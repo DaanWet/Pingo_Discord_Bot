@@ -11,25 +11,25 @@ import java.util.stream.Stream;
 public class CommandHandler {
 
     private Random random;
-    private Set<String> pcommands;
+
     private ArrayList<Command> commands;
     public static final String pathname = "./Pictures";
     private final ArrayList<String> rythmcommands = new ArrayList<>(Arrays.asList("!play", "!stop", "!np", "!queue", "!skipto", "!next", "!skip"));
 
     public CommandHandler() {
         random = new Random();
-        File dir = new File(pathname);
-        pcommands = new HashSet<>();
-        for (File file : dir.listFiles()) {
-            pcommands.add(file.getName());
-        }
         Help hc = new Help();
-        commands = new ArrayList<>(Arrays.asList(hc, new AddPicture(this), new FuckPingo()));
+        commands = new ArrayList<>(Arrays.asList(hc, new AddPicture(this), new FuckPingo(), new DeletePicture(this)));
         hc.setCommands(commands);
     }
 
-    public void addCommand(String command){
-        pcommands.add(command);
+    public Set<String> getPcommands(){
+        File cdir = new File(pathname);
+        Set<String> pcommands = new HashSet<>();
+        for (File file : cdir.listFiles()) {
+            pcommands.add(file.getName());
+        }
+        return pcommands;
     }
 
     public void onCommandReceived(GuildMessageReceivedEvent e) {
@@ -46,7 +46,7 @@ public class CommandHandler {
                 c.run(args, e);
             }
         }
-
+        Set<String> pcommands = getPcommands();
         if (pcommands.contains(command.toLowerCase())) {
             try {
                 File dir = new File(String.format("%s/%s", pathname, command));

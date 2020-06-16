@@ -37,13 +37,7 @@ public class AddPicture extends Command{
                     t.printStackTrace();
                     e.getChannel().sendMessage("Something went wrong").queue();
                     return null;
-                }).thenAccept(a -> {
-                    if (i > 0) {
-                        commandHandler.addCommand(words[1].toLowerCase());
-                    }
-                    e.getMessage().addReaction(":green_tick:667450925677543454").queue();
-
-                });
+                }).thenAccept(a -> e.getMessage().addReaction(":green_tick:667450925677543454").queue());
             } catch (IOException exc1) {
                 exc1.printStackTrace();
             }
