@@ -1,6 +1,7 @@
 package Commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -12,24 +13,26 @@ public class CommandHandler {
 
     private Random random;
 
-    private ArrayList<Command> commands;
+    private Map<String, Command> commands;
     public static final String pathname = "./Pictures";
-    private DeletePicture dp;
     private final ArrayList<String> rythmcommands = new ArrayList<>(Arrays.asList("!play", "!stop", "!np", "!queue", "!skipto", "!next", "!skip"));
 
     public CommandHandler() {
         random = new Random();
-        Help hc = new Help();
-        dp = new DeletePicture(this);
-        commands = new ArrayList<>(Arrays.asList(hc, new AddPicture(this), new FuckPingo(), dp, new Nickname()));
-        hc.setCommands(commands);
+        commands = Map.of(
+                "help", new Help(),
+                "add", new AddPicture(this),
+                "fuckpingo", new FuckPingo(),
+                "delete", new DeletePicture(this),
+                "nickname", new Nickname());
+        ((Help) commands.get("help")).setCommands(commands);
     }
 
     public OpenExplorerData getExplorerData(String command){
-        return dp.getExplorerData(command);
+        return ((DeletePicture) commands.get("delete")).getExplorerData(command);
     }
     public void closeExplorer(String command, Message message){
-        dp.closeExplorer(command, message);
+        ((DeletePicture) commands.get("delete")).closeExplorer(command, message);
     }
 
     public Set<String> getPcommands(){
@@ -40,15 +43,19 @@ public class CommandHandler {
         }
         return pcommands;
     }
+    public void updateNickName(String name){
+        ((FuckPingo) commands.get("fuckpingo")).setNickName(name);
+    }
+
 
     public void onCommandReceived(GuildMessageReceivedEvent e) {
         User author = e.getAuthor();
         TextChannel channel = e.getChannel();
         Message message = e.getMessage();
-
+        updateNickName(e.getGuild().getMemberById("589027434611867668").getNickname());
         String[] words = message.getContentRaw().split(" ");
         String command = words[0].substring(1);
-        for (Command c : commands){
+        for (Command c : commands.values()){
             if (c.isCommandFor(command)){
                 /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
                         .toArray(String[]::new);*/

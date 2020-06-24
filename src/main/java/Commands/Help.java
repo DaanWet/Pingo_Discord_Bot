@@ -11,15 +11,15 @@ import static Commands.CommandHandler.pathname;
 
 public class Help extends Command{
 
-    private ArrayList<Command> commands;
+    private Collection<Command> commands;
 
     public Help(){
         name = "help";
         aliases = new String[]{"commands", "command", "h", "test"};
     }
 
-    public void setCommands(ArrayList<Command> comm){
-        commands = comm;
+    public void setCommands(Map<String, Command> comm){
+        commands = comm.values();
     }
 
     @Override
