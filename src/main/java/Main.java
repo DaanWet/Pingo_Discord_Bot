@@ -18,8 +18,9 @@ public class Main {
         JDA jda = new JDABuilder(args[0]).build();
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("with your balls"));
         jda.setAutoReconnect(true);
-        jda.addEventListener(new MessageListener());
+        MessageListener ml = new MessageListener();
+        jda.addEventListener(ml);
         jda.addEventListener(new NicknameHandler());
-        jda.addEventListener(new ReactionListener());
+        jda.addEventListener(new ReactionListener(ml.getCommandHandler()));
     }
 }

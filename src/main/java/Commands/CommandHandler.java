@@ -14,13 +14,22 @@ public class CommandHandler {
 
     private ArrayList<Command> commands;
     public static final String pathname = "./Pictures";
+    private DeletePicture dp;
     private final ArrayList<String> rythmcommands = new ArrayList<>(Arrays.asList("!play", "!stop", "!np", "!queue", "!skipto", "!next", "!skip"));
 
     public CommandHandler() {
         random = new Random();
         Help hc = new Help();
-        commands = new ArrayList<>(Arrays.asList(hc, new AddPicture(this), new FuckPingo(), new DeletePicture(this)));
+        dp = new DeletePicture(this);
+        commands = new ArrayList<>(Arrays.asList(hc, new AddPicture(this), new FuckPingo(), dp, new Nickname()));
         hc.setCommands(commands);
+    }
+
+    public OpenExplorerData getExplorerData(String command){
+        return dp.getExplorerData(command);
+    }
+    public void closeExplorer(String command, Message message){
+        dp.closeExplorer(command, message);
     }
 
     public Set<String> getPcommands(){
@@ -41,9 +50,9 @@ public class CommandHandler {
         String command = words[0].substring(1);
         for (Command c : commands){
             if (c.isCommandFor(command)){
-                String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
-                        .toArray(String[]::new);
-                c.run(args, e);
+                /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
+                        .toArray(String[]::new);*/
+                c.run(Arrays.stream(words, 1, words.length).toArray(String[]::new), e);
             }
         }
         Set<String> pcommands = getPcommands();

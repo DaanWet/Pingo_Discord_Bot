@@ -20,6 +20,10 @@ public class ReactionListener extends ListenerAdapter {
     private CommandHandler commandHandler;
     private Random random = new Random();
 
+    public ReactionListener(CommandHandler commandHandler){
+        this.commandHandler = commandHandler;
+    }
+
     @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
         User user = e.getUser();
@@ -77,50 +81,53 @@ public class ReactionListener extends ListenerAdapter {
                             EmbedBuilder eb = new EmbedBuilder(me);
                             int n = Integer.parseInt(me.getDescription().substring(0, me.getDescription().indexOf('.')));
                             String command = me.getTitle().substring(me.getTitle().lastIndexOf(' ') + 1);
-                            File dir = new File(String.format("%s/%s", pathname, command));
-                            int max = dir.listFiles().length;
-                            switch (e.getReaction().getReactionEmote().getEmoji()){
-                                case "◀":
-                                    if (n != 0){
-                                        n--;
+                            String emoji = e.getReactionEmote().getEmoji();
+
+                            if (commandHandler.getExplorerData(command).getPlayerId().equals(e.getUserId()) || emoji.equals("❌")){
+                                File dir = new File(String.format("%s/%s", pathname, command));
+                                int max = dir.listFiles().length;
+                                switch (emoji){
+                                    case "◀":
+                                        m.removeReaction(emoji, user).queue();
+                                        if (n != 0){
+                                            n--;
+                                            eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
+                                            eb.setDescription(String.format("%d.jpg", n));
+                                            m.editMessage(eb.build()).queue();
+                                        }
+                                        break;
+                                    case "\uD83D\uDDD1":
+                                        //remove image
+
+                                        File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
+                                        foto.delete();
+                                        for (int i = n + 1; i < max; i++){
+                                            foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
+                                            foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
+                                        }
                                         eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
-                                        eb.setDescription(String.format("%d.jpg", n));
                                         m.editMessage(eb.build()).queue();
-                                    }
-                                    m.removeReaction("◀", user).queue();
-                                    break;
-                                case "\uD83D\uDDD1":
-                                    //remove image
+                                        if (dir.listFiles().length == 0){
+                                            dir.delete();
+                                            commandHandler.closeExplorer(command, m);
+                                        } else {
+                                            m.removeReaction(emoji, user).queue();
+                                        }
+                                        break;
+                                    case "▶":
+                                        m.removeReaction(emoji, user).queue();
+                                        if (n != max - 1){
+                                            n++;
+                                            eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
+                                            eb.setDescription(String.format("%d.jpg", n));
+                                            m.editMessage(eb.build()).queue();
 
-                                    File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
-                                    foto.delete();
-                                    for (int i = n + 1; i < max; i++){
-                                        foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
-                                        foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
-                                    }
-                                    eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
-                                    m.editMessage(eb.build()).queue();
-                                    m.removeReaction("\uD83D\uDDD1", user).queue();
-                                    if (dir.listFiles().length == 0){
-                                        dir.delete();
-                                        m.delete().queue();
-                                    }
-
-                                    break;
-                                case "▶":
-                                    if (n != max - 1){
-                                        n++;
-                                        eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
-                                        eb.setDescription(String.format("%d.jpg", n));
-                                        m.editMessage(eb.build()).queue();
-
-                                    }
-                                    m.removeReaction("▶", user).queue();
-                                    break;
-                                case "❌":
-                                    m.delete().queue();
-                                    break;
-
+                                        }
+                                        break;
+                                    case "❌":
+                                        commandHandler.closeExplorer(command, m);
+                                        break;
+                                }
                             }
                         }
                     }
