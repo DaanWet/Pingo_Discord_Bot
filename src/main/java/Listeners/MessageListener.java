@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 public class MessageListener extends ListenerAdapter {
 
     private final CommandHandler commandListener = new CommandHandler();
-
+    public CommandHandler getCommandHandler(){
+        return commandListener;
+    }
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
         User author = e.getAuthor();
@@ -22,7 +24,7 @@ public class MessageListener extends ListenerAdapter {
 
         // Minecraft update
         if (e.isWebhookMessage() || author.isBot()) {
-            if (channel.equals(guild.getTextChannelById(686645470835245079L)) && (message.getContentRaw().contains("Java") || message.getContentRaw().contains("java"))) {
+            if (channel.equals(guild.getTextChannelById(686645470835245079L)) && (!message.getContentRaw().startsWith("**Minecraft (Bedrock)"))) {
                 guild.getTextChannelById(598619747076276224L).sendMessage(message).queue();
             }
         } else if (!author.isBot()) {
@@ -36,12 +38,10 @@ public class MessageListener extends ListenerAdapter {
                     guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES);
                 });
             }
-            // Check for commands
+
             String contentRaw = e.getMessage().getContentRaw();
-            if (contentRaw.length() > 0 && contentRaw.charAt(0) == '!') {
-                commandListener.onCommandReceived(e);
-            } // Codex submissions
-            else if (channel.equals(e.getGuild().getTextChannelById("664230911935512586"))){
+            // Codex submissions
+            if (channel.equals(e.getGuild().getTextChannelById("664230911935512586"))){
                 message.delete().queue();
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor(author.getName(), null, author.getEffectiveAvatarUrl());
@@ -52,7 +52,11 @@ public class MessageListener extends ListenerAdapter {
                     m.addReaction(":indifferent_tick:667450939208368130").queue();
                     m.addReaction(":red_tick:667450953217212436").queue();
                 });
+            } // Check for commands
+            else if (contentRaw.length() > 0 && contentRaw.charAt(0) == '!') {
+                commandListener.onCommandReceived(e);
             }
+
         }
 
 
