@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Nickname extends Command{
 
+
     public Nickname(){
         name = "nickname";
         aliases = new String[]{"rename", "bijnaam"};
@@ -21,8 +22,15 @@ public class Nickname extends Command{
     public void run(String[] args, GuildMessageReceivedEvent e) {
         Message m = e.getMessage();
         List<Member> mentionedmembers = m.getMentionedMembers();
-        if ( args.length >= 2 && ((mentionedmembers.size() == 1 && args[0].startsWith("<@!")) || e.getGuild().getMemberById(args[0]) != null )){
-            Member target = mentionedmembers.size() == 1 ? mentionedmembers.get(0) : e.getGuild().getMemberById(args[0]);
+        System.out.println(args[0]);
+        Member target;
+        try {
+            target = mentionedmembers.size() == 1 && args[0].startsWith("<@") ? mentionedmembers.get(0) : e.getGuild().getMemberById(args[0]);
+        } catch (Exception exc){
+            target = null;
+            e.getChannel().sendMessage("Usage: !nickname <Member> <Nickname>").queue();
+        }
+        if ( args.length >= 2 && (target != null )){
             try {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 1; i < args.length; i++){
