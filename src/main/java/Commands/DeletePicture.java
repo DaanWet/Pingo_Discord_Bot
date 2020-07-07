@@ -1,17 +1,15 @@
 package Commands;
 
+import Utils.OpenExplorerData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import static Commands.CommandHandler.pathname;
 
 public class DeletePicture extends Command{
 
@@ -45,7 +43,7 @@ public class DeletePicture extends Command{
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (args.length == 2 && commandHandler.getPcommands().contains(args[1])){
+        if (args.length == 2 && commandHandler.getPcommands().contains(args[1].toLowerCase())){
             if (openExplorers.containsKey(args[1])){
                 e.getChannel().sendMessage("An explorer is already open").queue();
             } else {

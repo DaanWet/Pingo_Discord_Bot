@@ -1,13 +1,12 @@
 package Commands;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
+import Utils.OpenExplorerData;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class CommandHandler {
 
@@ -39,7 +38,7 @@ public class CommandHandler {
         File cdir = new File(pathname);
         Set<String> pcommands = new HashSet<>();
         for (File file : cdir.listFiles()) {
-            pcommands.add(file.getName());
+            pcommands.add(file.getName().toLowerCase());
         }
         return pcommands;
     }
@@ -57,9 +56,14 @@ public class CommandHandler {
         String command = words[0].substring(1);
         for (Command c : commands.values()){
             if (c.isCommandFor(command)){
-                /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
+                if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                    /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
                         .toArray(String[]::new);*/
-                c.run(Arrays.stream(words, 1, words.length).toArray(String[]::new), e);
+                    c.run(Arrays.stream(words, 1, words.length).toArray(String[]::new), e);
+                } else {
+                    channel.sendMessage("❌ You don't have permission to run this command").queue();
+                }
+
             }
         }
         Set<String> pcommands = getPcommands();
