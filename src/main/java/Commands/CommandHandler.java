@@ -23,7 +23,8 @@ public class CommandHandler {
                 "add", new AddPicture(this),
                 "fuckpingo", new FuckPingo(),
                 "delete", new DeletePicture(this),
-                "nickname", new Nickname());
+                "nickname", new Nickname(),
+                "roleassign", new RoleAssign(),
         ((Help) commands.get("help")).setCommands(commands);
     }
 

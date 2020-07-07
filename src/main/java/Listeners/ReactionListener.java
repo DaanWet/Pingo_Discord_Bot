@@ -40,6 +40,8 @@ public class ReactionListener extends ListenerAdapter {
                         if (me.getTitle() != null){
                             if (me.getTitle().contains("Delete pictures from ")){
                                 handleDeleteExplorerReaction(e, m, me);
+                            } else if (me.getTitle().contains("Gaming Roles")){
+                                handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), e.getMember(), true);
                             }
                         }
                     }
@@ -168,6 +170,19 @@ public class ReactionListener extends ListenerAdapter {
         }
     }
 
+    public void handleRoleReaction(String emote, Guild g, Member m, boolean add){
+        ArrayList<JSONObject> gameroles = new DataHandler().getGameRoles();
+        for (JSONObject obj : gameroles){
+            if (emote.equals(obj.get("emoji").toString().substring(1))){
+                if (add){
+                    g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
+                } else {
+                    g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
+                }
+
+            }
+        }
+    }
 }
 
 
