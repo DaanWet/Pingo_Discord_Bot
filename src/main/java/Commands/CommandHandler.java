@@ -25,6 +25,7 @@ public class CommandHandler {
                 "delete", new DeletePicture(this),
                 "nickname", new Nickname(),
                 "roleassign", new RoleAssign(),
+                "addRA", new AddRoleAssign());
         ((Help) commands.get("help")).setCommands(commands);
     }
 
