@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class CommandHandler {
 
@@ -61,9 +62,16 @@ public class CommandHandler {
                 if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
                         .toArray(String[]::new);*/
-                    c.run(Arrays.stream(words, 1, words.length).toArray(String[]::new), e);
+                    if (!c.getBannedChannels().contains(channel.getIdLong())){
+                        c.run(Arrays.stream(words, 1, words.length).toArray(String[]::new), e);
+                    } else {
+                        e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+                        channel.sendMessage("❌ You can't use that command here").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                    }
+
                 } else {
-                    channel.sendMessage("❌ You don't have permission to run this command").queue();
+                    e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+                    channel.sendMessage("❌ You don't have permission to run this command").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                 }
 
             }

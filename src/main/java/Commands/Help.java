@@ -1,6 +1,8 @@
 package Commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
@@ -25,11 +27,27 @@ public class Help extends Command{
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Pingo commands");
+        if (args.length == 1 && args[0].equalsIgnoreCase("moderation")){
+            if (e.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                eb.setTitle("Pingo Moderation commands");
+                fillCommands(eb, true);
+                e.getChannel().sendMessage(eb.build()).queue();
+            } else {
+                e.getChannel().sendMessage("❌ You don't have permission to run this command").queue();
+            }
+        } else {
+            eb.setTitle("Pingo commands");
+            fillCommands(eb, false);
+            e.getChannel().sendMessage(eb.build()).queue();
+        }
 
+
+    }
+
+    public void fillCommands(EmbedBuilder eb, boolean moderation){
         Map<String, StringBuilder> sbs = new HashMap<>();
         for (Command c : commands) {
-            if (c.getCategory() == null ||  !c.getCategory().equalsIgnoreCase("moderation")) {
+            if (c.getCategory() == null || c.getCategory().equalsIgnoreCase("moderation") == moderation) {
                 String cat = c.getCategory();
                 if (!sbs.containsKey(cat)) {
                     sbs.put(cat, new StringBuilder());
@@ -38,22 +56,23 @@ public class Help extends Command{
                 String[] als = c.getAliases();
                 sb.append(String.format("\n!%s%s", c.getName(), als.length > 0 ? "[" : ""));
                 Arrays.stream(c.getAliases()).forEach(alias -> sb.append(alias).append(", "));
-                if (als.length > 0){
+                if (als.length > 0) {
                     sb.delete(sb.length() - 2, sb.length());
                 }
-                sb.append(String.format("%s: *%s*", als.length > 0 ? "]" : "" ,c.getDescription().trim()));
+                sb.append(String.format("%s: *%s*", als.length > 0 ? "]" : "", c.getDescription().trim()));
             }
         }
-        File dir = new File(pathname);
-        for (File directory : dir.listFiles()) {
-            sbs.get("Pictures").append(String.format("\n!%s: *Shows a random picture of %s*", directory.getName(), directory.getName()));
+        if (!moderation){
+            File dir = new File(pathname);
+            for (File directory : dir.listFiles()) {
+                sbs.get("Pictures").append(String.format("\n!%s: *Shows a random picture of %s*", directory.getName(), directory.getName()));
+            }
         }
+
         eb.setColor(Color.BLUE);
         sbs.keySet().forEach(s -> eb.addField(s, sbs.get(s).toString().trim(), false));
-
-
-        e.getChannel().sendMessage(eb.build()).queue();
     }
+
 
     @Override
     public String getDescription() {
