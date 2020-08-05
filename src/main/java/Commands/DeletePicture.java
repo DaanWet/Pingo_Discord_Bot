@@ -43,21 +43,23 @@ public class DeletePicture extends Command{
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (args.length == 2 && commandHandler.getPcommands().contains(args[1].toLowerCase())){
-            if (openExplorers.containsKey(args[1])){
+        System.out.println(commandHandler.getPcommands());
+        System.out.println(args[0]);
+        if (args.length == 1 && commandHandler.getPcommands().contains(args[0].toLowerCase())){
+            if (openExplorers.containsKey(args[0])){
                 e.getChannel().sendMessage("An explorer is already open").queue();
             } else {
                 EmbedBuilder eb = new EmbedBuilder();
-                eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[1], 0, random.nextInt(), random.nextInt()));
-                eb.setTitle("Delete pictures from " + args[1]);
+                eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[0], 0, random.nextInt(), random.nextInt()));
+                eb.setTitle("Delete pictures from " + args[0]);
                 eb.setDescription("0.jpg");
                 e.getChannel().sendMessage(eb.build()).queue(m -> {
-                    openExplorers.put(args[1], new OpenExplorerData(e.getAuthor().getId(),  e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));
+                    openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(),  e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));
                     m.addReaction("U+25C0").queue();
                     m.addReaction("U+1F5D1").queue();
                     m.addReaction("U+25B6").queue();
                     m.addReaction("U+274C").queue();
-                    autoClosers.put(args[1], deleteMessage(args[1], m).queueAfter(10, TimeUnit.MINUTES));
+                    autoClosers.put(args[0], deleteMessage(args[0], m).queueAfter(10, TimeUnit.MINUTES));
 
                 });
 
