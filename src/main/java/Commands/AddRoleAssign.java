@@ -2,10 +2,13 @@ package Commands;
 
 import Utils.DataHandler;
 import com.vdurmont.emoji.EmojiManager;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class AddRoleAssign extends Command{
 
@@ -32,7 +35,20 @@ public class AddRoleAssign extends Command{
                 name.append(args[i]).append(" ");
             }
             if (role != null){
-                dataHandler.addRoleAssign(args[0], args[1].substring(1, args[1].length() - 1), name.toString().trim() ,role.getIdLong());
+                long[] message = dataHandler.getMessage(args[0]);
+                String emote = args[1].substring(1, args[1].length() - 1);
+                if (message != null){
+                    e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
+                        MessageEmbed me = m.getEmbeds().get(0);
+                        EmbedBuilder eb = new EmbedBuilder(me);
+                        eb.setDescription(me.getDescription().concat(String.format("\n\n<%s>\t%s", emote, name.toString())));
+                        m.editMessage(eb.build()).queue();
+                        m.addReaction(emote).queue();
+                    });
+                }
+                dataHandler.addRoleAssign(args[0], emote, name.toString().trim() ,role.getIdLong());
+                e.getMessage().addReaction(":green_tick:667450925677543454").queue();
+                e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
             }
         } else {
             e.getChannel().sendMessage("Usage: !addRoleAssign <type> <emoji> <role> <name>").queue();
@@ -41,6 +57,6 @@ public class AddRoleAssign extends Command{
 
     @Override
     public String getDescription() {
-        return null;
+        return "Add a role to the role assigner";
     }
 }
