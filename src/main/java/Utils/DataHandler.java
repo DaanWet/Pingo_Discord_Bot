@@ -72,6 +72,46 @@ public class DataHandler {
             save();
         }
     }
+    public boolean removeRoleAssign(String type, String emoji){
+        openfile();
+        String key = String.format("%s-roles", type.toLowerCase());
+        boolean found = false;
+        if (jsonObject.containsKey(key)){
+            JSONArray roles = (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
+            int i = 0;
+            while (!found && i < roles.size()){
+                if (((JSONObject) roles.get(i)).get("emoji").equals(emoji)){
+                    found = true;
+                }   else {
+                    i++;
+                }
+            }
+            if (found){
+                roles.remove(i);
+            }
+        }
+        return found;
+    }
+    public boolean removeRoleAssign(String type, long roleid){
+        openfile();
+        String key = String.format("%s-roles", type.toLowerCase());
+        boolean found = false;
+        if (jsonObject.containsKey(key)){
+            JSONArray roles = (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
+            int i = 0;
+            while (!found && i < roles.size()){
+                if (((long) ((JSONObject) roles.get(i)).get("role")) == (roleid)){
+                    found = true;
+                }   else {
+                    i++;
+                }
+            }
+            if (found){
+                roles.remove(i);
+            }
+        }
+        return found;
+    }
 
     void save() {
         try (FileWriter file = new FileWriter(PATH)) {
