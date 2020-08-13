@@ -43,8 +43,6 @@ public class DeletePicture extends Command{
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        System.out.println(commandHandler.getPcommands());
-        System.out.println(args[0]);
         if (args.length == 1 && commandHandler.getPcommands().contains(args[0].toLowerCase())){
             if (openExplorers.containsKey(args[0])){
                 e.getChannel().sendMessage("An explorer is already open").queue();
