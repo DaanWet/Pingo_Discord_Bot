@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class RemoveRoleAssign extends Command{
@@ -27,7 +28,7 @@ public class RemoveRoleAssign extends Command{
             long[] message = dataHandler.getMessage("gaming");
             String emote = args[0].substring(1, args[0].length() - 1);
             System.out.println(emote);
-            e.getGuild().getTextChannelById(730167052228231218L/*message[0]*/).retrieveMessageById(730171710560534578L/*message[1]*/).queue(m -> {
+            e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
                 MessageEmbed me = m.getEmbeds().get(0);
                 EmbedBuilder eb = new EmbedBuilder(me);
                 ArrayList<String> lines = new ArrayList<>(Arrays.asList(me.getDescription().split("\n")));

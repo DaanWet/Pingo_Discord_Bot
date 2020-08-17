@@ -33,6 +33,10 @@ public abstract class Command {
         return bannedChannels;
     }
 
+    public String getUsage(){
+        return String.format("Usage: !%s \n%s", name, this.getDescription());
+    }
+
     public boolean isCommandFor(String s) {
         if (s.equalsIgnoreCase(name)) {
             return true;
