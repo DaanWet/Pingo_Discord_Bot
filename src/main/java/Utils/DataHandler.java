@@ -3,6 +3,9 @@ package Utils;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -15,8 +18,11 @@ import org.json.simple.parser.*;
 @SuppressWarnings("unchecked")
 public class DataHandler {
 
-    final private String PATH = "./Data.json"; // "src/main/resources/Data.json";
+    final private String PATH =  "src/main/resources/Data.json"; //"./Data.json";
     private JSONObject jsonObject;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-dd-MM HH-mm-ss");
+
+
 
     public DataHandler() {
         openfile();
@@ -90,6 +96,7 @@ public class DataHandler {
                 roles.remove(i);
             }
         }
+        save();
         return found;
     }
     public boolean removeRoleAssign(String type, long roleid){
@@ -110,7 +117,82 @@ public class DataHandler {
                 roles.remove(i);
             }
         }
+        save();
         return found;
+
+    }
+
+    public int getCredits(String userid){
+        openfile();
+        int credits = 0;
+        if (jsonObject.containsKey("casino")){
+            JSONObject casino = (JSONObject) jsonObject.get("casino");
+            if (casino.containsKey(userid)){
+                JSONObject userobject = (JSONObject) casino.get(userid);
+                if (userobject.containsKey("credits")){
+                    credits = (int) (long) userobject.get("credits");
+                }
+            }
+        }
+        return credits;
+    }
+
+    public void createUser(String userid){
+        openfile();
+        if (!jsonObject.containsKey("casino")){
+            jsonObject.put("casino", new JSONObject());
+        }
+        JSONObject casino = (JSONObject) jsonObject.get("casino");
+        if (!casino.containsKey(userid)){
+            JSONObject user = new JSONObject();
+            user.put("credits", 0);
+
+            user.put("last_cred_collect", dtf.format(LocalDateTime.now().minusDays(1)));
+            casino.put(userid, user);
+        }
+        save();
+    }
+
+
+    public void setCredits(String userid, int credits){
+        openfile();
+        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid) ){
+            createUser(userid);
+        }
+
+        JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("casino")).get(userid);
+        user.put("credits", credits);
+        save();
+    }
+
+    public int addCredits(String userid, int credits){
+        int c = getCredits(userid) + credits;
+        setCredits(userid, c);
+        return c;
+    }
+
+    public LocalDateTime getLatestCollect(String userid){
+        openfile();
+        LocalDateTime date = LocalDateTime.now().minusDays(1);
+        if (jsonObject.containsKey("casino")) {
+            JSONObject casino = (JSONObject) jsonObject.get("casino");
+            if (casino.containsKey(userid)) {
+                JSONObject userobject = (JSONObject) casino.get(userid);
+                date = LocalDateTime.from(dtf.parse((String) userobject.get("last_cred_collect")));
+            }
+        }
+        return date;
+    }
+
+    public void setLatestCollect(String userid, LocalDateTime time){
+        openfile();
+        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid) ){
+            createUser(userid);
+        }
+
+        JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("casino")).get(userid);
+        user.put("last_cred_collect", dtf.format(time));
+        save();
     }
 
     void save() {

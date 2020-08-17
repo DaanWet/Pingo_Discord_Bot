@@ -27,7 +27,9 @@ public class CommandHandler {
                 "nickname", new Nickname(),
                 "roleassign", new RoleAssign(),
                 "addRA", new AddRoleAssign(),
-                "removeRA", new RemoveRoleAssign());
+                "removeRA", new RemoveRoleAssign(),
+                "daily", new CollectCredits(),
+                "balance", new ShowCredits());
 
         ((Help) commands.get("help")).setCommands(commands);
     }
