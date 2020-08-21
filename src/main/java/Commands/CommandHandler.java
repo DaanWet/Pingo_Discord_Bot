@@ -1,6 +1,13 @@
-package Commands;
+package commands;
 
-import Utils.OpenExplorerData;
+import blackjack.GameHandler;
+import commands.casino.*;
+import commands.pictures.AddPicture;
+import commands.pictures.DeletePicture;
+import commands.roles.AddRoleAssign;
+import commands.roles.RemoveRoleAssign;
+import commands.roles.RoleAssign;
+import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -13,25 +20,32 @@ public class CommandHandler {
 
     private Random random;
 
-    private Map<String, Command> commands;
+    private HashMap<String, Command> commands;
     public static final String pathname = "./Pictures";
-    private final ArrayList<String> rythmcommands = new ArrayList<>(Arrays.asList("!play", "!stop", "!np", "!queue", "!skipto", "!next", "!skip"));
 
     public CommandHandler() {
         random = new Random();
-        commands = Map.of(
-                "help", new Help(),
-                "add", new AddPicture(this),
-                "fuckpingo", new FuckPingo(),
-                "delete", new DeletePicture(this),
-                "nickname", new Nickname(),
-                "roleassign", new RoleAssign(),
-                "addRA", new AddRoleAssign(),
-                "removeRA", new RemoveRoleAssign(),
-                "daily", new CollectCredits(),
-                "balance", new ShowCredits());
+        CommandHandler commh = this;
+        GameHandler gameHandler = new GameHandler();
+        commands = new HashMap<>() {
+            {
+                put("help", new Help());
+                put("add", new AddPicture(commh));
+                put("fuckpingo", new FuckPingo());
+                put("delete", new DeletePicture(commh));
+                put("nickname", new Nickname());
+                put("roleassign", new RoleAssign());
+                put("addRA", new AddRoleAssign());
+                put("removeRA", new RemoveRoleAssign());
+                put("daily", new CollectCredits());
+                put("balance", new ShowCredits());
+                put("blackjack", new BlackJack(gameHandler));
+            }
 
+        };
         ((Help) commands.get("help")).setCommands(commands);
+        commands.put("stand", new Stand(gameHandler));
+        commands.put("hit", new Hit(gameHandler));
     }
 
     public OpenExplorerData getExplorerData(String command){
