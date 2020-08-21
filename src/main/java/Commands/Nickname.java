@@ -1,11 +1,10 @@
-package Commands;
+package commands;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 
-import java.net.Socket;
 import java.util.List;
 
 public class Nickname extends Command{

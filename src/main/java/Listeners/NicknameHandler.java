@@ -1,4 +1,4 @@
-package Listeners;
+package listeners;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;

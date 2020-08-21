@@ -1,6 +1,8 @@
-package Commands;
+package commands.pictures;
 
-import Utils.OpenExplorerData;
+import commands.Command;
+import commands.CommandHandler;
+import utils.OpenExplorerData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -11,7 +13,7 @@ import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class DeletePicture extends Command{
+public class DeletePicture extends Command {
 
     private CommandHandler commandHandler;
     private Random random = new Random();

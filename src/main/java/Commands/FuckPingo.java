@@ -1,8 +1,6 @@
-package Commands;
+package commands;
 
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class FuckPingo extends Command{

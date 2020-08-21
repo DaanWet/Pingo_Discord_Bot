@@ -1,15 +1,14 @@
-package Commands;
+package commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.io.File;
 import java.util.*;
 
-import static Commands.CommandHandler.pathname;
+import static commands.CommandHandler.pathname;
 
 public class Help extends Command{
 
@@ -47,7 +46,7 @@ public class Help extends Command{
     public void fillCommands(EmbedBuilder eb, boolean moderation){
         Map<String, StringBuilder> sbs = new HashMap<>();
         for (Command c : commands) {
-            if (c.getCategory() == null || c.getCategory().equalsIgnoreCase("moderation") == moderation) {
+            if (c.getCategory() == null || (!c.getCategory().equalsIgnoreCase("hidden") && c.getCategory().equalsIgnoreCase("moderation") == moderation)) {
                 String cat = c.getCategory();
                 if (!sbs.containsKey(cat)) {
                     sbs.put(cat, new StringBuilder());

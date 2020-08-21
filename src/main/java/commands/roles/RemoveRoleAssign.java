@@ -1,6 +1,7 @@
-package Commands;
+package commands.roles;
 
-import Utils.DataHandler;
+import commands.Command;
+import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -8,10 +9,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class RemoveRoleAssign extends Command{
+public class RemoveRoleAssign extends Command {
 
     private DataHandler dataHandler;
 

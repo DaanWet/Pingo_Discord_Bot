@@ -1,16 +1,16 @@
-package Commands;
+package commands.roles;
 
-import Utils.DataHandler;
+import commands.Command;
+import utils.DataHandler;
 import com.vdurmont.emoji.EmojiManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class AddRoleAssign extends Command{
+public class AddRoleAssign extends Command {
 
     private DataHandler dataHandler;
 

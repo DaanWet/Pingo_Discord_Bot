@@ -1,7 +1,7 @@
-package Commands;
+package commands.casino;
 
-import Commands.Command;
-import Utils.DataHandler;
+import commands.Command;
+import utils.DataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class ShowCredits extends Command {

@@ -1,6 +1,5 @@
-package Commands;
+package commands;
 
-import jdk.jshell.spi.ExecutionControl;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;

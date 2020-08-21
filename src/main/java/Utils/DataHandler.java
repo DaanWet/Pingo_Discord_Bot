@@ -1,15 +1,12 @@
-package Utils;
+package utils;
 
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
@@ -171,9 +168,10 @@ public class DataHandler {
         return c;
     }
 
+
     public LocalDateTime getLatestCollect(String userid){
         openfile();
-        LocalDateTime date = LocalDateTime.now().minusDays(1);
+        LocalDateTime date = LocalDateTime.now().minusDays(1).minusMinutes(1);
         if (jsonObject.containsKey("casino")) {
             JSONObject casino = (JSONObject) jsonObject.get("casino");
             if (casino.containsKey(userid)) {

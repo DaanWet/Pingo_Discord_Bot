@@ -1,13 +1,14 @@
-package Commands;
+package commands.roles;
 
-import Utils.DataHandler;
+import commands.Command;
+import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
-public class RoleAssign extends Command{
+public class RoleAssign extends Command {
 
     private DataHandler dataHandler;
 

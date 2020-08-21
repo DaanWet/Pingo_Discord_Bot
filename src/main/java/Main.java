@@ -1,7 +1,6 @@
-import Commands.CommandHandler;
-import Listeners.MessageListener;
-import Listeners.NicknameHandler;
-import Listeners.ReactionListener;
+import listeners.MessageListener;
+import listeners.NicknameHandler;
+import listeners.ReactionListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;

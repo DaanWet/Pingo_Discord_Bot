@@ -1,4 +1,4 @@
-package Utils;
+package utils;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;

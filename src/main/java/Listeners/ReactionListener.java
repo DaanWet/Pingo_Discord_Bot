@@ -1,7 +1,7 @@
-package Listeners;
+package listeners;
 
-import Commands.CommandHandler;
-import Utils.DataHandler;
+import commands.CommandHandler;
+import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-import static Commands.CommandHandler.pathname;
+import static commands.CommandHandler.pathname;
 
 public class ReactionListener extends ListenerAdapter {
     private CommandHandler commandHandler;
