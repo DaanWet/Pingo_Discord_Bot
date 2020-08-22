@@ -145,6 +145,7 @@ public class DataHandler {
             user.put("credits", 0);
 
             user.put("last_cred_collect", dtf.format(LocalDateTime.now().minusDays(1)));
+            user.put("last_weekly_collect", dtf.format(LocalDateTime.now().minusDays(7)));
             casino.put(userid, user);
         }
         save();
@@ -180,6 +181,31 @@ public class DataHandler {
             }
         }
         return date;
+    }
+
+    public LocalDateTime getLatestWeekCollect(String userid){
+        openfile();
+        LocalDateTime date = LocalDateTime.now().minusDays(7).minusMinutes(1);
+        if (jsonObject.containsKey("casino")) {
+            JSONObject casino = (JSONObject) jsonObject.get("casino");
+            if (casino.containsKey(userid)) {
+                JSONObject userobject = (JSONObject) casino.get(userid);
+                if (userobject.containsKey("last_weekly_collect")){
+                    date = LocalDateTime.from(dtf.parse((String) userobject.get("last_weekly_collect")));
+                }
+
+            }
+        }
+        return date;
+    }
+    public void setLatestWeekCollect(String userid, LocalDateTime time){
+        openfile();
+        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid) ){
+            createUser(userid);
+        }
+        JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("casino")).get(userid);
+        user.put("last_weekly_collect", dtf.format(time));
+        save();
     }
 
     public void setLatestCollect(String userid, LocalDateTime time){
