@@ -36,7 +36,7 @@ public class BlackJack extends Command {
                 } else {
                     dataHandler.addCredits(author.getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
                 }
-                e.getChannel().sendMessage(bjg.buildEmbed(author.getName())).queue(m -> bjg.setMessageId(m.getIdLong()));
+                e.getChannel().sendMessage(bjg.buildEmbed(author.getName()).build()).queue(m -> bjg.setMessageId(m.getIdLong()));
             } else {
                 e.getChannel().sendMessage("You're already playing a game").queue();
             }

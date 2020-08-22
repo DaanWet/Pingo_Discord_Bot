@@ -22,12 +22,17 @@ public class BlackJackHand {
         }
         while (aces > 0 && v > 21){
             v -= 10;
+            aces--;
         }
         return v;
     }
 
     public void addCard(Card card){
         cards.add(card);
+    }
+
+    public ArrayList<Card> getCards() {
+        return cards;
     }
 
     public String toString(){

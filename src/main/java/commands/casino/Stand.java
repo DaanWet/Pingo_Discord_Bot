@@ -26,11 +26,12 @@ public class Stand extends Command {
             BlackJackGame bjg = gameHandler.getBlackJackGame(e.getAuthor().getIdLong());
             if (bjg != null){
                 bjg.stand();
-                dataHandler.addCredits(e.getAuthor().getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                int credits = dataHandler.addCredits(e.getAuthor().getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
                 gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
+                EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
+                eb.addField("Credits", String.format("You now have %d credits", credits), false);
                 e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
-                    m.editMessage(bjg.buildEmbed(e.getAuthor().getName())).queue();
-
+                    m.editMessage(eb.build()).queue();
                 });
             }
         }

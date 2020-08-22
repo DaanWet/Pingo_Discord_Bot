@@ -38,14 +38,16 @@ public class CommandHandler {
                 put("addRA", new AddRoleAssign());
                 put("removeRA", new RemoveRoleAssign());
                 put("daily", new CollectCredits());
+                put("weekly", new Weekly());
                 put("balance", new ShowCredits());
                 put("blackjack", new BlackJack(gameHandler));
+                put("stand", new Stand(gameHandler));
+                put("hit", new Hit(gameHandler));
+                put("double", new DoubleDown(gameHandler));
             }
 
         };
         ((Help) commands.get("help")).setCommands(commands);
-        commands.put("stand", new Stand(gameHandler));
-        commands.put("hit", new Hit(gameHandler));
     }
 
     public OpenExplorerData getExplorerData(String command){

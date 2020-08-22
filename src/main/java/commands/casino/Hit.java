@@ -27,11 +27,13 @@ public class Hit extends Command {
             if (bjg != null) {
                 bjg.hit();
                 e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
-                    m.editMessage(bjg.buildEmbed(e.getAuthor().getName())).queue();
+                    EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
                     if (bjg.hasEnded()){
-                        dataHandler.addCredits(e.getAuthor().getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                        int credits = dataHandler.addCredits(e.getAuthor().getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                        eb.addField("Credits", String.format("You now have %d credits", credits), false);
                         gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
                     }
+                    m.editMessage(eb.build()).queue();
                 });
             }
         }

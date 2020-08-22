@@ -42,6 +42,7 @@ public class BlackJackGame {
     private Long messageId;
     private ArrayList<Card> deck;
     private BlackJackHand playerHand;
+    private BlackJackHand secondPlayerHand;
     private BlackJackHand dealerHand;
     private boolean hasEnded;
     private EndState endstate;
@@ -97,6 +98,9 @@ public class BlackJackGame {
         if (playerHand.getValue() > 21){
             hasEnded = true;
             endstate = EndState.BUST;
+        } else if (playerHand.getValue() == 21){
+            hasEnded = true;
+            doDealerMoves();
         }
     }
 
@@ -104,8 +108,16 @@ public class BlackJackGame {
         hasEnded = true;
         doDealerMoves();
     }
+    public boolean canDouble(){
+        return playerHand.getCards().size() == 2;
+    }
+
+    public boolean canSplit(){
+        return canDouble() && playerHand.getCards().get(0).getValue().getValue() == playerHand.getCards().get(1).getValue().getValue();
+    }
 
     public void doubleDown(){
+        bet *= 2;
         playerHand.addCard(deck.remove(0));
         hasEnded = true;
         doDealerMoves();
@@ -140,9 +152,9 @@ public class BlackJackGame {
         this.messageId = messageId;
     }
 
-    public MessageEmbed buildEmbed(String user){
+    public EmbedBuilder buildEmbed(String user){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(String.format("\u2063Blackjack | %s           \u2063", user));
+        eb.setTitle(String.format("\u2063Blackjack | %s | Bet : %d         \u2063", user, bet));
         eb.addField("Player Cards", String.format("%s\nValue: **%s**", playerHand.toString(), playerHand.getValue()), true);
         eb.addField("Dealer Cards", String.format("%s\nValue: **%s**", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", hasEnded ? dealerHand.getValue() : ":question:"), true);
         eb.setColor(Color.BLUE);
@@ -150,8 +162,10 @@ public class BlackJackGame {
             int credits = ((Double) (bet * endstate.reward)).intValue();
             eb.addField(endstate.getDisplay(), String.format("You %s %d credits", endstate.getReward() > 0 ? "won" : endstate.getReward() == 0 ? "won/lost" : "lost", credits), false);
             eb.setColor(endstate.getColor());
+        } else {
+            eb.addField("Commands", String.format("!stand : see dealer cards\n!hit : take another card%s%s", canDouble() ? "\n!double : double bet and take last card" : "", canSplit() ? "\n!split : split your cards" : ""), false);
         }
 
-        return eb.build();
+        return eb;
     };
 }
