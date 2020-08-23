@@ -5,13 +5,21 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.kohsuke.github.GitHub;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter {
 
-    private final CommandHandler commandListener = new CommandHandler();
+    private final CommandHandler commandListener;
+    private GitHub github;
+
+
+    public MessageListener(GitHub github){
+        this.github = github;
+        this.commandListener =  new CommandHandler(github);
+    }
 
     public CommandHandler getCommandHandler() {
         return commandListener;

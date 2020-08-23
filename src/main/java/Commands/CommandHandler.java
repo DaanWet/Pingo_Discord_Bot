@@ -7,6 +7,7 @@ import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
 import commands.roles.RemoveRoleAssign;
 import commands.roles.RoleAssign;
+import org.kohsuke.github.GitHub;
 import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -22,8 +23,10 @@ public class CommandHandler {
 
     private HashMap<String, Command> commands;
     public static final String pathname = "./Pictures";
+    private GitHub gitHub;
 
-    public CommandHandler() {
+    public CommandHandler(GitHub gitHub) {
+        this.gitHub = gitHub;
         random = new Random();
         CommandHandler commh = this;
         GameHandler gameHandler = new GameHandler();
@@ -45,6 +48,8 @@ public class CommandHandler {
                 put("hit", new Hit(gameHandler));
                 put("double", new DoubleDown(gameHandler));
                 put("split", new Split(gameHandler));
+                put("suggest", new Suggest());
+                put("issues", new ListIssues(gitHub));
             }
 
         };

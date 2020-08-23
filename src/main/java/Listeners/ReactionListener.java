@@ -1,6 +1,9 @@
 package listeners;
 
 import commands.CommandHandler;
+import org.kohsuke.github.GHIssueBuilder;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -10,6 +13,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -21,18 +25,22 @@ import static commands.CommandHandler.pathname;
 
 public class ReactionListener extends ListenerAdapter {
     private CommandHandler commandHandler;
+    private GitHub gitHub;
     private Random random = new Random();
 
-    public ReactionListener(CommandHandler commandHandler){
+    public ReactionListener(CommandHandler commandHandler, GitHub gitHub){
         this.commandHandler = commandHandler;
+        this.gitHub = gitHub;
     }
 
     @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
         User user = e.getUser();
         if (!user.isBot()) {
-            if (e.getChannel().equals(e.getGuild().getTextChannelById("664230911935512586"))) {
+            if (e.getChannel().getIdLong() == 664230911935512586L) {
                 handleSuggestionReaction(e);
+            } else if (e.getChannel().getIdLong() == 747228850353733739L){
+                handleBotSuggestion(e);
             } else {
                 e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
                     if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()){
@@ -52,20 +60,41 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e){
-        Member member = e.getMember();
-        if (!e.getUser().isBot() && !member.isFake()){
-            e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
-                if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()){
-                    MessageEmbed me = m.getEmbeds().get(0);
-                    if (me.getTitle() != null && me.getTitle().contains("Gaming Roles")){
-                        handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), e.getMember(), false);
+        e.retrieveUser().queue(user -> {
+            if (user != null && !user.isBot()){
+                System.out.println("yessir");
+                e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
+                    if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()){
+                        MessageEmbed me = m.getEmbeds().get(0);
+                        if (me.getTitle() != null && me.getTitle().contains("Gaming Roles")){
+                            handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), e.getMember(), false);
+                        }
                     }
-                }
-            });
-
-        }
+                });
+            }
+        });
     }
 
+    public void handleBotSuggestion(GuildMessageReactionAddEvent e){
+        if (e.getMember().getIdLong() == 223837254118801408L){
+            if (e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals("✅")){
+                e.retrieveMessage().queue(m -> {
+                    if (m.getEmbeds().size() == 1){
+                        try{
+                            MessageEmbed me = m.getEmbeds().get(0);
+                            if (me.getFooter() != null && me.getFooter().getText() != null){
+                                GHRepository repo = gitHub.getRepository(me.getFooter().getText().split(" ")[1]);
+                                repo.createIssue(me.getTitle()).body(me.getDescription()).create();
+                            }
+                        } catch (IOException | NullPointerException ioException){
+                            e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", ioException.getMessage())).queue();
+                            ioException.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }
+    }
 
     public void handleSuggestionReaction(GuildMessageReactionAddEvent e) {
         User user = e.getUser();
