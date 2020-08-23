@@ -15,7 +15,8 @@ public class BlackJack extends Command {
 
     private GameHandler gameHandler;
     private DataHandler dataHandler;
-    public BlackJack(GameHandler gameHandler){
+
+    public BlackJack(GameHandler gameHandler) {
         this.gameHandler = gameHandler;
         this.dataHandler = new DataHandler();
         this.name = "blackjack";
@@ -26,22 +27,27 @@ public class BlackJack extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         User author = e.getAuthor();
-        int bet = Utils.getInt(args[0]);
-        if (args.length == 1 &&  bet >= 10 && dataHandler.getCredits(author.getId()) - bet >= 0){
-            BlackJackGame objg = gameHandler.getBlackJackGame(author.getIdLong());
-            if (objg == null){
-                BlackJackGame bjg = new BlackJackGame(bet);
-                if (!bjg.hasEnded()){
-                    gameHandler.putBlackJackGame(author.getIdLong(), bjg);
+        int bet =  args.length == 0 ? 0 : Utils.getInt(args[0]);
+        if (bet >= 10) {
+            if (dataHandler.getCredits(author.getId()) - bet >= 0) {
+                BlackJackGame objg = gameHandler.getBlackJackGame(author.getIdLong());
+                if (objg == null) {
+                    BlackJackGame bjg = new BlackJackGame(bet);
+                    if (!bjg.hasEnded()) {
+                        gameHandler.putBlackJackGame(author.getIdLong(), bjg);
+                    } else {
+                        dataHandler.addCredits(author.getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                    }
+                    e.getChannel().sendMessage(bjg.buildEmbed(author.getName()).build()).queue(m -> bjg.setMessageId(m.getIdLong()));
                 } else {
-                    dataHandler.addCredits(author.getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                    e.getChannel().sendMessage("You're already playing a game").queue();
                 }
-                e.getChannel().sendMessage(bjg.buildEmbed(author.getName()).build()).queue(m -> bjg.setMessageId(m.getIdLong()));
             } else {
-                e.getChannel().sendMessage("You're already playing a game").queue();
+                e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
             }
+        } else {
+            e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
         }
-
     }
 
     @Override

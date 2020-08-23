@@ -9,29 +9,23 @@ import java.util.Collections;
 
 public class BlackJackGame {
     public enum EndState{
-        WON("You Won", Color.GREEN, 1),
-        LOST("You Lost", Color.RED, -1),
-        BUST("You Bust", Color.RED, -1),
-        DEALER_BUST("The Dealer Bust",Color.GREEN, 1),
-        PUSH("It's a push", Color.BLUE, 0),
-        BLACKJACK("You have blackjack", Color.GREEN, 1.5);
+        WON("You Won", 1),
+        LOST("You Lost", -1),
+        BUST("You Bust", -1),
+        DEALER_BUST("The Dealer Bust", 1),
+        PUSH("It's a push", 0),
+        BLACKJACK("You have blackjack", 1.5);
 
         private String display;
-        private  Color color;
         private double reward;
 
-        EndState(String display, Color color, double reward){
+        EndState(String display, double reward){
             this.display = display;
-            this.color = color;
             this.reward = reward;
         }
 
         public String getDisplay() {
             return display;
-        }
-
-        public Color getColor() {
-            return color;
         }
 
         public double getReward() {
@@ -46,15 +40,23 @@ public class BlackJackGame {
     private BlackJackHand dealerHand;
     private boolean hasEnded;
     private EndState endstate;
+    private EndState secondEndstate;
     private int bet;
+    private int secondbet;
+    private boolean firsthand;
+    private boolean hasSplit;
 
 
     public BlackJackGame(int bet){
         hasEnded = false;
+        firsthand = true;
+        hasSplit = false;
         deck = new ArrayList<>();
         this.bet = bet;
+        secondbet = 0;
         playerHand = new BlackJackHand();
         dealerHand = new BlackJackHand();
+        secondPlayerHand = new BlackJackHand();
         for (Card.Face f : Card.Face.values()){
             for (Card.Value v : Card.Value.values()){
                 deck.add(new Card(f, v));
@@ -72,9 +74,23 @@ public class BlackJackGame {
             hasEnded = true;
             endstate = EndState.BLACKJACK;
         }
-
     }
 
+    public EndState getEndState(int dealerv, int playerv){
+        EndState state;
+        if (playerv > 21){
+            state = EndState.BUST;
+        } else if (dealerv > 21){
+            state = EndState.DEALER_BUST;
+        } else if (dealerv > playerv){
+            state = EndState.LOST;
+        } else if (dealerv < playerv ){
+            state = EndState.WON;
+        } else {
+            state = EndState.PUSH;
+        }
+        return state;
+    }
 
     public void doDealerMoves(){
         while (dealerHand.getValue() < 17){
@@ -82,31 +98,44 @@ public class BlackJackGame {
         }
         int dealv = dealerHand.getValue();
         int playerv = playerHand.getValue();
-        if (dealv > 21){
-            endstate = EndState.DEALER_BUST;
-        } else if (dealv > playerv){
-            endstate = EndState.LOST;
-        } else if (dealv < playerv ){
-            endstate = EndState.WON;
-        } else {
-            endstate = EndState.PUSH;
+        endstate = getEndState(dealv, playerv);
+        if (hasSplit){
+            playerv = secondPlayerHand.getValue();
+            secondEndstate = getEndState(dealv, playerv);
         }
     }
 
     public void hit(){
-        playerHand.addCard(deck.remove(0));
-        if (playerHand.getValue() > 21){
-            hasEnded = true;
-            endstate = EndState.BUST;
-        } else if (playerHand.getValue() == 21){
-            hasEnded = true;
-            doDealerMoves();
+        BlackJackHand hand = firsthand ? playerHand : secondPlayerHand;
+        hand.addCard(deck.remove(0));
+        int value = hand.getValue();
+        if (value >= 21){
+            if (!firsthand || !hasSplit){
+                hasEnded = true;
+                doDealerMoves();
+            }
+            if (hasSplit && firsthand){
+                firsthand = false;
+            }
         }
     }
 
     public void stand(){
-        hasEnded = true;
-        doDealerMoves();
+        if (!firsthand || !hasSplit){
+            hasEnded = true;
+            doDealerMoves();
+        }
+        if (hasSplit && firsthand){
+            firsthand = false;
+        }
+    }
+
+    public void split(){
+        hasSplit = true;
+        secondbet = bet;
+        secondPlayerHand.addCard(playerHand.removeCard(1));
+        playerHand.addCard(deck.remove(0));
+        secondPlayerHand.addCard(deck.remove(0));
     }
     public boolean canDouble(){
         return playerHand.getCards().size() == 2;
@@ -117,8 +146,13 @@ public class BlackJackGame {
     }
 
     public void doubleDown(){
-        bet *= 2;
-        playerHand.addCard(deck.remove(0));
+        if (firsthand){
+            bet *= 2;
+            playerHand.addCard(deck.remove(0));
+        } else {
+            secondbet *= 2;
+            secondPlayerHand.addCard(deck.remove(0));
+        }
         hasEnded = true;
         doDealerMoves();
     }
@@ -152,20 +186,26 @@ public class BlackJackGame {
         this.messageId = messageId;
     }
 
+    public int getWonCreds(){
+        return ((Double) (bet * endstate.reward + (hasSplit ? secondbet * secondEndstate.reward : 0))).intValue();
+    }
+
     public EmbedBuilder buildEmbed(String user){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(String.format("\u2063Blackjack | %s | Bet : %d         \u2063", user, bet));
-        eb.addField("Player Cards", String.format("%s\nValue: **%s**", playerHand.toString(), playerHand.getValue()), true);
+        eb.setTitle(String.format("\u2063Blackjack | %s | Bet : %d         \u2063", user, bet + secondbet));
+        eb.addField(String.format("%sPlayer Cards", hasSplit && firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**" ,playerHand.toString(), playerHand.getValue()), true);
         eb.addField("Dealer Cards", String.format("%s\nValue: **%s**", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", hasEnded ? dealerHand.getValue() : ":question:"), true);
+        if (hasSplit){
+            eb.addField(String.format("%sSecond Hand Cards" , !firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**", !firsthand ? ":arrow_right: " : "", secondPlayerHand.toString(), secondPlayerHand.getValue()), false);
+        }
         eb.setColor(Color.BLUE);
         if (hasEnded){
-            int credits = ((Double) (bet * endstate.reward)).intValue();
-            eb.addField(endstate.getDisplay(), String.format("You %s %d credits", endstate.getReward() > 0 ? "won" : endstate.getReward() == 0 ? "won/lost" : "lost", credits), false);
-            eb.setColor(endstate.getColor());
+            int credits = getWonCreds();
+            eb.addField(String.format("%s%s", endstate.display, hasSplit ? " and " + secondEndstate.display: ""), String.format("You %s %d credits", credits > 0 ? "won" : credits == 0 ? "won/lost" : "lost", credits), hasSplit);
+            eb.setColor(credits > 0 ? Color.GREEN : credits == 0 ? Color.BLUE : Color.RED);
         } else {
             eb.addField("Commands", String.format("!stand : see dealer cards\n!hit : take another card%s%s", canDouble() ? "\n!double : double bet and take last card" : "", canSplit() ? "\n!split : split your cards" : ""), false);
         }
-
         return eb;
     };
 }

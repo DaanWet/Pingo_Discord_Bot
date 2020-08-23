@@ -44,6 +44,7 @@ public class CommandHandler {
                 put("stand", new Stand(gameHandler));
                 put("hit", new Hit(gameHandler));
                 put("double", new DoubleDown(gameHandler));
+                put("split", new Split(gameHandler));
             }
 
         };

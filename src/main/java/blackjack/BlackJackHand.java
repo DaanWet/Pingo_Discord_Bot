@@ -31,6 +31,10 @@ public class BlackJackHand {
         cards.add(card);
     }
 
+    public Card removeCard(int index){
+        return cards.remove(index);
+    }
+
     public ArrayList<Card> getCards() {
         return cards;
     }
