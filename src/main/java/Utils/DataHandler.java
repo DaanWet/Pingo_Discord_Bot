@@ -15,7 +15,7 @@ import org.json.simple.parser.*;
 @SuppressWarnings("unchecked")
 public class DataHandler {
 
-    final private String PATH =  "src/main/resources/Data.json"; //"./Data.json";
+    final private String PATH =  "./Data.json"; //"src/main/resources/Data.json"; //
     private JSONObject jsonObject;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-dd-MM HH-mm-ss");
 

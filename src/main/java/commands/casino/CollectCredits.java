@@ -1,6 +1,7 @@
 package commands.casino;
 
 import commands.Command;
+import net.dv8tion.jda.api.entities.User;
 import utils.DataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -12,9 +13,10 @@ public class CollectCredits extends Command {
     private DataHandler dataHandler;
 
     public CollectCredits() {
-        this.name = "collect";
-        this.aliases = new String[]{"daily", "dailycredits"};
+        this.name = "daily";
+        this.aliases = new String[]{"collect", "dailycredits"};
         this.dataHandler = new DataHandler();
+        this.category = "Casino";
     }
 
     @Override

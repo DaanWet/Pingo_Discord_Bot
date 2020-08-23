@@ -15,6 +15,7 @@ public class Weekly extends Command {
         this.name = "weekly";
         this.aliases = new String[]{"weeklycredits"};
         this.dataHandler = new DataHandler();
+        this.category = "Casino";
     }
 
     @Override
