@@ -10,8 +10,9 @@ public abstract class Command {
     protected String[] aliases = new String[0];
     protected String category = "Other";
     protected ArrayList<Long> bannedChannels = new ArrayList<>();
+    protected String arguments = "";
 
-    public abstract void run(String[] args, GuildMessageReceivedEvent e);
+    public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
     public abstract String getDescription();
 
@@ -33,7 +34,7 @@ public abstract class Command {
     }
 
     public String getUsage(){
-        return String.format("Usage: !%s \n%s", name, this.getDescription());
+        return String.format("Usage: !%s %s\n%s", name, arguments, this.getDescription());
     }
 
     public boolean isCommandFor(String s) {
@@ -47,5 +48,14 @@ public abstract class Command {
         }
 
         return ctr < aliases.length;
+    }
+
+    public static Long isLong(String s) {
+        Long l = null;
+        try {
+            l = Long.parseLong(s);
+        } catch (Exception ignored) {
+        }
+        return l;
     }
 }

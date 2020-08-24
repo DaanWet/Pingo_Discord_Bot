@@ -10,6 +10,7 @@ public class Suggest extends Command {
     public Suggest() {
         this.name = "suggest";
         this.aliases = new String[]{"issue", "suggestion"};
+        this.arguments = "{**bot** | **plugin** | **discord**} <title> **-d** <description>";
     }
 
 
@@ -21,8 +22,11 @@ public class Suggest extends Command {
                 repo = "DaanWet/Pingo_Discord_Bot";
             } else if (args[0].equalsIgnoreCase("plugin")) {
                 repo = "DaanWet/MinecraftTeamsPlugin";
-            } else {
+            } else if (args[0].equals("discord") || args[0].equalsIgnoreCase("server")){
                 repo = "";
+            } else {
+                e.getChannel().sendMessage(getUsage()).queue();
+                return;
             }
             boolean t = true;
             StringBuilder title = new StringBuilder();
@@ -41,7 +45,7 @@ public class Suggest extends Command {
             }
             // If no description is given send error
             if (t) {
-                e.getChannel().sendMessage("You need to add a description, Usage: !suggest [bot | plugin] <title> -d <description>").queue();
+                e.getChannel().sendMessage(String.format("You need to add a description. %s", getUsage())).queue();
             } else {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
@@ -56,7 +60,7 @@ public class Suggest extends Command {
                 e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             }
         } else {
-            e.getChannel().sendMessage("False usage, use: !suggest [bot | plugin] <title> -d <description>").queue();
+            e.getChannel().sendMessage(getUsage()).queue();
         }
     }
 

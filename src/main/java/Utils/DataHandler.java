@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -132,6 +133,18 @@ public class DataHandler {
             }
         }
         return credits;
+    }
+
+    public HashMap<String, Integer> getAllCredits(){
+        openfile();
+        HashMap<String, Integer> map = new HashMap<>();
+        if (jsonObject.containsKey("casino")){
+            JSONObject casino = (JSONObject) jsonObject.get("casino");
+            for (Object key : casino.keySet()){
+                map.put((String) key, (int) (long) ((JSONObject) casino.get(key)).get("credits"));
+            }
+        }
+        return map;
     }
 
     public void createUser(String userid){

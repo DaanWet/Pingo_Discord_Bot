@@ -57,7 +57,11 @@ public class MessageListener extends ListenerAdapter {
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
             } // Check for commands
             else if (contentRaw.length() > 0 && contentRaw.charAt(0) == '!') {
-                commandListener.onCommandReceived(e);
+                try  {
+                    commandListener.onCommandReceived(e);
+                } catch (Exception exc){
+                    e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
+                }
             } else if (e.getGuild().getIdLong() == 712013079629660171L) {
                 message.delete().queue();
                 e.getJDA().getGuildById(203572340280262657L).getTextChannelById(203572340280262657L).sendMessage(message.getContentRaw()).queue();

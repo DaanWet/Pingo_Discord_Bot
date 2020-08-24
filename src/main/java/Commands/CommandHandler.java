@@ -76,7 +76,7 @@ public class CommandHandler {
     }
 
 
-    public void onCommandReceived(GuildMessageReceivedEvent e) {
+    public void onCommandReceived(GuildMessageReceivedEvent e) throws Exception{
         User author = e.getAuthor();
         TextChannel channel = e.getChannel();
         Message message = e.getMessage();
