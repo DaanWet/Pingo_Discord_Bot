@@ -50,6 +50,7 @@ public class CommandHandler {
                 put("split", new Split(gameHandler));
                 put("suggest", new Suggest());
                 put("issues", new ListIssues(gitHub));
+                put("editI", new EditSuggestion());
             }
 
         };

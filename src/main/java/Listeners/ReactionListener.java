@@ -62,7 +62,6 @@ public class ReactionListener extends ListenerAdapter {
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e){
         e.retrieveUser().queue(user -> {
             if (user != null && !user.isBot()){
-                System.out.println("yessir");
                 e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
                     if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()){
                         MessageEmbed me = m.getEmbeds().get(0);
@@ -80,16 +79,32 @@ public class ReactionListener extends ListenerAdapter {
             if (e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals("✅")){
                 e.retrieveMessage().queue(m -> {
                     if (m.getEmbeds().size() == 1){
-                        try{
-                            MessageEmbed me = m.getEmbeds().get(0);
-                            if (me.getFooter() != null && me.getFooter().getText() != null){
-                                GHRepository repo = gitHub.getRepository(me.getFooter().getText().split(" ")[1]);
-                                repo.createIssue(me.getTitle()).body(me.getDescription()).create();
+                        e.getReaction().retrieveUsers().queue(users -> {
+                            boolean added = false;
+                            for (User user : users){
+                                if (user.isBot() && user.getIdLong() == 589027434611867668L){
+                                    added = true;
+                                }
                             }
-                        } catch (IOException | NullPointerException ioException){
-                            e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", ioException.getMessage())).queue();
-                            ioException.printStackTrace();
-                        }
+                            if (!added){
+                                try{
+                                    MessageEmbed me = m.getEmbeds().get(0);
+                                    if (me.getFooter() != null && me.getFooter().getText() != null){
+                                        GHRepository repo = gitHub.getRepository(me.getFooter().getText().split(" ")[1]);
+                                        GHIssueBuilder issue = repo.createIssue(me.getTitle()).body(me.getDescription());
+                                        if (me.getFields().size() == 1){
+                                            issue = issue.label(me.getFields().get(0).getValue());
+                                        }
+                                        issue.create();
+                                        m.addReaction("✅").queue();
+                                    }
+                                } catch (IOException | NullPointerException ioException){
+                                    e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", ioException.getMessage())).queue();
+                                    ioException.printStackTrace();
+                                }
+                            }
+                        });
+
                     }
                 });
             }

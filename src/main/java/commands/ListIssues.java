@@ -15,12 +15,13 @@ public class ListIssues extends Command {
     public ListIssues(GitHub gitHub) {
         this.gitHub = gitHub;
         this.name = "issues";
+        this.arguments = "{**bot** | **plugin**} [-l]";
     }
 
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (args.length == 1) {
+        if (args.length == 1 || args.length == 2) {
             try {
                 GHRepository repo = null;
 
@@ -32,16 +33,28 @@ public class ListIssues extends Command {
 
                 }
                 if (repo != null){
-                    List<GHIssue> issues = repo.listIssues(GHIssueState.OPEN).toList();
                     EmbedBuilder eb = new EmbedBuilder();
-                    eb.setTitle(String.format("%s issues", repo.getName()));
-                    eb.setFooter(repo.getHtmlUrl().toString());
                     StringBuilder sb = new StringBuilder();
-                    for (GHIssue issue : issues) {
-                        sb.append(":small_blue_diamond:").append(issue.getTitle()).append("\n");
+                    if (args.length == 1){
+                        List<GHIssue> issues = repo.listIssues(GHIssueState.OPEN).toList();
+                        eb.setTitle(String.format("%s issues", repo.getName()));
+                        for (GHIssue issue : issues) {
+                            sb.append(":small_blue_diamond:").append(issue.getTitle()).append("\n");
+                        }
+                    } else if (args[1].equalsIgnoreCase("-l")){
+                        List<GHLabel> labels = repo.listLabels().toList();
+                        eb.setTitle(String.format("%s labels", repo.getName()));
+                        for (GHLabel label: labels){
+                            sb.append(":small_blue_diamond:").append(label.getName()).append("\n");
+                        }
+                    }  else {
+                        e.getChannel().sendMessage(getUsage()).queue();
                     }
+                    eb.setFooter(repo.getHtmlUrl().toString());
                     eb.setDescription(sb.toString());
                     e.getChannel().sendMessage(eb.build()).queue();
+                }  else{
+                    e.getChannel().sendMessage(getUsage()).queue();
                 }
 
 
@@ -49,6 +62,8 @@ public class ListIssues extends Command {
                 e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", ioException.getMessage())).queue();
                 ioException.printStackTrace();
             }
+        }  else {
+            e.getChannel().sendMessage(getUsage()).queue();
         }
     }
 
