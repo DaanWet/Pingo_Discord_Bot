@@ -33,12 +33,16 @@ public class BlackJack extends Command {
                 BlackJackGame objg = gameHandler.getBlackJackGame(author.getIdLong());
                 if (objg == null) {
                     BlackJackGame bjg = new BlackJackGame(bet);
+                    EmbedBuilder eb = bjg.buildEmbed(author.getName());
                     if (!bjg.hasEnded()) {
                         gameHandler.putBlackJackGame(author.getIdLong(), bjg);
                     } else {
-                        dataHandler.addCredits(author.getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                        int credits = dataHandler.addCredits(author.getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                        eb.addField("Credits", String.format("You now have %d credits", credits), false);
                     }
-                    e.getChannel().sendMessage(bjg.buildEmbed(author.getName()).build()).queue(m -> bjg.setMessageId(m.getIdLong()));
+                    e.getChannel().sendMessage(eb.build()).queue(m -> {
+                        if(!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());
+                    });
                 } else {
                     e.getChannel().sendMessage("You're already playing a game").queue();
                 }

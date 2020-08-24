@@ -24,16 +24,22 @@ public class Split extends Command {
         if (args.length == 0) {
             BlackJackGame bjg = gameHandler.getBlackJackGame(e.getAuthor().getIdLong());
             if (bjg != null) {
-                bjg.split();
-                e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
-                    EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
-                    if (bjg.hasEnded()) {
-                        int credits = dataHandler.addCredits(e.getAuthor().getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
-                        eb.addField("Credits", String.format("You now have %d credits", credits), false);
-                        gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
-                    }
-                    m.editMessage(eb.build()).queue();
-                });
+
+                if (dataHandler.getCredits(e.getAuthor().getId()) - 2*bjg.getBet() > 0){
+                    bjg.split();
+                    e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
+                        EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
+                        if (bjg.hasEnded()) {
+                            int credits = dataHandler.addCredits(e.getAuthor().getId(), bjg.getWonCreds());
+                            eb.addField("Credits", String.format("You now have %d credits", credits), false);
+                            gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
+                        }
+                        m.editMessage(eb.build()).queue();
+                    });
+                } else {
+                    e.getChannel().sendMessage("You have not enough credits").queue();
+                }
+
             }
         }
     }

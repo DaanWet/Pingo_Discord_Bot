@@ -67,7 +67,10 @@ public class BlackJackGame {
         playerHand.addCard(deck.remove(0));
         dealerHand.addCard(deck.remove(0));
         playerHand.addCard(deck.remove(0));
-        if (dealerHand.getValue() == 21){
+        if (playerHand.getValue() == 21 && dealerHand.getValue() == 21){
+            hasEnded = true;
+            endstate = EndState.PUSH;
+        } else if (dealerHand.getValue() == 21){
             hasEnded = true;
             endstate = EndState.LOST;
         } else if (playerHand.getValue() == 21){
@@ -196,7 +199,7 @@ public class BlackJackGame {
         eb.addField(String.format("%sPlayer Cards", hasSplit && firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**" ,playerHand.toString(), playerHand.getValue()), true);
         eb.addField("Dealer Cards", String.format("%s\nValue: **%s**", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", hasEnded ? dealerHand.getValue() : ":question:"), true);
         if (hasSplit){
-            eb.addField(String.format("%sSecond Hand Cards" , !firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**", !firsthand ? ":arrow_right: " : "", secondPlayerHand.toString(), secondPlayerHand.getValue()), false);
+            eb.addField(String.format("%sSecond Hand Cards" , !firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**", secondPlayerHand.toString(), secondPlayerHand.getValue()), false);
         }
         eb.setColor(Color.BLUE);
         if (hasEnded){
@@ -204,7 +207,7 @@ public class BlackJackGame {
             eb.addField(String.format("%s%s", endstate.display, hasSplit ? " and " + secondEndstate.display: ""), String.format("You %s %d credits", credits > 0 ? "won" : credits == 0 ? "won/lost" : "lost", credits), hasSplit);
             eb.setColor(credits > 0 ? Color.GREEN : credits == 0 ? Color.BLUE : Color.RED);
         } else {
-            eb.addField("Commands", String.format("!stand : see dealer cards\n!hit : take another card%s%s", canDouble() ? "\n!double : double bet and take last card" : "", canSplit() ? "\n!split : split your cards" : ""), false);
+            eb.addField("Commands", String.format("!stand : see dealer cards\n!hit : take another card%s%s", canDouble() ? "\n!double : double bet and take last card" : "", canSplit() && !hasSplit ? "\n!split : split your cards" : ""), false);
         }
         return eb;
     };

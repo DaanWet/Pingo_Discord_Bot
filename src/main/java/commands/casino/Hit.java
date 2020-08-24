@@ -29,7 +29,7 @@ public class Hit extends Command {
                 e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
                     EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
                     if (bjg.hasEnded()){
-                        int credits = dataHandler.addCredits(e.getAuthor().getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                        int credits = dataHandler.addCredits(e.getAuthor().getId(), bjg.getWonCreds());
                         eb.addField("Credits", String.format("You now have %d credits", credits), false);
                         gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
                     }
