@@ -61,6 +61,7 @@ public class MessageListener extends ListenerAdapter {
                     commandListener.onCommandReceived(e);
                 } catch (Exception exc){
                     e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
+                    exc.printStackTrace();
                 }
             } else if (e.getGuild().getIdLong() == 712013079629660171L) {
                 message.delete().queue();
