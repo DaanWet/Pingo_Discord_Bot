@@ -92,8 +92,12 @@ public class ReactionListener extends ListenerAdapter {
                                     if (me.getFooter() != null && me.getFooter().getText() != null){
                                         GHRepository repo = gitHub.getRepository(me.getFooter().getText().split(" ")[1]);
                                         GHIssueBuilder issue = repo.createIssue(me.getTitle()).body(me.getDescription());
-                                        if (me.getFields().size() == 1){
-                                            issue = issue.label(me.getFields().get(0).getValue());
+                                        for (MessageEmbed.Field f : me.getFields()){
+                                            if (f.getName().equalsIgnoreCase("Labels")){
+                                                for (String label : me.getFields().get(0).getValue().split(", ")){
+                                                    issue = issue.label(label);
+                                                }
+                                            }
                                         }
                                         issue.create();
                                         m.addReaction("✅").queue();

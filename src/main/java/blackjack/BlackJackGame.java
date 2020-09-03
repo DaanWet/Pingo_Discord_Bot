@@ -156,8 +156,14 @@ public class BlackJackGame {
             secondbet *= 2;
             secondPlayerHand.addCard(deck.remove(0));
         }
-        hasEnded = true;
-        doDealerMoves();
+        if (!hasSplit || !firsthand){
+            hasEnded = true;
+            doDealerMoves();
+        } else {
+            firsthand = false;
+        }
+
+
     }
 
 
