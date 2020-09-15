@@ -4,6 +4,7 @@ import commands.CommandHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.kohsuke.github.GitHub;
 
@@ -25,6 +26,11 @@ public class MessageListener extends ListenerAdapter {
         return commandListener;
     }
 
+    @Override
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent e){
+        if (e.getMessage().getContentRaw().equals("Original Message Deleted]")) e.getMessage().delete().queue();
+    }
+    
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
         User author = e.getAuthor();

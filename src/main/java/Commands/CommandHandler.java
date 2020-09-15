@@ -52,6 +52,7 @@ public class CommandHandler {
                 put("issues", new ListIssues(gitHub));
                 put("editI", new EditSuggestion());
                 put("adminAbuse", new AdminAbuse());
+                put("clean", new Clean());
             }
 
         };
