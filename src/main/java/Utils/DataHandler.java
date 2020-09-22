@@ -21,28 +21,27 @@ public class DataHandler {
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-dd-MM HH-mm-ss");
 
 
-
     public DataHandler() {
         openfile();
     }
 
-    private void openfile(){
+    private void openfile() {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(PATH)) {
             jsonObject = ((JSONObject) parser.parse(reader));
-        } catch (IOException | ParseException e){
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
 
 
-    public ArrayList<JSONObject> getGameRoles(){
+    public ArrayList<JSONObject> getGameRoles() {
         openfile();
         return (JSONArray) ((JSONObject) jsonObject.get("gaming-roles")).get("roles");
 
     }
 
-    public boolean setMessage(String type, long channelId, long messageId){
+    public boolean setMessage(String type, long channelId, long messageId) {
         openfile();
         String key = String.format("%s-roles", type.toLowerCase());
         if (!jsonObject.containsKey(key)) return false;
@@ -53,20 +52,20 @@ public class DataHandler {
         return true;
     }
 
-    public long[] getMessage(String type){
+    public long[] getMessage(String type) {
         openfile();
         String key = String.format("%s-roles", type.toLowerCase());
         if (!jsonObject.containsKey(key)) return null;
         JSONObject roleobject = (JSONObject) jsonObject.get(key);
         if (!roleobject.containsKey("channel")) return null;
-        return new long[]{(long)roleobject.get("channel"), (long)roleobject.get("message")};
+        return new long[]{(long) roleobject.get("channel"), (long) roleobject.get("message")};
     }
 
 
-    public void addRoleAssign(String type, String emoji, String name, long roleId){
+    public void addRoleAssign(String type, String emoji, String name, long roleId) {
         openfile();
         String key = String.format("%s-roles", type.toLowerCase());
-        if (jsonObject.containsKey(key)){
+        if (jsonObject.containsKey(key)) {
             JSONArray roles = (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
             JSONObject ra = new JSONObject();
             ra.put("emoji", emoji);
@@ -76,42 +75,44 @@ public class DataHandler {
             save();
         }
     }
-    public boolean removeRoleAssign(String type, String emoji){
+
+    public boolean removeRoleAssign(String type, String emoji) {
         openfile();
         String key = String.format("%s-roles", type.toLowerCase());
         boolean found = false;
-        if (jsonObject.containsKey(key)){
+        if (jsonObject.containsKey(key)) {
             JSONArray roles = (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
             int i = 0;
-            while (!found && i < roles.size()){
-                if (((JSONObject) roles.get(i)).get("emoji").equals(emoji)){
+            while (!found && i < roles.size()) {
+                if (((JSONObject) roles.get(i)).get("emoji").equals(emoji)) {
                     found = true;
-                }   else {
+                } else {
                     i++;
                 }
             }
-            if (found){
+            if (found) {
                 roles.remove(i);
             }
         }
         save();
         return found;
     }
-    public boolean removeRoleAssign(String type, long roleid){
+
+    public boolean removeRoleAssign(String type, long roleid) {
         openfile();
         String key = String.format("%s-roles", type.toLowerCase());
         boolean found = false;
-        if (jsonObject.containsKey(key)){
+        if (jsonObject.containsKey(key)) {
             JSONArray roles = (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
             int i = 0;
-            while (!found && i < roles.size()){
-                if (((long) ((JSONObject) roles.get(i)).get("role")) == (roleid)){
+            while (!found && i < roles.size()) {
+                if (((long) ((JSONObject) roles.get(i)).get("role")) == (roleid)) {
                     found = true;
-                }   else {
+                } else {
                     i++;
                 }
             }
-            if (found){
+            if (found) {
                 roles.remove(i);
             }
         }
@@ -120,14 +121,14 @@ public class DataHandler {
 
     }
 
-    public int getCredits(String userid){
+    public int getCredits(String userid) {
         openfile();
         int credits = 0;
-        if (jsonObject.containsKey("casino")){
+        if (jsonObject.containsKey("casino")) {
             JSONObject casino = (JSONObject) jsonObject.get("casino");
-            if (casino.containsKey(userid)){
+            if (casino.containsKey(userid)) {
                 JSONObject userobject = (JSONObject) casino.get(userid);
-                if (userobject.containsKey("credits")){
+                if (userobject.containsKey("credits")) {
                     credits = (int) (long) userobject.get("credits");
                 }
             }
@@ -135,39 +136,35 @@ public class DataHandler {
         return credits;
     }
 
-    public HashMap<String, Integer> getAllCredits(){
+    public HashMap<String, Integer> getAllCredits() {
         openfile();
         HashMap<String, Integer> map = new HashMap<>();
-        if (jsonObject.containsKey("casino")){
+        if (jsonObject.containsKey("casino")) {
             JSONObject casino = (JSONObject) jsonObject.get("casino");
-            for (Object key : casino.keySet()){
+            for (Object key : casino.keySet()) {
                 map.put((String) key, (int) (long) ((JSONObject) casino.get(key)).get("credits"));
             }
         }
         return map;
     }
 
-    public void createUser(String userid){
+    public void createUser(String userid) {
         openfile();
-        if (!jsonObject.containsKey("casino")){
-            jsonObject.put("casino", new JSONObject());
-        }
+        jsonObject.putIfAbsent("casino", new JSONObject());
         JSONObject casino = (JSONObject) jsonObject.get("casino");
-        if (!casino.containsKey(userid)){
-            JSONObject user = new JSONObject();
-            user.put("credits", 0);
-
-            user.put("last_cred_collect", dtf.format(LocalDateTime.now().minusDays(1)));
-            user.put("last_weekly_collect", dtf.format(LocalDateTime.now().minusDays(7)));
-            casino.put(userid, user);
-        }
+        casino.putIfAbsent(userid, new JSONObject());
+        JSONObject user = (JSONObject) jsonObject.get(userid);
+        user.putIfAbsent("credits", 0);
+        user.putIfAbsent("last_cred_collect", dtf.format(LocalDateTime.now().minusDays(1)));
+        user.putIfAbsent("last_weekly_collect", dtf.format(LocalDateTime.now().minusDays(7)));
+        casino.put(userid, user);
         save();
     }
 
 
-    public void setCredits(String userid, int credits){
+    public void setCredits(String userid, int credits) {
         openfile();
-        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid) ){
+        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid)) {
             createUser(userid);
         }
 
@@ -183,7 +180,7 @@ public class DataHandler {
     }
 
 
-    public LocalDateTime getLatestCollect(String userid){
+    public LocalDateTime getLatestCollect(String userid) {
         openfile();
         LocalDateTime date = LocalDateTime.now().minusDays(1).minusMinutes(1);
         if (jsonObject.containsKey("casino")) {
@@ -196,14 +193,14 @@ public class DataHandler {
         return date;
     }
 
-    public LocalDateTime getLatestWeekCollect(String userid){
+    public LocalDateTime getLatestWeekCollect(String userid) {
         openfile();
         LocalDateTime date = LocalDateTime.now().minusDays(7).minusMinutes(1);
         if (jsonObject.containsKey("casino")) {
             JSONObject casino = (JSONObject) jsonObject.get("casino");
             if (casino.containsKey(userid)) {
                 JSONObject userobject = (JSONObject) casino.get(userid);
-                if (userobject.containsKey("last_weekly_collect")){
+                if (userobject.containsKey("last_weekly_collect")) {
                     date = LocalDateTime.from(dtf.parse((String) userobject.get("last_weekly_collect")));
                 }
 
@@ -211,9 +208,10 @@ public class DataHandler {
         }
         return date;
     }
-    public void setLatestWeekCollect(String userid, LocalDateTime time){
+
+    public void setLatestWeekCollect(String userid, LocalDateTime time) {
         openfile();
-        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid) ){
+        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid)) {
             createUser(userid);
         }
         JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("casino")).get(userid);
@@ -221,9 +219,9 @@ public class DataHandler {
         save();
     }
 
-    public void setLatestCollect(String userid, LocalDateTime time){
+    public void setLatestCollect(String userid, LocalDateTime time) {
         openfile();
-        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid) ){
+        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid)) {
             createUser(userid);
         }
 

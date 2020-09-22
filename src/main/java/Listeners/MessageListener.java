@@ -28,9 +28,9 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageUpdate(GuildMessageUpdateEvent e){
-        if (e.getMessage().getContentRaw().equals("Original Message Deleted]")) e.getMessage().delete().queue();
+        if (e.getMessage().getContentRaw().equals("[Original Message Deleted]")) e.getMessage().delete().queue();
     }
-    
+
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
         User author = e.getAuthor();

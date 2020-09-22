@@ -43,6 +43,6 @@ public class Weekly extends Command {
 
     @Override
     public String getDescription() {
-        return "Collect your daily credits";
+        return "Collect your weekly credits";
     }
 }
