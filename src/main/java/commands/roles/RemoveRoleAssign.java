@@ -27,7 +27,6 @@ public class RemoveRoleAssign extends Command {
         if (e.getMessage().getEmotes().size() == 1){
             long[] message = dataHandler.getMessage("gaming");
             String emote = args[0].substring(1, args[0].length() - 1);
-            System.out.println(emote);
             e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
                 MessageEmbed me = m.getEmbeds().get(0);
                 EmbedBuilder eb = new EmbedBuilder(me);

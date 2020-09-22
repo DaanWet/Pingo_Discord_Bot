@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 
+import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
@@ -16,7 +20,7 @@ import org.json.simple.parser.*;
 @SuppressWarnings("unchecked")
 public class DataHandler {
 
-    final private String PATH =  "./Data.json"; //"src/main/resources/Data.json"; //
+    final private String PATH = "./Data.json"; //"src/main/resources/Data.json"; //
     private JSONObject jsonObject;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-dd-MM HH-mm-ss");
 
@@ -157,6 +161,7 @@ public class DataHandler {
         user.putIfAbsent("credits", 0);
         user.putIfAbsent("last_cred_collect", dtf.format(LocalDateTime.now().minusDays(1)));
         user.putIfAbsent("last_weekly_collect", dtf.format(LocalDateTime.now().minusDays(7)));
+        user.putIfAbsent("records", new JSONObject());
         casino.put(userid, user);
         save();
     }
@@ -169,11 +174,82 @@ public class DataHandler {
         }
 
         JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("casino")).get(userid);
+        user.putIfAbsent("records", new JSONObject());
+        JSONObject records = ((JSONObject) user.get("records"));
+        if ((int)(long) ((JSONObject) records.getOrDefault("highest_credits", new JSONObject(Map.of("value", 0)))).get("value") < credits) {
+
+            records.put("highest_credits", new JSONObject(Map.of("value", credits)));;
+        }
         user.put("credits", credits);
         save();
     }
 
-    public int addCredits(String userid, int credits){
+    public void setRecord(String userid, String record, Comparable value, String link) {
+        JSONObject records = getUserRecords(userid);
+        Comparable oldv = (Comparable)  ((JSONObject) records.get(record)).get("value");
+        if (oldv instanceof Long){
+            oldv = (int) (long) oldv;
+        }
+        if (!records.containsKey(record) || oldv.compareTo(value) < 0){
+            records.put(record, new JSONObject(Map.of("value", value, "link", link)));
+        }
+        save();
+    }
+
+    public Pair<Object, String> getRecord(String userid, String record){
+        JSONObject r = (JSONObject) getUserRecords(userid).get(record);
+        return Pair.of(r.get("value"), (String) r.getOrDefault("link", null));
+    }
+
+    public HashMap<String, Pair<Comparable, String>> getRecords(String userid){
+        JSONObject records = getUserRecords(userid);
+        HashMap<String, Pair<Comparable, String>> map = new HashMap<>();
+        records.forEach((key, value) -> map.put((String) key, Pair.of((Comparable) ((JSONObject) value).get("value"),(String) ((JSONObject) value).get("link"))));
+        return map;
+    }
+
+    private JSONObject getUserRecords(String userid){
+        openfile();
+        if (!jsonObject.containsKey("casino") || !((JSONObject) jsonObject.get("casino")).containsKey(userid)) {
+            createUser(userid);
+        }
+        JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("casino")).get(userid);
+        user.putIfAbsent("records",new JSONObject());
+        return (JSONObject) user.get("records");
+    }
+
+    public HashMap<String, Triple<String, Comparable, String>> getRecords(){
+        openfile();
+        HashMap<String, Triple<String, Comparable, String>> map = new HashMap<>();
+        JSONObject casino = (JSONObject) jsonObject.getOrDefault("casino", new JSONObject());
+        for (Object uuid : casino.keySet()){
+            JSONObject records = (JSONObject) ((JSONObject) casino.get(uuid)).getOrDefault("records", new JSONObject());
+            for (Object record : records.keySet()){
+                Comparable value = (Comparable)  ((JSONObject) records.get(record)).get("value");
+                if (!map.containsKey(record) || value.compareTo(map.get(record).getMiddle()) > 0){
+                    map.put((String) record, Triple.of((String) uuid, value, (String)((JSONObject) records.get(record)).get("link")));
+                }
+            }
+        }
+        return map;
+    }
+
+    public ArrayList<Triple<String, Comparable, String>> getRecord(String record){
+        openfile();
+        ArrayList<Triple<String, Comparable, String>> list = new ArrayList<>();
+        JSONObject casino = (JSONObject) jsonObject.getOrDefault("casino", new JSONObject());
+        for (Object uuid : casino.keySet()){
+            JSONObject records = (JSONObject) ((JSONObject) casino.get(uuid)).getOrDefault("records", new JSONObject());
+            if (records.containsKey(record)){
+                JSONObject r = (JSONObject) records.get(record);
+                list.add(Triple.of((String) uuid, (Comparable) r.get("value"), (String) r.get("link")));
+            }
+        }
+        return list;
+    }
+
+
+    public int addCredits(String userid, int credits) {
         int c = getCredits(userid) + credits;
         setCredits(userid, c);
         return c;

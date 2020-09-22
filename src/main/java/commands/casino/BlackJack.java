@@ -28,11 +28,11 @@ public class BlackJack extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) {
         User author = e.getAuthor();
 
-        int bet =  args.length == 0 ? 0 : Utils.getInt(args[0]);
-        if (args.length == 1 && args[0].matches("(?i)all(-?in)?")){
+        int bet = args.length == 0 ? 0 : Utils.getInt(args[0]);
+        if (args.length == 1 && args[0].matches("(?i)all(-?in)?")) {
             bet = dataHandler.getCredits(author.getId());
         }
-        if (bet >= 10 ) {
+        if (bet >= 10) {
             if (dataHandler.getCredits(author.getId()) - bet >= 0) {
                 BlackJackGame objg = gameHandler.getBlackJackGame(author.getIdLong());
                 if (objg == null) {
@@ -41,11 +41,16 @@ public class BlackJack extends Command {
                     if (!bjg.hasEnded()) {
                         gameHandler.putBlackJackGame(author.getIdLong(), bjg);
                     } else {
-                        int credits = dataHandler.addCredits(author.getId(), ((Double) (bjg.getBet() * bjg.getEndstate().getReward())).intValue());
+                        int credits = dataHandler.addCredits(author.getId(), bjg.getWonCreds());
                         eb.addField("Credits", String.format("You now have %d credits", credits), false);
+
                     }
                     e.getChannel().sendMessage(eb.build()).queue(m -> {
-                        if(!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());
+                        if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());
+                        else {
+                            int won_lose = bjg.getWonCreds();
+                            dataHandler.setRecord(author.getId(), won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl());
+                        }
                     });
                 } else {
                     e.getChannel().sendMessage("You're already playing a game").queue();

@@ -29,9 +29,12 @@ public class Hit extends Command {
                 e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
                     EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
                     if (bjg.hasEnded()){
-                        int credits = dataHandler.addCredits(e.getAuthor().getId(), bjg.getWonCreds());
+                        int won_lose = bjg.getWonCreds();
+                        int credits = dataHandler.addCredits(e.getAuthor().getId(), won_lose);
                         eb.addField("Credits", String.format("You now have %d credits", credits), false);
                         gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
+                        dataHandler.setRecord(e.getAuthor().getId(), won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl());
+
                     }
                     m.editMessage(eb.build()).queue();
                 });

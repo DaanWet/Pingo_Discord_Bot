@@ -12,11 +12,13 @@ import javax.xml.crypto.Data;
 public class DoubleDown extends Command {
 
     private GameHandler gameHandler;
+    private DataHandler dataHandler;
 
     public DoubleDown(GameHandler gameHandler){
         this.gameHandler = gameHandler;
         this.name = "double";
         this.category = "hidden";
+        dataHandler = new DataHandler();
 
     }
 
@@ -32,9 +34,11 @@ public class DoubleDown extends Command {
                         e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
                             EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
                             if (bjg.hasEnded()) {
-                                int credits = new DataHandler().addCredits(e.getAuthor().getId(), bjg.getWonCreds());
+                                int won_lose = bjg.getWonCreds();
+                                int credits = new DataHandler().addCredits(e.getAuthor().getId(), won_lose);
                                 eb.addField("Credits", String.format("You now have %d credits", credits), false);
                                 gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
+                                dataHandler.setRecord(e.getAuthor().getId(), won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl());
                             }
                             m.editMessage(eb.build()).queue();
                         });

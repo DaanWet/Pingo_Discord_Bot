@@ -53,6 +53,7 @@ public class CommandHandler {
                 put("editI", new EditSuggestion());
                 put("adminAbuse", new AdminAbuse());
                 put("clean", new Clean());
+                put("records", new Records());
             }
 
         };
