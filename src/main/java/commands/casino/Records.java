@@ -57,9 +57,10 @@ public class Records extends Command {
                 e.getChannel().sendMessage(eb.build()).queue();
             });
         } else if (e.getMessage().getMentionedMembers().size() == 1){
-            HashMap<String, Pair<Comparable, String>> records = dataHandler.getRecords(e.getAuthor().getId());
+            Member target = e.getMessage().getMentionedMembers().get(0);
+            HashMap<String, Pair<Comparable, String>> records = dataHandler.getRecords(target.getId());
             EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle(String.format("%s's Records", e.getAuthor().getName()));
+            eb.setTitle(String.format("%s's Records", target.getUser().getName()));
             StringBuilder sb = new StringBuilder();
             for (String record : records.keySet()){
                 Pair<Comparable, String> v = records.get(record);
