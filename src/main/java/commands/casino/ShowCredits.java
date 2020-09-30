@@ -34,8 +34,8 @@ public class ShowCredits extends Command {
             eb.setTitle("Leaderboard");
             e.getGuild().retrieveMembersByIds(sorted.stream().map(key -> Command.isLong(key.getKey())).collect(Collectors.toList())).onSuccess(list -> {
                 Map<String, Member> m = list.stream().collect(Collectors.toMap(Member::getId, member -> member));
-                for (int i = 0; i < sorted.size() && i <= 10; i++) {
-                    sb.append("`").append(i+1).append(i == 10 ? ".`" : ". `  ")
+                for (int i = 0; i < sorted.size() && i < 10; i++) {
+                    sb.append("`").append(i+1).append(i == 9 ? ".`" : ". `  ")
                             .append(m.get(sorted.get(i).getKey()).getAsMention())
                             .append("  **: ").append(sorted.get(i).getValue()).append(" **\n");
 

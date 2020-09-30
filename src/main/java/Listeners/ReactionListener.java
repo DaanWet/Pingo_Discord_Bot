@@ -60,13 +60,13 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e){
-        e.retrieveUser().queue(user -> {
-            if (user != null && !user.isBot()){
+        e.retrieveMember().queue(user -> {
+            if (user != null && !user.getUser().isBot()){
                 e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
                     if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()){
                         MessageEmbed me = m.getEmbeds().get(0);
                         if (me.getTitle() != null && me.getTitle().contains("Gaming Roles")){
-                            handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), e.getMember(), false);
+                            handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), user, false);
                         }
                     }
                 });

@@ -55,6 +55,6 @@ public class EditSuggestion extends Command{
 
     @Override
     public String getDescription() {
-        return null;
+        return "Edits a suggestion";
     }
 }

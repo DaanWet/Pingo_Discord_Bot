@@ -27,9 +27,13 @@ public class BlackJack extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         User author = e.getAuthor();
-
-        int bet = args.length == 0 ? 0 : Utils.getInt(args[0]);
-        if (args.length == 1 && args[0].matches("(?i)all(-?in)?")) {
+        String arg = args.length == 0 ? "0" : args[0];
+        if (arg.matches("(?i)[0-9]*k?m?")) {
+            arg = arg.replaceAll("m", "000000");
+            arg = arg.replaceAll("k", "000");
+        }
+        int bet = Utils.getInt(arg);
+        if (arg.matches("(?i)all(-?in)?")) {
             bet = dataHandler.getCredits(author.getId());
         }
         if (bet >= 10) {
