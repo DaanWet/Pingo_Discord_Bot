@@ -1,6 +1,8 @@
 package blackjack;
 
 
+import uno.UnoGame;
+
 import java.util.HashMap;
 
 public class GameHandler {
@@ -8,6 +10,7 @@ public class GameHandler {
 
 
     private HashMap<Long, BlackJackGame> blackJackGames;
+    private UnoGame unoGame;
 
 
     public GameHandler(){
@@ -27,5 +30,17 @@ public class GameHandler {
 
     public void putBlackJackGame(long user, BlackJackGame game){
         blackJackGames.put(user, game);
+    }
+
+    public UnoGame getUnoGame(){
+        return unoGame;
+    }
+
+    public void removeUnoGame(){
+        unoGame = null;
+    }
+
+    public void setUnoGame(UnoGame unoGame){
+        this.unoGame = unoGame;
     }
 }

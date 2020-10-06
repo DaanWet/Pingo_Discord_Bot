@@ -2,6 +2,9 @@ package commands;
 
 import blackjack.GameHandler;
 import commands.casino.*;
+import commands.casino.uno.Draw;
+import commands.casino.uno.Play;
+import commands.casino.uno.Uno;
 import commands.pictures.AddPicture;
 import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
@@ -25,11 +28,13 @@ public class CommandHandler {
     public static final String pathname = "./Pictures";
     private GitHub gitHub;
 
+    private GameHandler gameHandler;
+
     public CommandHandler(GitHub gitHub) {
         this.gitHub = gitHub;
         random = new Random();
         CommandHandler commh = this;
-        GameHandler gameHandler = new GameHandler();
+        gameHandler = new GameHandler();
         commands = new HashMap<>() {
             {
                 put("help", new Help());
@@ -54,6 +59,9 @@ public class CommandHandler {
                 put("adminAbuse", new AdminAbuse());
                 put("clean", new Clean());
                 put("records", new Records());
+                put("uno", new Uno(gameHandler));
+                put("play", new Play(gameHandler));
+                put("draw", new Draw(gameHandler));
             }
 
         };
@@ -63,6 +71,11 @@ public class CommandHandler {
     public OpenExplorerData getExplorerData(String command){
         return ((DeletePicture) commands.get("delete")).getExplorerData(command);
     }
+
+    public GameHandler getGameHandler() {
+        return gameHandler;
+    }
+
     public void closeExplorer(String command, Message message){
         ((DeletePicture) commands.get("delete")).closeExplorer(command, message);
     }
