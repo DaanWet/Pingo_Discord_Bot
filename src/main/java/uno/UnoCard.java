@@ -121,8 +121,6 @@ public class UnoCard {
                 }
             }
         }
-        System.out.println(card);
-        System.out.println("No token value");
         if (color == null || value == null || !card.equalsIgnoreCase("")) return null;
         return new UnoCard(color, value);
 

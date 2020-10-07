@@ -58,6 +58,7 @@ public class Draw extends Command {
                         return;
                     }
                 } else {
+                    hands.get(turn).endTurn(null);
                     unoGame.nextTurn(false);
                     deb.setTitle(String.format("You drew a %s", newCard.toString()));
                 }
