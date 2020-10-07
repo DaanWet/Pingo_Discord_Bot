@@ -1,11 +1,9 @@
 package uno;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Random;
 
 import static java.lang.Math.min;
@@ -23,10 +21,11 @@ public class UnoGame {
     private Random random = new Random();
     private int bet;
     private long messageID;
+    private long channelID;
     private long starter;
     private long category;
 
-    public UnoGame(int bet, long starter) {
+    public UnoGame(int bet, long starter, long channelID) {
         trekstapel = new ArrayList<>();
         for (UnoCard.Value value : UnoCard.Value.values()) {
             for (UnoCard.Color color : UnoCard.Color.values()) {
@@ -43,6 +42,7 @@ public class UnoGame {
         clockwise = true;
         finished = false;
         this.starter = starter;
+        this.channelID = channelID;
         hands = new ArrayList<>();
     }
 
@@ -84,7 +84,7 @@ public class UnoGame {
             switch (card.getValue()) {
                 case REVERSE:
                     clockwise = !clockwise;
-                    nextTurn(false);
+                    nextTurn(hands.size() == 2);
                     break;
                 case SKIP:
                     nextTurn(true);
@@ -165,6 +165,10 @@ public class UnoGame {
         return bet;
     }
 
+    public boolean isClockwise() {
+        return clockwise;
+    }
+
     public ArrayList<UnoHand> getHands() {
         return hands;
     }
@@ -231,8 +235,12 @@ public class UnoGame {
         }
         names.append("\n").append(cards);
         eb.addField("Other players' cards", names.toString(), false);
-        //eb.setImage("attachment://card.png");
+        eb.setImage("attachment://hand.png");
         eb.setThumbnail(String.format("%s%s%s.png", PATH, getTopCard().getColor().getToken(), getTopCard().getValue().getToken()));
         return eb;
+    }
+
+    public long getChannelID() {
+        return channelID;
     }
 }

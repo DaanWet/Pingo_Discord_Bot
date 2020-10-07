@@ -45,7 +45,7 @@ public class Uno extends Command {
             e.getChannel().sendMessage("You need to place a valid bet").queue();
             return;
         }
-        UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong());
+        UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
         gameHandler.setUnoGame(unogame);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("A game of uno is going to start!");

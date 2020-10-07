@@ -12,6 +12,7 @@ import uno.UnoCard;
 import uno.UnoGame;
 import uno.UnoHand;
 import utils.DataHandler;
+import utils.ImageHandler;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -52,40 +53,64 @@ public class Play extends Command {
                     unoGame.playCard(card);
                     Color color = guild.getSelfMember().getColor();
                     int newturn = unoGame.getTurn();
-                    for (UnoHand hand : hands) {
+                    for (int i = 0; i < hands.size() ; i++) {
+                        UnoHand hand = hands.get(i);
                         long player = hand.getPlayerId();
                         TextChannel channel = guild.getTextChannelById(hand.getChannelId());
                         if (player != e.getMember().getIdLong()) {
+                            int finalI = i;
                             channel.retrieveMessageById(hand.getMessageId()).queue(message -> {
                                 EmbedBuilder eb = unoGame.createEmbed(player);
                                 eb.setColor(color);
-                                message.editMessage(eb.build()).queue();
                                 if (unoGame.isFinished()) {
+                                    message.editMessage(eb.build()).queue();
                                     EmbedBuilder eb2 = new EmbedBuilder();
-                                    int credits = unoGame.getBet() == 0 ? 100 * hands.size() : unoGame.getBet() * hands.size();
+                                    int size = hands.size() - 1;
+                                    int bet = unoGame.getBet();
+                                    int credits = bet == 0 ? 100 * size : bet * size;
                                     eb2.setTitle(String.format("%s played a **%s** and won, he/she won **%d** credits", e.getMember().getEffectiveName(), card.toString(), credits));
+                                    if (bet != 0){
+                                        eb2.setDescription(String.format("You lost **%d** credits", bet));
+                                    }
+
+                                    dataHandler.addCredits(player + "", -1 * credits);
                                     eb2.setColor(color);
                                     channel.sendMessage(eb2.build()).queue();
                                     channel.delete().queueAfter(1, TimeUnit.MINUTES);
-                                } else if (hands.get(newturn).getPlayerId() == player) {
+                                } else if (newturn == finalI) {
+                                    message.editMessage(eb.build()).queue();
                                     EmbedBuilder eb2 = new EmbedBuilder();
                                     eb2.setTitle("It's your turn!");
                                     eb2.setColor(color);
                                     channel.sendMessage(eb2.build()).queue();
+                                } else if (isBetween(unoGame, turn, finalI) && (card.getValue() == UnoCard.Value.PLUSFOUR || card.getValue() == UnoCard.Value.PLUSTWO)){
+                                    EmbedBuilder eb2 = new EmbedBuilder();
+                                    eb2.setColor(color);
+                                    eb2.setTitle(String.format("You had to draw %d cards because %s played a %s", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card.toString()));
+                                    channel.sendMessage(eb2.build()).queue();
+                                    channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS);
                                 }
                             });
                         } else {
                             if (!unoGame.isFinished()) {
                                 EmbedBuilder eb = unoGame.createEmbed(player);
                                 eb.setColor(guild.getSelfMember().getColor());
-                                channel.sendMessage(eb.build()).queue(newmessage -> hand.setMessageId(newmessage.getIdLong()));
+                                channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> hand.setMessageId(newmessage.getIdLong()));
                             } else {
                                 EmbedBuilder eb2 = new EmbedBuilder();
-                                int credits = unoGame.getBet() == 0 ? 100 * hands.size() : unoGame.getBet() * hands.size();
+                                int size = hands.size() - 1;
+                                int credits = unoGame.getBet() == 0 ? 100 * size : unoGame.getBet() * size;
                                 eb2.setTitle(String.format("You played a **%s** and won, you won **%d** credits", card.toString(), credits));
                                 dataHandler.addCredits(player + "", credits);
                                 channel.sendMessage(eb2.build()).queue();
+                                guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
+                                    EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));
+                                    eb.setTitle("The game of uno has concluded");
+                                    eb.setDescription(String.format("%s won the game and won **%d** credits", hand.getPlayerName(), credits));
+                                    m.editMessage(eb.build()).queue();
+                                });
                                 channel.delete().queueAfter(1, TimeUnit.MINUTES);
+
                             }
                         }
                     }
@@ -100,6 +125,16 @@ public class Play extends Command {
             }
 
         }
+    }
+
+    public boolean isBetween(UnoGame game, int turn, int between){
+        int one = game.isClockwise() ? 1 : -1;
+        int newturn = game.getTurn();
+        int x1 = (turn + one) % game.getHands().size();
+        if (x1 < 0) x1 += game.getHands().size();
+        int x2 = (newturn - one) % game.getHands().size();
+        if (x2 < 0) x2 += game.getHands().size();
+        return between == x1 && between == x2;
     }
 
 

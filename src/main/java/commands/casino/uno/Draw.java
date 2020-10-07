@@ -10,6 +10,7 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 import uno.UnoCard;
 import uno.UnoGame;
 import uno.UnoHand;
+import utils.ImageHandler;
 
 
 import java.awt.*;
@@ -44,16 +45,23 @@ public class Draw extends Command {
                 UnoCard newCard = unoGame.drawCard();
                 EmbedBuilder deb = new EmbedBuilder();
                 Color color = guild.getSelfMember().getColor();
+                deb.setColor(color);
                 if (unoGame.canPlay(newCard)) {
-                    unoGame.playCard(newCard);
-                    deb.setTitle(String.format("You drew and played a %s", newCard.toString()));
+                    if (newCard.getValue() != UnoCard.Value.PLUSFOUR && newCard.getValue() != UnoCard.Value.WILD) {
+                        unoGame.playCard(newCard);
+                        deb.setTitle(String.format("You drew and played a %s", newCard.toString()));
+                    } else {
+                        UnoHand hand = unoGame.getPlayerHand(e.getMember().getIdLong());
+                        TextChannel channel = guild.getTextChannelById(hand.getChannelId());
+                        deb.setTitle(String.format("You drew a %s", newCard.toString()));
+                        channel.sendMessage(deb.build()).queue();
+                        return;
+                    }
                 } else {
                     unoGame.nextTurn(false);
                     deb.setTitle(String.format("You drew a %s", newCard.toString()));
                 }
-                deb.setColor(color);
                 int newturn = unoGame.getTurn();
-
                 for (UnoHand hand : hands) {
                     TextChannel channel = guild.getTextChannelById(hand.getChannelId());
                     long player = hand.getPlayerId();
@@ -67,17 +75,18 @@ public class Draw extends Command {
                                 eb2.setTitle("It's your turn!");
                                 eb2.setColor(color);
                                 channel.sendMessage(eb2.build()).queue();
-
                             }
                         });
                     } else {
                         channel.sendMessage(deb.build()).queue();
                         EmbedBuilder eb = unoGame.createEmbed(player);
                         eb.setColor(guild.getSelfMember().getColor());
-                        channel.sendMessage(eb.build()).queue(newmessage -> hand.setMessageId(newmessage.getIdLong()));
+                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> hand.setMessageId(newmessage.getIdLong()));
 
                     }
                 }
+
+
             } else {
                 e.getChannel().sendMessage("It's not your turn yet").queue();
             }

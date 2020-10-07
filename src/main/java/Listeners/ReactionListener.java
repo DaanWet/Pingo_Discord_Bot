@@ -19,11 +19,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONObject;
 import utils.ImageHandler;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static commands.CommandHandler.pathname;
@@ -261,7 +263,7 @@ public class ReactionListener extends ListenerAdapter {
                                             .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                             .addRolePermissionOverride(589030386726600714L, Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                             .addRolePermissionOverride(203572340280262657L, Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(channel -> {
-                                        channel.sendMessage(unoGame.createEmbed(hand.getPlayerId()).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
+                                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId()).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
                                             hand.setChannelId(channel.getIdLong());
                                             hand.setMessageId(mes.getIdLong());
                                         });
@@ -276,12 +278,15 @@ public class ReactionListener extends ListenerAdapter {
                 case "❌":
                     if (unoGame.getStarter() == member.getIdLong()) {
                         for (long channelId : unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList())) {
-                            guild.getTextChannelById(channelId).delete().queue();
+                            if (channelId != -1) guild.getTextChannelById(channelId).delete().queue();
                         }
                         if (unoGame.getTurn() != -1) {
                             guild.getCategoryById(unoGame.getCategory()).delete().queue();
                         }
-
+                        MessageEmbed me = message.getEmbeds().get(0);
+                        EmbedBuilder eb = new EmbedBuilder(me);
+                        eb.setTitle("The game of uno has been canceled");
+                        message.editMessage(eb.build()).queue();
                         gameHandler.removeUnoGame();
                     }
                     break;
