@@ -56,7 +56,7 @@ public class ReactionListener extends ListenerAdapter {
                                 handleDeleteExplorerReaction(e, m, me);
                             } else if (me.getTitle().contains("Gaming Roles")) {
                                 handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), e.getMember(), true);
-                            } else if (me.getTitle().equals("A game of casino.uno is going to start!")) {
+                            } else if (me.getTitle().equals("A game of uno is going to start!")) {
                                 handleUnoReaction(e.getMember(), m, e.getReactionEmote());
                             }
                         }
@@ -282,7 +282,7 @@ public class ReactionListener extends ListenerAdapter {
                         }
                         MessageEmbed me = message.getEmbeds().get(0);
                         EmbedBuilder eb = new EmbedBuilder(me);
-                        eb.setTitle("The game of casino.uno has been canceled");
+                        eb.setTitle("The game of uno has been canceled");
                         message.editMessage(eb.build()).queue();
                         gameHandler.removeUnoGame();
                     }

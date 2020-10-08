@@ -48,7 +48,7 @@ public class Uno extends Command {
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
         gameHandler.setUnoGame(unogame);
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("A game of casino.uno is going to start!");
+        eb.setTitle("A game of uno is going to start!");
         if (bet != 0) eb.setDescription(String.format("This game requires a %d credits bet.\nThe winner receives the sum of all bets", bet));
         eb.addField("Players", "No Players yet", false);
         eb.setFooter("React with \uD83D\uDD90️ to join, ▶️ to start and ❌ to cancel the game");

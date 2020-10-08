@@ -100,7 +100,7 @@ public class Play extends Command {
                                 channel.sendMessage(eb2.build()).queue();
                                 guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
                                     EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));
-                                    eb.setTitle("The game of casino.uno has concluded");
+                                    eb.setTitle("The game of uno has concluded");
                                     eb.setDescription(String.format("%s won the game and won **%d** credits", hand.getPlayerName(), credits));
                                     m.editMessage(eb.build()).queue();
                                 });
