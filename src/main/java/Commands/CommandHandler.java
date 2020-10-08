@@ -1,7 +1,8 @@
 package commands;
 
-import blackjack.GameHandler;
+import casino.GameHandler;
 import commands.casino.*;
+import commands.casino.blackjack.*;
 import commands.casino.uno.Draw;
 import commands.casino.uno.Play;
 import commands.casino.uno.Uno;
@@ -48,7 +49,7 @@ public class CommandHandler {
                 put("daily", new CollectCredits());
                 put("weekly", new Weekly());
                 put("balance", new ShowCredits());
-                put("blackjack", new BlackJack(gameHandler));
+                put("casino", new BlackJack(gameHandler));
                 put("stand", new Stand(gameHandler));
                 put("hit", new Hit(gameHandler));
                 put("double", new DoubleDown(gameHandler));
@@ -59,7 +60,7 @@ public class CommandHandler {
                 put("adminAbuse", new AdminAbuse());
                 put("clean", new Clean());
                 put("records", new Records());
-                put("uno", new Uno(gameHandler));
+                put("casino/uno", new Uno(gameHandler));
                 put("play", new Play(gameHandler));
                 put("draw", new Draw(gameHandler));
             }

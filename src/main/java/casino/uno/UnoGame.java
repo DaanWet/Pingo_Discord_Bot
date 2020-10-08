@@ -1,4 +1,4 @@
-package uno;
+package casino.uno;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 

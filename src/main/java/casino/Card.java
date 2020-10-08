@@ -1,4 +1,4 @@
-package blackjack;
+package casino;
 
 public class Card {
     public enum Value {

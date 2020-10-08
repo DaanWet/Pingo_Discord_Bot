@@ -1,15 +1,13 @@
 package listeners;
 
-import blackjack.GameHandler;
+import casino.GameHandler;
 import commands.CommandHandler;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import uno.UnoCard;
-import uno.UnoGame;
-import uno.UnoHand;
+import casino.uno.UnoGame;
+import casino.uno.UnoHand;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -19,7 +17,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONObject;
 import utils.ImageHandler;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -59,7 +56,7 @@ public class ReactionListener extends ListenerAdapter {
                                 handleDeleteExplorerReaction(e, m, me);
                             } else if (me.getTitle().contains("Gaming Roles")) {
                                 handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), e.getMember(), true);
-                            } else if (me.getTitle().equals("A game of uno is going to start!")) {
+                            } else if (me.getTitle().equals("A game of casino.uno is going to start!")) {
                                 handleUnoReaction(e.getMember(), m, e.getReactionEmote());
                             }
                         }
@@ -259,7 +256,7 @@ public class ReactionListener extends ListenerAdapter {
                                 unoGame.setCategory(category.getIdLong());
                                 guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(2).queue();
                                 for (UnoHand hand : hands) {
-                                    category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
+                                    category.createTextChannel(String.format("%s-casino.uno", hand.getPlayerName()))
                                             .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                             .addRolePermissionOverride(589030386726600714L, Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                             .addRolePermissionOverride(203572340280262657L, Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(channel -> {
@@ -285,7 +282,7 @@ public class ReactionListener extends ListenerAdapter {
                         }
                         MessageEmbed me = message.getEmbeds().get(0);
                         EmbedBuilder eb = new EmbedBuilder(me);
-                        eb.setTitle("The game of uno has been canceled");
+                        eb.setTitle("The game of casino.uno has been canceled");
                         message.editMessage(eb.build()).queue();
                         gameHandler.removeUnoGame();
                     }

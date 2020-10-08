@@ -285,7 +285,7 @@ public class DataHandler {
     }
 
     public void setRecord(String userid, String record, Comparable value) {
-
+        setRecord(userid, record, value, null);
     }
 
     public void setRecord(String userid, String record, Comparable value, String link) {
@@ -313,9 +313,13 @@ public class DataHandler {
         save();
     }
 
-    public Pair<Object, String> getRecord(String userid, String record) {
-        JSONObject r = (JSONObject) getUserRecords(userid).get(record);
-        return Pair.of(r.get("value"), (String) r.getOrDefault("link", null));
+    public Pair<Comparable, String> getRecord(String userid, String record) {
+        JSONObject ur = getUserRecords(userid);
+        if (ur.containsKey(record)){
+            JSONObject r = (JSONObject) ur.get(record);
+            return Pair.of((Comparable) r.get("value"), (String) r.getOrDefault("link", null));
+        }
+        return null;
     }
 
     public HashMap<String, Pair<Comparable, String>> getRecords(String userid) {

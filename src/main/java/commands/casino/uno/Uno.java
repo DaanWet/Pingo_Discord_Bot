@@ -1,10 +1,10 @@
 package commands.casino.uno;
 
-import blackjack.GameHandler;
+import casino.GameHandler;
 import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import uno.UnoGame;
+import casino.uno.UnoGame;
 import utils.DataHandler;
 import utils.Utils;
 
@@ -15,7 +15,7 @@ public class Uno extends Command {
     private GameHandler gameHandler;
 
     public Uno(GameHandler gameHandler){
-        this.name = "uno";
+        this.name = "casino/uno";
         this.aliases = new String[]{"playuno"};
         this.category = "Casino";
         dataHandler = new DataHandler();
@@ -48,7 +48,7 @@ public class Uno extends Command {
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
         gameHandler.setUnoGame(unogame);
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("A game of uno is going to start!");
+        eb.setTitle("A game of casino.uno is going to start!");
         if (bet != 0) eb.setDescription(String.format("This game requires a %d credits bet.\nThe winner receives the sum of all bets", bet));
         eb.addField("Players", "No Players yet", false);
         eb.setFooter("React with \uD83D\uDD90️ to join, ▶️ to start and ❌ to cancel the game");

@@ -1,4 +1,4 @@
-package blackjack;
+package casino;
 
 import java.util.ArrayList;
 

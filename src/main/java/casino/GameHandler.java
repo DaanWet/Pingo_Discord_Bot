@@ -1,7 +1,7 @@
-package blackjack;
+package casino;
 
 
-import uno.UnoGame;
+import casino.uno.UnoGame;
 
 import java.util.HashMap;
 

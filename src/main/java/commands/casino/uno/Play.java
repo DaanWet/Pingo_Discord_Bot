@@ -1,24 +1,19 @@
 package commands.casino.uno;
 
-import blackjack.GameHandler;
+import casino.GameHandler;
 import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
-import uno.UnoCard;
-import uno.UnoGame;
-import uno.UnoHand;
+import casino.uno.UnoCard;
+import casino.uno.UnoGame;
+import casino.uno.UnoHand;
 import utils.DataHandler;
 import utils.ImageHandler;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -105,7 +100,7 @@ public class Play extends Command {
                                 channel.sendMessage(eb2.build()).queue();
                                 guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
                                     EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));
-                                    eb.setTitle("The game of uno has concluded");
+                                    eb.setTitle("The game of casino.uno has concluded");
                                     eb.setDescription(String.format("%s won the game and won **%d** credits", hand.getPlayerName(), credits));
                                     m.editMessage(eb.build()).queue();
                                 });

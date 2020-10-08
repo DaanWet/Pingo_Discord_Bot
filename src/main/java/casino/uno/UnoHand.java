@@ -1,4 +1,4 @@
-package uno;
+package casino.uno;
 
 import java.util.ArrayList;
 
