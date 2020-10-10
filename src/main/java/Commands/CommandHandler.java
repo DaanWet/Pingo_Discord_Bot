@@ -63,6 +63,7 @@ public class CommandHandler {
                 put("uno", new Uno(gameHandler));
                 put("play", new Play(gameHandler));
                 put("draw", new Draw(gameHandler));
+                put("amongus", new AmongUs());
             }
 
         };
