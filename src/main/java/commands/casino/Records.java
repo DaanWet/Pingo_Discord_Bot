@@ -64,9 +64,17 @@ public class Records extends Command {
             StringBuilder sb = new StringBuilder();
             for (String record : records.keySet()){
                 Pair<Comparable, String> v = records.get(record);
+
                 sb.append(":small_blue_diamond: ").append(properties.getProperty(record))
-                        .append(": **")
-                        .append(v.getLeft()).append("** ");
+                        .append(": **");
+
+                // Formats the blackjack winrate into something more human readable
+                if(v.getLeft() instanceof Double ||  v.getLeft() instanceof Float)
+                        sb.append(String.format("%.2f", v.getLeft() * 100));
+                else
+                        sb.append(v.getLeft());
+
+                sb.append("** ");
                 if (v.getRight() != null){
                     sb.append(" [jump](").append(v.getRight()).append(")");
                 }
