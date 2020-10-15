@@ -48,9 +48,10 @@ public class MessageListener extends ListenerAdapter {
             //Text to speech mute
             if (message.isTTS()) {
                 message.delete().complete();
+
+                channel.sendMessage(String.format("%s has been muted, cause TTS sucks", e.getMember().getAsMention())).queue();
                 Role role = guild.getRoleById(598551156867858442L);
                 List<Role> roles = e.getMember().getRoles();
-                channel.sendMessage(String.format("%s has been muted, cause TTS sucks", e.getMember().getAsMention())).queue();
                 guild.modifyMemberRoles(e.getMember(), role).queue(em -> {
                     guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES);
                 });

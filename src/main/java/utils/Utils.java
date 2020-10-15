@@ -1,5 +1,7 @@
 package utils;
 
+import casino.uno.UnoGame;
+
 public class Utils {
 
     public static boolean isInteger(String s) {
@@ -38,6 +40,16 @@ public class Utils {
             i = -1;
         }
         return i;
+    }
+
+    public static boolean isBetween(UnoGame game, int turn, int between){
+        int one = game.isClockwise() ? 1 : -1;
+        int newturn = game.getTurn();
+        int x1 = (turn + one) % game.getHands().size();
+        if (x1 < 0) x1 += game.getHands().size();
+        int x2 = (newturn - one) % game.getHands().size();
+        if (x2 < 0) x2 += game.getHands().size();
+        return between == x1 && between == x2;
     }
 
 

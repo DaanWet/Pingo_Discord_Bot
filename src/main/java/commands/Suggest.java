@@ -25,8 +25,7 @@ public class Suggest extends Command {
             } else if (args[0].equals("discord") || args[0].equalsIgnoreCase("server")){
                 repo = "";
             } else {
-                e.getChannel().sendMessage(getUsage()).queue();
-                return;
+                repo = "";
             }
             boolean t = true;
             StringBuilder title = new StringBuilder();
