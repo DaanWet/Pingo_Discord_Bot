@@ -284,11 +284,11 @@ public class DataHandler {
         return xp;
     }
 
-    public void setRecord(String userid, String record, Comparable value) {
-        setRecord(userid, record, value, null);
+    public void setRecord(String userid, String record, Comparable value, boolean ignore) {
+        setRecord(userid, record, value, null, ignore);
     }
 
-    public void setRecord(String userid, String record, Comparable value, String link) {
+    public void setRecord(String userid, String record, Comparable value, String link, boolean ignore) {
         JSONObject records = getUserRecords(userid);
         boolean put = false;
         if (!records.containsKey(record)) {
@@ -303,7 +303,7 @@ public class DataHandler {
             }
         }
 
-        if (put) {
+        if (put || ignore) {
             if (link == null) {
                 records.put(record, new JSONObject(Map.of("value", value)));
             } else {

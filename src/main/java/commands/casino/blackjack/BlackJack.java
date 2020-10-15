@@ -48,12 +48,13 @@ public class BlackJack extends Command {
                         else {
                             String id = author.getId();
                             int won_lose = bjg.getWonCreds();
-                            dataHandler.setRecord(id, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl());
+                            dataHandler.setRecord(id, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl(), false);
                             Pair<Comparable, String> played_games = dataHandler.getRecord(id, "bj_games_played");
                             Pair<Comparable, String> winrate = dataHandler.getRecord(id, "bj_win_rate");
                             int temp = played_games == null ? 0 : (int) (long) played_games.getLeft();
-                            dataHandler.setRecord(id, "bj_games_played", temp + 1);
-                            dataHandler.setRecord(id, "bj_win_rate", ((won_lose > 0 ? 1 : 0) - (winrate == null ? 0.0 : (double) winrate.getLeft()))/(temp + 1));
+                            double tempw = winrate == null ? 0.0 : (double) winrate.getLeft();
+                            dataHandler.setRecord(id, "bj_games_played", temp + 1, false);
+                            dataHandler.setRecord(id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
                         }
                     });
                 } else {
