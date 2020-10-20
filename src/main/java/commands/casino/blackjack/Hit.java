@@ -47,9 +47,4 @@ public class Hit extends Command {
             }
         }
     }
-
-    @Override
-    public String getDescription() {
-        return "this shouldn't happen";
-    }
 }

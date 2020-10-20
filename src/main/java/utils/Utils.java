@@ -27,6 +27,14 @@ public class Utils {
         }
         return true;
     }
+    public static Long isLong(String s) {
+        Long l = null;
+        try {
+            l = Long.parseLong(s);
+        } catch (Exception ignored) {
+        }
+        return l;
+    }
 
     public static int getInt(String s){
         if (s.matches("(?i)[0-9]*k?m?")) {

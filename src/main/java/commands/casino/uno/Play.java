@@ -11,6 +11,7 @@ import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import utils.DataHandler;
 import utils.ImageHandler;
+import utils.Utils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -26,7 +27,9 @@ public class Play extends Command {
         this.name = "play";
         this.aliases = new String[]{"p"};
         this.category = "hidden";
+        this.arguments = "<color><value>";
         this.gameHandler = gameHandler;
+        this.description = "Play a card from your hand, pick the color for a wildcard immediately";
         dataHandler = new DataHandler();
     }
 
@@ -48,7 +51,7 @@ public class Play extends Command {
                     unoGame.playCard(card);
                     Color color = guild.getSelfMember().getColor();
                     int newturn = unoGame.getTurn();
-                    for (int i = 0; i < hands.size() ; i++) {
+                    for (int i = 0; i < hands.size(); i++) {
                         UnoHand hand = hands.get(i);
                         long player = hand.getPlayerId();
                         TextChannel channel = guild.getTextChannelById(hand.getChannelId());
@@ -64,11 +67,11 @@ public class Play extends Command {
                                     int bet = unoGame.getBet();
                                     int credits = bet == 0 ? 100 * size : bet * size;
                                     eb2.setTitle(String.format("%s played a **%s** and won, he/she won **%d** credits", e.getMember().getEffectiveName(), card.toString(), credits));
-                                    if (bet != 0){
+                                    if (bet != 0) {
                                         eb2.setDescription(String.format("You lost **%d** credits", bet));
                                     }
 
-                                    dataHandler.addCredits(player + "", -1 * credits);
+                                    if (bet != 0) dataHandler.addCredits(player + "", -1 * credits);
                                     eb2.setColor(color);
                                     channel.sendMessage(eb2.build()).queue();
                                     channel.delete().queueAfter(1, TimeUnit.MINUTES);
@@ -78,7 +81,7 @@ public class Play extends Command {
                                     eb2.setTitle("It's your turn!");
                                     eb2.setColor(color);
                                     channel.sendMessage(eb2.build()).queue();
-                                } else if (isBetween(unoGame, turn, finalI) && (card.getValue() == UnoCard.Value.PLUSFOUR || card.getValue() == UnoCard.Value.PLUSTWO)){
+                                } else if (Utils.isBetween(unoGame, turn, finalI) && (card.getValue() == UnoCard.Value.PLUSFOUR || card.getValue() == UnoCard.Value.PLUSTWO)) {
                                     EmbedBuilder eb2 = new EmbedBuilder();
                                     eb2.setColor(color);
                                     eb2.setTitle(String.format("You had to draw %d cards because %s played a %s", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card.toString()));
@@ -120,21 +123,5 @@ public class Play extends Command {
             }
 
         }
-    }
-
-    public boolean isBetween(UnoGame game, int turn, int between){
-        int one = game.isClockwise() ? 1 : -1;
-        int newturn = game.getTurn();
-        int x1 = (turn + one) % game.getHands().size();
-        if (x1 < 0) x1 += game.getHands().size();
-        int x2 = (newturn - one) % game.getHands().size();
-        if (x2 < 0) x2 += game.getHands().size();
-        return between == x1 && between == x2;
-    }
-
-
-    @Override
-    public String getDescription() {
-        return "Play a card in a unogame";
     }
 }

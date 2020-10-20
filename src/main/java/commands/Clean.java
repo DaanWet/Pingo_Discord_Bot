@@ -8,6 +8,7 @@ public class Clean extends Command {
         this.name = "clean";
         this.category = "Moderation";
         this.aliases = new String[]{"cleanChannel"};
+        this.description = "Cleans up a channel";
     }
 
 
@@ -19,10 +20,5 @@ public class Clean extends Command {
             });
             e.getMessage().delete().queue();
         });
-    }
-
-    @Override
-    public String getDescription() {
-        return "Cleans up a channel";
     }
 }

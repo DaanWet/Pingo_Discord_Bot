@@ -14,10 +14,12 @@ public class Uno extends Command {
     private DataHandler dataHandler;
     private GameHandler gameHandler;
 
-    public Uno(GameHandler gameHandler){
-        this.name = "casino/uno";
+    public Uno(GameHandler gameHandler) {
+        this.name = "uno";
         this.aliases = new String[]{"playuno"};
         this.category = "Casino";
+        this.arguments = "[<bet>]";
+        this.description = "Start a game of Uno";
         dataHandler = new DataHandler();
         this.gameHandler = gameHandler;
     }
@@ -25,18 +27,18 @@ public class Uno extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        if (gameHandler.getUnoGame() != null){
+        if (gameHandler.getUnoGame() != null) {
             e.getChannel().sendMessage("A game has already started").queue();
             return;
         }
         int bet = 0;
-        if (args.length == 1){
+        if (args.length == 1) {
             bet = Utils.getInt(args[0]);
-            if (bet >= 100){
-               if (!(dataHandler.getCredits(e.getAuthor().getId()) - bet >= 0)){
-                   e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
-                   return;
-               }
+            if (bet >= 100) {
+                if (!(dataHandler.getCredits(e.getAuthor().getId()) - bet >= 0)) {
+                    e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
+                    return;
+                }
             } else {
                 e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
                 return;
@@ -49,7 +51,8 @@ public class Uno extends Command {
         gameHandler.setUnoGame(unogame);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("A game of uno is going to start!");
-        if (bet != 0) eb.setDescription(String.format("This game requires a %d credits bet.\nThe winner receives the sum of all bets", bet));
+        if (bet != 0)
+            eb.setDescription(String.format("This game requires a %d credits bet.\nThe winner receives the sum of all bets", bet));
         eb.addField("Players", "No Players yet", false);
         eb.setFooter("React with \uD83D\uDD90️ to join, ▶️ to start and ❌ to cancel the game");
         e.getChannel().sendMessage(eb.build()).queue(m -> {
@@ -58,10 +61,5 @@ public class Uno extends Command {
             m.addReaction("▶️").queue();
             m.addReaction("❌").queue();
         });
-    }
-
-    @Override
-    public String getDescription() {
-        return "Start a game of Uno";
     }
 }

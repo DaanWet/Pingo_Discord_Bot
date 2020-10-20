@@ -14,7 +14,7 @@ public class Stand extends Command {
     private GameHandler gameHandler;
     private DataHandler dataHandler;
 
-    public Stand(GameHandler gameHandler){
+    public Stand(GameHandler gameHandler) {
         this.name = "Stand";
         this.gameHandler = gameHandler;
         this.dataHandler = new DataHandler();
@@ -23,9 +23,9 @@ public class Stand extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (args.length == 0){
+        if (args.length == 0) {
             BlackJackGame bjg = gameHandler.getBlackJackGame(e.getAuthor().getIdLong());
-            if (bjg != null){
+            if (bjg != null) {
                 bjg.stand();
                 e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
                     EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
@@ -42,16 +42,11 @@ public class Stand extends Command {
                         int temp = played_games == null ? 0 : (int) (long) played_games.getLeft();
                         double tempw = winrate == null ? 0.0 : (double) winrate.getLeft();
                         dataHandler.setRecord(id, "bj_games_played", temp + 1, false);
-                        dataHandler.setRecord(id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
+                        dataHandler.setRecord(id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw) / (temp + 1.0)), true);
                     }
                     m.editMessage(eb.build()).queue();
                 });
             }
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "this shouldn't happen";
     }
 }

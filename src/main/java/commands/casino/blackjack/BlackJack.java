@@ -21,6 +21,8 @@ public class BlackJack extends Command {
         this.name = "casino";
         this.aliases = new String[]{"bj", "21"};
         this.category = "Casino";
+        this.arguments = "<bet>";
+        this.description = "Start a blackjack game";
     }
 
     @Override
@@ -66,10 +68,5 @@ public class BlackJack extends Command {
         } else {
             e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Start a blackjack game";
     }
 }

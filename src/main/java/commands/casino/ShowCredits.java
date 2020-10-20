@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import utils.DataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.Utils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,8 @@ public class ShowCredits extends Command {
         this.name = "ShowCredits";
         this.aliases = new String[]{"bal", "credits", "balance"};
         this.category = "Casino";
+        this.arguments = "[top]";
+        this.description = "Show your current credit balance";
         this.dataHandler = new DataHandler();
     }
 
@@ -32,7 +35,7 @@ public class ShowCredits extends Command {
             EmbedBuilder eb = new EmbedBuilder();
             StringBuilder sb = new StringBuilder();
             eb.setTitle("Leaderboard");
-            e.getGuild().retrieveMembersByIds(sorted.stream().map(key -> Command.isLong(key.getKey())).collect(Collectors.toList())).onSuccess(list -> {
+            e.getGuild().retrieveMembersByIds(sorted.stream().map(key -> Utils.isLong(key.getKey())).collect(Collectors.toList())).onSuccess(list -> {
                 Map<String, Member> m = list.stream().collect(Collectors.toMap(Member::getId, member -> member));
                 for (int i = 0; i < sorted.size() && i < 10; i++) {
                     sb.append("`").append(i+1).append(i == 9 ? ".`" : ". `  ")
@@ -47,10 +50,5 @@ public class ShowCredits extends Command {
         } else {
             e.getChannel().sendMessage(this.getUsage()).queue();
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Show your current credit balance";
     }
 }

@@ -26,7 +26,7 @@ public class Split extends Command {
             BlackJackGame bjg = gameHandler.getBlackJackGame(e.getAuthor().getIdLong());
             if (bjg != null) {
 
-                if (dataHandler.getCredits(e.getAuthor().getId()) - 2*bjg.getBet() > 0){
+                if (dataHandler.getCredits(e.getAuthor().getId()) - 2 * bjg.getBet() > 0) {
                     bjg.split();
                     e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
                         EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
@@ -42,7 +42,7 @@ public class Split extends Command {
                             int temp = played_games == null ? 0 : (int) (long) played_games.getLeft();
                             double tempw = winrate == null ? 0.0 : (double) winrate.getLeft();
                             dataHandler.setRecord(id, "bj_games_played", temp + 1, false);
-                            dataHandler.setRecord(id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
+                            dataHandler.setRecord(id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw) / (temp + 1.0)), true);
                         }
                         m.editMessage(eb.build()).queue();
                     });
@@ -53,9 +53,4 @@ public class Split extends Command {
             }
         }
     }
-
-        @Override
-        public String getDescription () {
-            return null;
-        }
-    }
+}

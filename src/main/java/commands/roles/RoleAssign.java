@@ -16,6 +16,8 @@ public class RoleAssign extends Command {
         category = "Moderation";
         name = "roleassign";
         dataHandler = new DataHandler();
+        this.arguments = "<category>";
+        this.description = "Display Role picker";
     }
 
     @Override
@@ -41,8 +43,5 @@ public class RoleAssign extends Command {
         e.getMessage().delete().queue();
     }
 
-    @Override
-    public String getDescription() {
-        return "Game role picker";
     }
 }

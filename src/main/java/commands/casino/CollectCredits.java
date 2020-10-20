@@ -17,6 +17,7 @@ public class CollectCredits extends Command {
         this.aliases = new String[]{"collect", "dailycredits"};
         this.dataHandler = new DataHandler();
         this.category = "Casino";
+        this.description = "Collect your daily credits";
     }
 
     @Override
@@ -39,10 +40,5 @@ public class CollectCredits extends Command {
         } else {
             e.getChannel().sendMessage(this.getUsage()).queue();
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Collect your daily credits";
     }
 }

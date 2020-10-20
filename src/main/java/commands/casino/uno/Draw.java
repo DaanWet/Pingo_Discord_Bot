@@ -25,6 +25,7 @@ public class Draw extends Command {
         this.aliases = new String[]{"d"};
         this.category = "hidden";
         this.gameHandler = gameHandler;
+        this.description = "Draw a card from the deck";
     }
 
     @Override
@@ -89,10 +90,5 @@ public class Draw extends Command {
                 e.getChannel().sendMessage("It's not your turn yet").queue();
             }
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return null;
     }
 }

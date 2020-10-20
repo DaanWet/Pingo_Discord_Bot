@@ -15,10 +15,12 @@ public class RemoveRoleAssign extends Command {
 
     private DataHandler dataHandler;
 
-    public RemoveRoleAssign(){
+    public RemoveRoleAssign() {
         this.name = "removeRoleAssign";
         this.aliases = new String[]{"removeRole", "removeRoleA", "removeRA"};
         this.category = "Moderation";
+        this.arguments = "<emoji>";
+        this.description = "Removes a role from the board";
         dataHandler = new DataHandler();
     }
 
@@ -58,10 +60,5 @@ public class RemoveRoleAssign extends Command {
                 }
             });
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Removes a role from the board";
     }
 }

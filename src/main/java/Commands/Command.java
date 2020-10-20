@@ -1,6 +1,7 @@
 package commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -11,14 +12,21 @@ public abstract class Command {
     protected String category = "Other";
     protected ArrayList<Long> bannedChannels = new ArrayList<>();
     protected String arguments = "";
+    protected String description;
 
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
-    public abstract String getDescription();
+    public String getDescription(){
+        return description;
+    }
 
     public String getName()  {
         //if (name == null) throw new ExecutionControl.NotImplementedException("Command should have a name");
         return name;
+    }
+
+    public String getArguments() {
+        return arguments;
     }
 
     public String[] getAliases() {
@@ -34,7 +42,7 @@ public abstract class Command {
     }
 
     public String getUsage(){
-        return String.format("Usage: !%s %s\n%s", name, arguments, this.getDescription());
+        return String.format("Usage: !%s %s\n%s", name, arguments, description == null ? "" : description);
     }
 
     public boolean isCommandFor(String s) {
@@ -48,14 +56,5 @@ public abstract class Command {
         }
 
         return ctr < aliases.length;
-    }
-
-    public static Long isLong(String s) {
-        Long l = null;
-        try {
-            l = Long.parseLong(s);
-        } catch (Exception ignored) {
-        }
-        return l;
     }
 }

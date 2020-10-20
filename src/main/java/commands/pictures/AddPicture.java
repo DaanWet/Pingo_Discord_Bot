@@ -17,11 +17,13 @@ public class AddPicture extends Command {
     private CommandHandler commandHandler;
 
 
-    public AddPicture(CommandHandler commandHandler){
+    public AddPicture(CommandHandler commandHandler) {
         name = "add";
         aliases = new String[]{"addpicture"};
         category = "Pictures";
         this.commandHandler = commandHandler;
+        this.description = "Adds a picture to the !<name> command";
+        this.arguments = "<name> <picture>";
     }
 
     @Override
@@ -46,10 +48,5 @@ public class AddPicture extends Command {
         } else {
             e.getChannel().sendMessage("Usage: !add <name> <picture>").queue();
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Adds a picture to the !<name> command";
     }
 }

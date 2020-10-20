@@ -12,6 +12,7 @@ public class AmongUs extends Command{
     public AmongUs(){
         this.name = "amongus";
         this.aliases = new String[]{"am", "among"};
+        this.description = "Mutes or unmutes among us players";
 
     }
     @Override
@@ -32,10 +33,5 @@ public class AmongUs extends Command{
             e.getChannel().sendMessage("You're not connected to a voice channel").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
         }
         e.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Mutes or unmutes among us players";
     }
 }

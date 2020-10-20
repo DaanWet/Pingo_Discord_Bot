@@ -16,6 +16,7 @@ public class Weekly extends Command {
         this.aliases = new String[]{"weeklycredits"};
         this.dataHandler = new DataHandler();
         this.category = "Casino";
+        this.description = "Collect your weekly credits";
     }
 
     @Override
@@ -23,7 +24,7 @@ public class Weekly extends Command {
         if (args.length == 0) {
             String id = e.getAuthor().getId();
             LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(id);
-            if (LocalDateTime.now().minusDays(7).isAfter(latestcollect)){
+            if (LocalDateTime.now().minusDays(7).isAfter(latestcollect)) {
                 int creds = dataHandler.addCredits(id, 15000);
                 dataHandler.setLatestWeekCollect(id, LocalDateTime.now());
                 e.getChannel().sendMessage(String.format("You collected your weekly **15000 credits** \nYour new balance is now **%d credits**", creds)).queue();
@@ -39,10 +40,5 @@ public class Weekly extends Command {
         } else {
             e.getChannel().sendMessage(this.getUsage()).queue();
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Collect your weekly credits";
     }
 }

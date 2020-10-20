@@ -57,9 +57,4 @@ public class DoubleDown extends Command {
             }
         }
     }
-
-    @Override
-    public String getDescription() {
-        return null;
-    }
 }

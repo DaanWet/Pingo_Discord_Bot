@@ -11,8 +11,8 @@ public class Suggest extends Command {
         this.name = "suggest";
         this.aliases = new String[]{"issue", "suggestion"};
         this.arguments = "{**bot** | **plugin** | **discord**} <title> **-d** <description>";
+        this.description = "Create a new suggestion for the bot";
     }
-
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
@@ -22,7 +22,7 @@ public class Suggest extends Command {
                 repo = "DaanWet/Pingo_Discord_Bot";
             } else if (args[0].equalsIgnoreCase("plugin")) {
                 repo = "DaanWet/MinecraftTeamsPlugin";
-            } else if (args[0].equals("discord") || args[0].equalsIgnoreCase("server")){
+            } else if (args[0].equals("discord") || args[0].equalsIgnoreCase("server")) {
                 repo = "";
             } else {
                 repo = "";
@@ -30,7 +30,6 @@ public class Suggest extends Command {
             boolean t = true;
             StringBuilder title = new StringBuilder();
             StringBuilder descript = new StringBuilder();
-
             for (int i = 1; i < args.length; i++) {
                 if (t) {
                     if (args[i].equalsIgnoreCase("-d")) {
@@ -61,10 +60,5 @@ public class Suggest extends Command {
         } else {
             e.getChannel().sendMessage(getUsage()).queue();
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Create a new suggestion for the bot";
     }
 }
