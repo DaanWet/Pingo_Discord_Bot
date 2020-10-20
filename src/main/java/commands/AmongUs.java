@@ -24,12 +24,12 @@ public class AmongUs extends Command{
                 for (Member m : vc.getMembers()){
                     m.mute(mute).queue();
                 }
-                e.getChannel().sendMessage(String.format("Succesfully %s all playing members", mute ? "muted" : "unmuted")).queueAfter(10, TimeUnit.SECONDS);
+                e.getChannel().sendMessage(String.format("Succesfully %s all playing members", mute ? "muted" : "unmuted")).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
             } else {
-                e.getChannel().sendMessage("Wrong voicechannel noob").queueAfter(10, TimeUnit.SECONDS);
+                e.getChannel().sendMessage("Wrong voicechannel noob").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
             }
         } else {
-            e.getChannel().sendMessage("You're not connected to a voice channel").queueAfter(10, TimeUnit.SECONDS);
+            e.getChannel().sendMessage("You're not connected to a voice channel").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
         }
         e.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
     }
