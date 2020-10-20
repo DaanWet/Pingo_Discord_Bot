@@ -25,7 +25,7 @@ public class AddRoleAssign extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (args.length >= 4 && args[0].equalsIgnoreCase("Gaming") && (EmojiManager.containsEmoji(args[1])) || (e.getMessage().getEmotes().size() == 1 && e.getMessage().getEmotes().get(0).getAsMention().equals(args[1]))){
+        if (args.length >= 4 && (EmojiManager.containsEmoji(args[1])) || (e.getMessage().getEmotes().size() == 1 && e.getMessage().getEmotes().get(0).getAsMention().equals(args[1]))) {
             Role role = null;
             try {
                 role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);

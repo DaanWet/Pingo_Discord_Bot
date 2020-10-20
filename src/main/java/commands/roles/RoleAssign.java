@@ -22,26 +22,31 @@ public class RoleAssign extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        long[] message =  dataHandler.getMessage("gaming");
-        if (message != null){
-            e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> m.delete().queue());
-        }
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Gaming Roles");
-        StringBuilder sb = new StringBuilder("Get your gaming roles here, react to get the role");
-        ArrayList<JSONObject> gameroles = dataHandler.getGameRoles();
-        for (JSONObject s : gameroles){
-            sb.append("\n\n<").append(s.get("emoji")).append(">\t").append(s.get("name"));
-        }
-        eb.setDescription(sb.toString());
-        e.getChannel().sendMessage(eb.build()).queue(m -> {
-            dataHandler.setMessage("gaming", m.getTextChannel().getIdLong(), m.getIdLong());
-            for (JSONObject obj : gameroles){
-                m.addReaction((String) obj.get("emoji")).queue();
+        if (args.length == 1) {
+            ArrayList<JSONObject> roles = dataHandler.getRoles(args[0]);
+            if (roles != null) {
+                e.getChannel().sendMessage(String.format("%s is not an existing category", args[0])).queue();
+                return;
             }
-        });
-        e.getMessage().delete().queue();
-    }
+            long[] message = dataHandler.getMessage(args[0]);
+            if (message != null) {
+                e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> m.delete().queue());
+            }
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle(String.format("%s Roles", args[0]));
+            StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", args[0]));
+            for (JSONObject s : roles) {
+                sb.append("\n\n<").append(s.get("emoji")).append(">\t").append(s.get("name"));
+            }
+            eb.setDescription(sb.toString());
+            e.getChannel().sendMessage(eb.build()).queue(m -> {
+                dataHandler.setMessage(args[0], m.getTextChannel().getIdLong(), m.getIdLong());
+                for (JSONObject obj : roles) {
+                    m.addReaction((String) obj.get("emoji")).queue();
+                }
+            });
+        }
 
+        e.getMessage().delete().queue();
     }
 }

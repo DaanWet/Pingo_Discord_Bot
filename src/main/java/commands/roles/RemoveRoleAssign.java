@@ -26,39 +26,42 @@ public class RemoveRoleAssign extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (e.getMessage().getEmotes().size() == 1){
-            long[] message = dataHandler.getMessage("gaming");
-            String emote = args[0].substring(1, args[0].length() - 1);
-            e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
-                MessageEmbed me = m.getEmbeds().get(0);
-                EmbedBuilder eb = new EmbedBuilder(me);
-                ArrayList<String> lines = new ArrayList<>(Arrays.asList(me.getDescription().split("\n")));
-                int i = 0;
-                boolean found = false;
-                while (!found && i < lines.size()){
-                    if (lines.get(i).contains(emote)){
-                        found = true;
-                    } else {
-                        i++;
+        if (e.getMessage().getEmotes().size() == 1 && args.length >= 2) {
+            long[] message = dataHandler.getMessage(args[0]);
+            String emote = args[1].substring(1, args[1].length() - 1);
+            if (message != null){
+                e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
+                    MessageEmbed me = m.getEmbeds().get(0);
+                    EmbedBuilder eb = new EmbedBuilder(me);
+                    ArrayList<String> lines = new ArrayList<>(Arrays.asList(me.getDescription().split("\n")));
+                    int i = 0;
+                    boolean found = false;
+                    while (!found && i < lines.size()) {
+                        if (lines.get(i).contains(emote)) {
+                            found = true;
+                        } else {
+                            i++;
+                        }
                     }
-                }
-                if (found){
-                    lines.remove(i);
-                    lines.remove(i - 1);
-                    dataHandler.removeRoleAssign("gaming", emote);
-                    eb.setDescription(String.join("\n", lines));
-                    m.editMessage(eb.build()).queue();
-                    m.removeReaction(emote).queue();
-                    e.getMessage().addReaction(":green_tick:667450925677543454").queue();
-                    for (Member member : e.getGuild().getMembers()){
-                        m.removeReaction(emote, member.getUser()).queue();
+                    if (found) {
+                        lines.remove(i);
+                        lines.remove(i - 1);
+                        eb.setDescription(String.join("\n", lines));
+                        m.editMessage(eb.build()).queue();
+                        m.removeReaction(emote).queue();
+                        e.getMessage().addReaction(":green_tick:667450925677543454").queue();
+                        for (Member member : e.getGuild().getMembers()) {
+                            m.removeReaction(emote, member.getUser()).queue();
+                        }
+                        e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
                     }
+                });
+            }
+            boolean found = dataHandler.removeRoleAssign(args[0], emote);
+            if (!found){
+                e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
+            }
 
-                    e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
-                } else {
-                    e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
-                }
-            });
         }
     }
 }

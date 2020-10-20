@@ -39,9 +39,11 @@ public class DataHandler {
     }
 
 
-    public ArrayList<JSONObject> getGameRoles() {
+    public ArrayList<JSONObject> getRoles(String type) {
         openfile();
-        return (JSONArray) ((JSONObject) jsonObject.get("gaming-roles")).get("roles");
+        String key = String.format("%s-roles", type.toLowerCase());
+        if (!jsonObject.containsKey(key)) return null;
+        return (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
 
     }
 
@@ -69,15 +71,15 @@ public class DataHandler {
     public void addRoleAssign(String type, String emoji, String name, long roleId) {
         openfile();
         String key = String.format("%s-roles", type.toLowerCase());
-        if (jsonObject.containsKey(key)) {
-            JSONArray roles = (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
-            JSONObject ra = new JSONObject();
-            ra.put("emoji", emoji);
-            ra.put("name", name);
-            ra.put("role", roleId);
-            roles.add(ra);
-            save();
-        }
+        jsonObject.putIfAbsent(key, new JSONObject(Map.of("roles", new JSONArray())));
+        JSONArray roles = (JSONArray) ((JSONObject) jsonObject.get(key)).get("roles");
+        JSONObject ra = new JSONObject();
+        ra.put("emoji", emoji);
+        ra.put("name", name);
+        ra.put("role", roleId);
+        roles.add(ra);
+        save();
+
     }
 
     public boolean removeRoleAssign(String type, String emoji) {
@@ -315,7 +317,7 @@ public class DataHandler {
 
     public Pair<Comparable, String> getRecord(String userid, String record) {
         JSONObject ur = getUserRecords(userid);
-        if (ur.containsKey(record)){
+        if (ur.containsKey(record)) {
             JSONObject r = (JSONObject) ur.get(record);
             return Pair.of((Comparable) r.get("value"), (String) r.getOrDefault("link", null));
         }

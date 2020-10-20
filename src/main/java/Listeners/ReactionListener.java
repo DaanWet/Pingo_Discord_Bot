@@ -227,7 +227,7 @@ public class ReactionListener extends ListenerAdapter {
     }
 
     public void handleRoleReaction(String emote, Guild g, Member m, boolean add) {
-        ArrayList<JSONObject> gameroles = new DataHandler().getGameRoles();
+        ArrayList<JSONObject> gameroles = new DataHandler().getRoles("gaming");
         for (JSONObject obj : gameroles) {
             if (emote.equals(obj.get("emoji").toString().substring(1))) {
                 if (add) {
