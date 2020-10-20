@@ -3,6 +3,7 @@ package commands;
 import casino.GameHandler;
 import commands.casino.*;
 import commands.casino.blackjack.*;
+import commands.casino.uno.Challenge;
 import commands.casino.uno.Draw;
 import commands.casino.uno.Play;
 import commands.casino.uno.Uno;
@@ -63,6 +64,7 @@ public class CommandHandler {
                 put("uno", new Uno(gameHandler));
                 put("play", new Play(gameHandler));
                 put("draw", new Draw(gameHandler));
+                put("challenge", new Challenge(gameHandler));
                 put("amongus", new AmongUs());
             }
 

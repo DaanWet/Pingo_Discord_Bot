@@ -256,7 +256,7 @@ public class ReactionListener extends ListenerAdapter {
                                 unoGame.setCategory(category.getIdLong());
                                 guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(2).queue();
                                 for (UnoHand hand : hands) {
-                                    category.createTextChannel(String.format("%s-casino.uno", hand.getPlayerName()))
+                                    category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
                                             .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                             .addRolePermissionOverride(589030386726600714L, Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                             .addRolePermissionOverride(203572340280262657L, Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(channel -> {

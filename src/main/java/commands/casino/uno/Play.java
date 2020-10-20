@@ -65,7 +65,7 @@ public class Play extends Command {
                                     EmbedBuilder eb2 = new EmbedBuilder();
                                     int size = hands.size() - 1;
                                     int bet = unoGame.getBet();
-                                    int credits = bet == 0 ? 100 * size : bet * size;
+                                    int credits = bet == 0 ? 200 * size : bet * size;
                                     eb2.setTitle(String.format("%s played a **%s** and won, he/she won **%d** credits", e.getMember().getEffectiveName(), card.toString(), credits));
                                     if (bet != 0) {
                                         eb2.setDescription(String.format("You lost **%d** credits", bet));
@@ -86,7 +86,7 @@ public class Play extends Command {
                                     eb2.setColor(color);
                                     eb2.setTitle(String.format("You had to draw %d cards because %s played a %s", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card.toString()));
                                     channel.sendMessage(eb2.build()).queue();
-                                    channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS);
+                                    channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
                                 }
                             });
                         } else {
@@ -97,7 +97,7 @@ public class Play extends Command {
                             } else {
                                 EmbedBuilder eb2 = new EmbedBuilder();
                                 int size = hands.size() - 1;
-                                int credits = unoGame.getBet() == 0 ? 100 * size : unoGame.getBet() * size;
+                                int credits = unoGame.getBet() == 0 ? 200 * size : unoGame.getBet() * size;
                                 eb2.setTitle(String.format("You played a **%s** and won, you won **%d** credits", card.toString(), credits));
                                 dataHandler.addCredits(player + "", credits);
                                 channel.sendMessage(eb2.build()).queue();

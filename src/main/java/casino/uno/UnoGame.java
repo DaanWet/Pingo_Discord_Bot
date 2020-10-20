@@ -72,6 +72,18 @@ public class UnoGame {
         return hands.get(turn).canPlay(card) && getTopCard().canBePlayed(card);
     }
 
+    public boolean canPlayDrawFour(int turn){
+        UnoCard topcard = aflegstapel.get(aflegstapel.size() - 2);
+        System.out.printf("\nTopcard: %s\n", topcard.toString());
+        for (UnoCard card : hands.get(turn).getCards()){
+            System.out.printf("Handcard: %s, ", card.toString());
+            if (card.getColor() == topcard.getColor() && card.getValue() != UnoCard.Value.PLUSFOUR && card.getValue() != UnoCard.Value.WILD){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean playCard(UnoCard card) {
         if (canPlay(card) && !finished) {
             UnoHand hand = hands.get(turn);
@@ -115,18 +127,25 @@ public class UnoGame {
         }
         return false;
     }
+    public UnoCard getNextCard(){
+        if (trekstapel.size() == 0) reshuffle();
+        return trekstapel.remove(0);
+    }
 
     public UnoCard drawCard() {
-        if (trekstapel.size() == 0) reshuffle();
-        UnoCard card = trekstapel.remove(0);
+       UnoCard card = getNextCard();
         hands.get(turn).addCard(card, true);
         return card;
     }
 
     public void nextTurn(boolean extra) {
         int amount = extra ? 2 : 1;
-        turn = (turn + (clockwise ? amount : -amount)) % hands.size();
-        if (turn < 0) turn += hands.size();
+        turn = calculateNextTurn(amount);
+    }
+    public int calculateNextTurn(int step){
+        int temp =  (turn + (clockwise ? step : -step)) % hands.size();
+        if (temp < 0) temp += hands.size();
+        return temp;
     }
 
     public void reshuffle() {
@@ -171,6 +190,10 @@ public class UnoGame {
 
     public ArrayList<UnoHand> getHands() {
         return hands;
+    }
+
+    public ArrayList<UnoCard> getTrekstapel() {
+        return trekstapel;
     }
 
     public void setCategory(long category) {
