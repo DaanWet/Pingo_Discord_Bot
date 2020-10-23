@@ -3,6 +3,7 @@ package listeners;
 import casino.GameHandler;
 import commands.CommandHandler;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
@@ -54,10 +55,10 @@ public class ReactionListener extends ListenerAdapter {
                         if (me.getTitle() != null) {
                             if (me.getTitle().contains("Delete pictures from ")) {
                                 handleDeleteExplorerReaction(e, m, me);
-                            } else if (me.getTitle().contains("Gaming Roles")) {
-                                handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), e.getMember(), true);
                             } else if (me.getTitle().equals("A game of uno is going to start!")) {
                                 handleUnoReaction(e.getMember(), m, e.getReactionEmote());
+                            } else if (me.getTitle().contains("Roles")){
+                                handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, e.getMember(), true);
                             }
                         }
                     }
@@ -74,7 +75,7 @@ public class ReactionListener extends ListenerAdapter {
                     if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()) {
                         MessageEmbed me = m.getEmbeds().get(0);
                         if (me.getTitle() != null && me.getTitle().contains("Gaming Roles")) {
-                            handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), user, false);
+                            handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, user, false);
                         }
                     }
                 });
@@ -226,16 +227,23 @@ public class ReactionListener extends ListenerAdapter {
         }
     }
 
-    public void handleRoleReaction(String emote, Guild g, Member m, boolean add) {
-        ArrayList<JSONObject> gameroles = new DataHandler().getRoles("gaming");
-        for (JSONObject obj : gameroles) {
-            if (emote.equals(obj.get("emoji").toString().substring(1))) {
-                if (add) {
-                    g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
-                } else {
-                    g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
-                }
+    public void handleRoleReaction(String emote, Message message, Member m, boolean add) {
+        DataHandler dh = new DataHandler();
+        Guild g = message.getGuild();
+        for (String type : dh.getRoleCategories()){
+            long[] longs = dh.getMessage(type);
+            if (longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
+                ArrayList<JSONObject> gameroles = new DataHandler().getRoles(type);
+                for (JSONObject obj : gameroles) {
+                    if (emote.equals(obj.get("emoji").toString().substring(1))) {
+                        if (add) {
+                            g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
+                        } else {
+                            g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
+                        }
 
+                    }
+                }
             }
         }
     }

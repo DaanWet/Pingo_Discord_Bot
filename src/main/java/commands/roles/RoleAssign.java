@@ -24,7 +24,7 @@ public class RoleAssign extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (args.length == 1) {
             ArrayList<JSONObject> roles = dataHandler.getRoles(args[0]);
-            if (roles != null) {
+            if (roles == null) {
                 e.getChannel().sendMessage(String.format("%s is not an existing category", args[0])).queue();
                 return;
             }

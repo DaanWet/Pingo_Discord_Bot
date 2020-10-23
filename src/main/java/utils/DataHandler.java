@@ -38,6 +38,30 @@ public class DataHandler {
         }
     }
 
+    public ArrayList<String> getRoleCategories(){
+        openfile();
+        ArrayList<String> list = new ArrayList<>();
+        for (Object key : jsonObject.keySet()){
+            String k = ((String) key);
+            if (k.contains("-roles")){
+                list.add(k.replace("-roles", ""));
+            }
+        }
+        return  list;
+    }
+
+    public ArrayList<Pair<Long, Long>> getRoleMessages(){
+        openfile();
+        ArrayList<Pair<Long, Long>> list = new ArrayList<>();
+        for (Object key : jsonObject.keySet()){
+            String k = ((String) key);
+            if (k.contains("-roles")){
+                JSONObject roleobject = (JSONObject) jsonObject.get(key);
+                if (roleobject.containsKey("channel")) list.add(Pair.of((long) roleobject.get("channel"), (long)roleobject.get("message")));
+            }
+        }
+        return list;
+    }
 
     public ArrayList<JSONObject> getRoles(String type) {
         openfile();
@@ -66,7 +90,6 @@ public class DataHandler {
         if (!roleobject.containsKey("channel")) return null;
         return new long[]{(long) roleobject.get("channel"), (long) roleobject.get("message")};
     }
-
 
     public void addRoleAssign(String type, String emoji, String name, long roleId) {
         openfile();
