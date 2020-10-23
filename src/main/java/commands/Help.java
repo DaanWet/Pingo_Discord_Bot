@@ -1,5 +1,8 @@
 package commands;
 
+import casino.GameHandler;
+import casino.uno.UnoGame;
+import casino.uno.UnoHand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,11 +18,13 @@ import static commands.CommandHandler.pathname;
 public class Help extends Command{
 
     private Collection<Command> commands;
+    private GameHandler gameHandler;
 
-    public Help(){
+    public Help(GameHandler gameHandler){
         this.name = "help";
         this.aliases = new String[]{"commands", "command", "h"};
         this.description = "Shows a help overview";
+        this.gameHandler = gameHandler;
     }
 
     public void setCommands(Map<String, Command> comm){
@@ -62,8 +67,28 @@ public class Help extends Command{
             }
 
         } else {
-            eb.setTitle("Pingo commands");
-            fillCommands(eb, false);
+            UnoGame game = gameHandler.getUnoGame();
+            boolean uno = false;
+            if (game != null){
+                for (Long channelId : gameHandler.getUnoGame().getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList())){
+                    if (channelId == e.getChannel().getIdLong()){
+                        eb.setTitle("Uno commands");
+                        uno = true;
+                        StringBuilder sb = new StringBuilder();
+                        for (Command c : commands){
+                            if (c.getCategory() != null && c.getCategory().equalsIgnoreCase("Uno")){
+                                sb.append(String.format("\n!%s %s: *%s*", c.getName(), c.getArguments(),c.getDescription() == null ? "No help availabe" :  c.getDescription().trim()));
+                            }
+                        }
+                        eb.setDescription(sb.toString());
+                    }
+                }
+            }
+            if (!uno){
+                eb.setTitle("Pingo commands");
+                fillCommands(eb, false);
+            }
+
         }
         e.getChannel().sendMessage(eb.build()).queue();
     }
@@ -71,7 +96,7 @@ public class Help extends Command{
     public void fillCommands(EmbedBuilder eb, boolean moderation){
         Map<String, StringBuilder> sbs = new HashMap<>();
         for (Command c : commands) {
-            if (c.getCategory() == null || (!c.getCategory().equalsIgnoreCase("hidden") && c.getCategory().equalsIgnoreCase("moderation") == moderation)) {
+            if (c.getCategory() == null || (!c.isHidden() && c.getCategory().equalsIgnoreCase("moderation") == moderation)) {
                 String cat = c.getCategory();
                 if (!sbs.containsKey(cat)) {
                     sbs.put(cat, new StringBuilder());

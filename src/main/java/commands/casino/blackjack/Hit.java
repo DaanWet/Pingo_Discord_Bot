@@ -16,8 +16,9 @@ public class Hit extends Command {
     public Hit(GameHandler gameHandler){
         this.name = "Hit";
         this.gameHandler = gameHandler;
-        this.category = "hidden";
+        this.category = "Blackjack";
         this.dataHandler = new DataHandler();
+        this.hidden = true;
     }
 
     @Override

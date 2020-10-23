@@ -23,9 +23,10 @@ public class Draw extends Command {
     public Draw(GameHandler gameHandler) {
         this.name = "Draw";
         this.aliases = new String[]{"d"};
-        this.category = "hidden";
+        this.category = "Uno";
         this.gameHandler = gameHandler;
         this.description = "Draw a card from the deck";
+        this.hidden = true;
     }
 
     @Override

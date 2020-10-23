@@ -30,7 +30,7 @@ public class UnoGame {
         for (UnoCard.Value value : UnoCard.Value.values()) {
             for (UnoCard.Color color : UnoCard.Color.values()) {
                 trekstapel.add(new UnoCard(color, value));
-                if (value != UnoCard.Value.ZERO) {
+                if (value != UnoCard.Value.ZERO && value != UnoCard.Value.PLUSFOUR && value != UnoCard.Value.WILD) {
                     trekstapel.add(new UnoCard(color, value));
                 }
             }
@@ -232,7 +232,12 @@ public class UnoGame {
         }
         StringBuilder sb = new StringBuilder();
         for (UnoCard c : getPlayerHand(player).getCards()) {
-            sb.append(c.toString()).append(", ");
+            if (c.getValue() == UnoCard.Value.WILD || c.getValue() == UnoCard.Value.PLUSFOUR){
+                sb.append(c.getValue().toString()).append(", ");
+            } else {
+                sb.append(c.toString()).append(", ");
+            }
+
         }
         sb.delete(sb.length() - 2, sb.length());
         eb.addField("Current Card", getTopCard().toString(), false);

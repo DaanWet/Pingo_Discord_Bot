@@ -13,6 +13,7 @@ public abstract class Command {
     protected ArrayList<Long> bannedChannels = new ArrayList<>();
     protected String arguments = "";
     protected String description;
+    protected boolean hidden = false;
 
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
@@ -35,6 +36,10 @@ public abstract class Command {
 
     public String getCategory() {
         return category;
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 
     public ArrayList<Long> getBannedChannels() {

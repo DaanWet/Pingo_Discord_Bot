@@ -16,8 +16,9 @@ public class Split extends Command {
     public Split(GameHandler gameHandler) {
         this.gameHandler = gameHandler;
         this.name = "split";
-        this.category = "hidden";
+        this.category = "Blackjack";
         dataHandler = new DataHandler();
+        this.hidden = true;
     }
 
     @Override

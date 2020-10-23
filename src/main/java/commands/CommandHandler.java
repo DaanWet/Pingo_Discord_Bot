@@ -39,7 +39,7 @@ public class CommandHandler {
         gameHandler = new GameHandler();
         commands = new HashMap<>() {
             {
-                put("help", new Help());
+                put("help", new Help(gameHandler));
                 put("add", new AddPicture(commh));
                 put("fuckpingo", new FuckPingo());
                 put("delete", new DeletePicture(commh));

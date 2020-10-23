@@ -259,7 +259,7 @@ public class ReactionListener extends ListenerAdapter {
                                     category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
                                             .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                             .addRolePermissionOverride(589030386726600714L, Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                            .addRolePermissionOverride(203572340280262657L, Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(channel -> {
+                                            .addRolePermissionOverride(203572340280262657L, Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic("Run !help to which commands you can use").queue(channel -> {
                                         channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId()).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
                                             hand.setChannelId(channel.getIdLong());
                                             hand.setMessageId(mes.getIdLong());

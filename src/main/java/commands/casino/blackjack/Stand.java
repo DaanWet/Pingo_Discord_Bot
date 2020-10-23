@@ -18,7 +18,8 @@ public class Stand extends Command {
         this.name = "Stand";
         this.gameHandler = gameHandler;
         this.dataHandler = new DataHandler();
-        this.category = "hidden";
+        this.category = "Blackjack";
+        this.hidden = true;
     }
 
     @Override

@@ -22,8 +22,10 @@ public class Challenge extends Command {
 
     public Challenge(GameHandler gameHandler) {
         this.name = "challenge";
-        this.category = "hidden";
+        this.category = "Uno";
         this.gameHandler = gameHandler;
+        this.hidden = true;
+        this.description = "Challenge the person who just played a +4 on you";
     }
 
 

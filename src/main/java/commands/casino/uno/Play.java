@@ -26,11 +26,12 @@ public class Play extends Command {
     public Play(GameHandler gameHandler) {
         this.name = "play";
         this.aliases = new String[]{"p"};
-        this.category = "hidden";
+        this.category = "Uno";
         this.arguments = "<color><value>";
         this.gameHandler = gameHandler;
         this.description = "Play a card from your hand, pick the color for a wildcard immediately";
         dataHandler = new DataHandler();
+        this.hidden = true;
     }
 
 

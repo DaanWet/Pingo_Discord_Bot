@@ -16,8 +16,9 @@ public class DoubleDown extends Command {
     public DoubleDown(GameHandler gameHandler){
         this.gameHandler = gameHandler;
         this.name = "double";
-        this.category = "hidden";
+        this.category = "Blackjack";
         dataHandler = new DataHandler();
+        this.hidden = true;
 
     }
 
