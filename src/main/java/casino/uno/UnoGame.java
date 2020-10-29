@@ -233,7 +233,7 @@ public class UnoGame {
         StringBuilder sb = new StringBuilder();
         for (UnoCard c : getPlayerHand(player).getCards()) {
             if (c.getValue() == UnoCard.Value.WILD || c.getValue() == UnoCard.Value.PLUSFOUR){
-                sb.append(c.getValue().toString()).append(", ");
+                sb.append(c.getValue().getName()).append(", ");
             } else {
                 sb.append(c.toString()).append(", ");
             }

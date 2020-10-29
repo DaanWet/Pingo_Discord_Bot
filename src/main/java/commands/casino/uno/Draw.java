@@ -10,10 +10,12 @@ import casino.uno.UnoCard;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import utils.ImageHandler;
+import utils.Utils;
 
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Draw extends Command {
@@ -45,9 +47,11 @@ public class Draw extends Command {
                 EmbedBuilder deb = new EmbedBuilder();
                 Color color = guild.getSelfMember().getColor();
                 deb.setColor(color);
+                boolean played = false;
                 if (unoGame.canPlay(newCard)) {
                     if (newCard.getValue() != UnoCard.Value.PLUSFOUR && newCard.getValue() != UnoCard.Value.WILD) {
                         unoGame.playCard(newCard);
+                        played = true;
                         deb.setTitle(String.format("You drew and played a %s", newCard.toString()));
                     } else {
                         UnoHand hand = unoGame.getPlayerHand(e.getMember().getIdLong());
@@ -62,21 +66,33 @@ public class Draw extends Command {
                     deb.setTitle(String.format("You drew a %s", newCard.toString()));
                 }
                 int newturn = unoGame.getTurn();
-                for (UnoHand hand : hands) {
+                for (int i = 0; i < hands.size(); i++) {
+                    UnoHand hand = hands.get(i);
                     TextChannel channel = guild.getTextChannelById(hand.getChannelId());
                     long player = hand.getPlayerId();
                     if (player != e.getMember().getIdLong()) {
-                        channel.retrieveMessageById(hand.getMessageId()).queue(message -> {
+                        if (played && Utils.isBetween(unoGame, turn, i) && (newCard.getValue() == UnoCard.Value.PLUSTWO)) {
                             EmbedBuilder eb = unoGame.createEmbed(player);
-                            eb.setColor(color);
-                            message.editMessage(eb.build()).queue();
-                            if (hands.get(newturn).getPlayerId() == player) {
-                                EmbedBuilder eb2 = new EmbedBuilder();
-                                eb2.setTitle("It's your turn!");
-                                eb2.setColor(color);
-                                channel.sendMessage(eb2.build()).queue();
-                            }
-                        });
+                            eb.setColor(guild.getSelfMember().getColor());
+                            EmbedBuilder eb2 = new EmbedBuilder();
+                            eb2.setColor(color);
+                            eb2.setTitle(String.format("You had to draw 2 cards because %s played a %s", hands.get(turn).getPlayerName(), newCard.toString()));
+                            channel.sendMessage(eb2.build()).queue();
+                            channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
+                        } else {
+                            channel.retrieveMessageById(hand.getMessageId()).queue(message -> {
+                                EmbedBuilder eb = unoGame.createEmbed(player);
+                                eb.setColor(color);
+                                message.editMessage(eb.build()).queue();
+                                if (hands.get(newturn).getPlayerId() == player) {
+                                    EmbedBuilder eb2 = new EmbedBuilder();
+                                    eb2.setTitle("It's your turn!");
+                                    eb2.setColor(color);
+                                    channel.sendMessage(eb2.build()).queue();
+                                }
+                            });
+                        }
+
                     } else {
                         channel.sendMessage(deb.build()).queue();
                         EmbedBuilder eb = unoGame.createEmbed(player);

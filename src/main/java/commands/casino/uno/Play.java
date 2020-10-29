@@ -115,6 +115,7 @@ public class Play extends Command {
                     }
                     if (unoGame.isFinished()) {
                         guild.getCategoryById(unoGame.getCategory()).delete().queueAfter(65, TimeUnit.SECONDS);
+                        gameHandler.removeUnoGame();
                     }
                 } else {
                     e.getChannel().sendMessage("You need to play a valid card that's in your hand").queue();

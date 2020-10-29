@@ -48,8 +48,14 @@ public class Records extends Command {
                 for (String record : records.keySet()) {
                     Triple<String, Comparable, String> v = records.get(record);
                     sb.append(":small_blue_diamond: ").append(properties.getProperty(record))
-                            .append(": **")
-                            .append(v.getMiddle()).append("** by ")
+                            .append(": **");
+                    // Formats the blackjack winrate into something more human readable
+                    if (v.getMiddle() instanceof Double || v.getMiddle() instanceof Float)
+                        sb.append(String.format("%.2f%s", (double) v.getMiddle() * 100, "%"));
+                    else
+                        sb.append(v.getMiddle());
+
+                    sb.append("** by ")
                             .append(m.get(v.getLeft()).getAsMention());
                     if (v.getRight() != null) {
                         sb.append(" [jump](").append(v.getRight()).append(")");
@@ -73,7 +79,7 @@ public class Records extends Command {
 
                 // Formats the blackjack winrate into something more human readable
                 if (v.getLeft() instanceof Double || v.getLeft() instanceof Float)
-                    sb.append(String.format("%.2f", (double) v.getLeft() * 100));
+                    sb.append(String.format("%.2f%s", (double) v.getLeft() * 100, "%"));
                 else
                     sb.append(v.getLeft());
 

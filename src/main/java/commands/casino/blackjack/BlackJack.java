@@ -18,7 +18,7 @@ public class BlackJack extends Command {
     public BlackJack(GameHandler gameHandler) {
         this.gameHandler = gameHandler;
         this.dataHandler = new DataHandler();
-        this.name = "casino";
+        this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
         this.category = "Casino";
         this.arguments = "<bet>";
