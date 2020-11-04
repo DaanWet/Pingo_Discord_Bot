@@ -12,6 +12,7 @@ public class Suggest extends Command {
         this.aliases = new String[]{"issue", "suggestion"};
         this.arguments = "{**bot** | **plugin** | **discord**} <title> **-d** <description>";
         this.description = "Create a new suggestion for the bot";
+        this.priveligedGuild = 203572340280262657L;
     }
 
     @Override

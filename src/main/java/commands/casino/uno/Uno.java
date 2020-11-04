@@ -24,7 +24,7 @@ public class Uno extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        if (gameHandler.getUnoGame() != null) {
+        if (gameHandler.getUnoGame(e.getGuild().getIdLong()) != null) {
             e.getChannel().sendMessage("A game has already started").queue();
             return;
         }
@@ -45,7 +45,7 @@ public class Uno extends Command {
             return;
         }
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
-        gameHandler.setUnoGame(unogame);
+        gameHandler.setUnoGame(e.getGuild().getIdLong(), unogame);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("A game of uno is going to start!");
         if (bet != 0)

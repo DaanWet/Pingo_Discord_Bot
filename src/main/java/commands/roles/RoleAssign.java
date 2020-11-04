@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class RoleAssign extends Command {
 
@@ -44,6 +45,8 @@ public class RoleAssign extends Command {
                     m.addReaction(obj.getLeft()).queue();
                 }
             });
+        } else {
+            e.getChannel().sendMessage(getUsage()).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
         }
 
         e.getMessage().delete().queue();

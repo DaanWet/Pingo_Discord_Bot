@@ -14,6 +14,7 @@ public abstract class Command {
     protected String arguments = "";
     protected String description;
     protected boolean hidden = false;
+    protected long priveligedGuild = -1;
 
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
@@ -44,6 +45,10 @@ public abstract class Command {
 
     public ArrayList<Long> getBannedChannels() {
         return bannedChannels;
+    }
+
+    public long getPriveligedGuild() {
+        return priveligedGuild;
     }
 
     public String getUsage(){

@@ -102,11 +102,11 @@ public class CommandHandler {
         User author = e.getAuthor();
         TextChannel channel = e.getChannel();
         Message message = e.getMessage();
-        updateNickName(e.getGuild().getMemberById("589027434611867668").getNickname());
+        updateNickName(e.getGuild().getSelfMember().getEffectiveName());
         String[] words = message.getContentRaw().split(" ");
         String command = words[0].substring(1);
         for (Command c : commands.values()){
-            if (c.isCommandFor(command)){
+            if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){
                 if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
                         .toArray(String[]::new);*/
@@ -121,11 +121,10 @@ public class CommandHandler {
                     e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
                     channel.sendMessage("❌ You don't have permission to run this command").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                 }
-
             }
         }
         Set<String> pcommands = getPcommands();
-        if (pcommands.contains(command.toLowerCase())) {
+        if (pcommands.contains(command.toLowerCase()) && e.getGuild().getIdLong() == 203572340280262657L) {
             try {
                 File dir = new File(String.format("%s/%s", pathname, command));
                 File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, random.nextInt(dir.listFiles().length)));

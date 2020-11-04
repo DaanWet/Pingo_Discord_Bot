@@ -10,11 +10,12 @@ public class GameHandler {
 
 
     private HashMap<Long, BlackJackGame> blackJackGames;
-    private UnoGame unoGame;
+    private HashMap<Long, UnoGame> unoGames;
 
 
     public GameHandler(){
         blackJackGames = new HashMap<>();
+        unoGames = new HashMap<>();
     }
 
     public BlackJackGame getBlackJackGame(long user){
@@ -32,15 +33,15 @@ public class GameHandler {
         blackJackGames.put(user, game);
     }
 
-    public UnoGame getUnoGame(){
-        return unoGame;
+    public UnoGame getUnoGame(long guildId){
+       return unoGames.getOrDefault(guildId, null);
     }
 
-    public void removeUnoGame(){
-        unoGame = null;
+    public void removeUnoGame(long guildId){
+        unoGames.remove(guildId);
     }
 
-    public void setUnoGame(UnoGame unoGame){
-        this.unoGame = unoGame;
+    public void setUnoGame(long guildId, UnoGame unoGame){
+        unoGames.put(guildId, unoGame);
     }
 }

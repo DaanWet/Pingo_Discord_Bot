@@ -250,8 +250,8 @@ public class ReactionListener extends ListenerAdapter {
     }
 
     public void handleUnoReaction(Member member, Message message, MessageReaction.ReactionEmote emoji) {
-        UnoGame unoGame = gameHandler.getUnoGame();
         Guild guild = message.getGuild();
+        UnoGame unoGame = gameHandler.getUnoGame(guild.getIdLong());
         if (emoji.isEmoji() && unoGame != null && message.getIdLong() == unoGame.getMessageID()) {
             ArrayList<UnoHand> hands = unoGame.getHands();
             switch (emoji.getEmoji()) {
@@ -260,15 +260,15 @@ public class ReactionListener extends ListenerAdapter {
                         int turn = unoGame.start();
                         if (turn != -1) {
                             guild.createCategory("Uno")
-                                    .addRolePermissionOverride(589030386726600714L, Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                    .addRolePermissionOverride(203572340280262657L, Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(category -> {
+                                    .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
+                                    .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(category -> {
                                 unoGame.setCategory(category.getIdLong());
-                                guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(2).queue();
+                                guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(Math.min(guild.getCategories().size() - 1, 2)).queue();
                                 for (UnoHand hand : hands) {
                                     category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
                                             .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                            .addRolePermissionOverride(589030386726600714L, Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                            .addRolePermissionOverride(203572340280262657L, Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic("Run !help to show which commands you can use").queue(channel -> {
+                                            .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
+                                            .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic("Run !help to show which commands you can use").queue(channel -> {
                                         channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId()).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
                                             hand.setChannelId(channel.getIdLong());
                                             hand.setMessageId(mes.getIdLong());
@@ -293,7 +293,7 @@ public class ReactionListener extends ListenerAdapter {
                         EmbedBuilder eb = new EmbedBuilder(me);
                         eb.setTitle("The game of uno has been canceled");
                         message.editMessage(eb.build()).queue();
-                        gameHandler.removeUnoGame();
+                        gameHandler.removeUnoGame(guild.getIdLong());
                     }
                     break;
                 case "\uD83D\uDD90️":

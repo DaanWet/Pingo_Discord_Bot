@@ -13,6 +13,7 @@ public class EditSuggestion extends Command {
         this.category = "Moderation";
         this.arguments = "<messageId> {**-r** | **-t** | **-d** | **-l**} <edit>";
         this.description = "Edits a suggestion";
+        this.priveligedGuild = 203572340280262657L;
     }
 
     @Override

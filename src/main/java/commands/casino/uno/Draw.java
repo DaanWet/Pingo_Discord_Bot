@@ -33,9 +33,9 @@ public class Draw extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        UnoGame unoGame = gameHandler.getUnoGame();
+        Guild guild = e.getGuild();
+        UnoGame unoGame = gameHandler.getUnoGame(guild.getIdLong());
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())) {
-            Guild guild = e.getGuild();
             int turn = unoGame.getTurn();
             ArrayList<UnoHand> hands = unoGame.getHands();
             if (unoGame.isFinished()) {

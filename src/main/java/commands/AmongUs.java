@@ -20,15 +20,15 @@ public class AmongUs extends Command{
         GuildVoiceState vs = e.getMember().getVoiceState();
         if (vs != null && vs.inVoiceChannel()){
             VoiceChannel vc = vs.getChannel();
-            if (vc.getIdLong() == 764495094375645205L || vc.getIdLong() == 636590365100474398L){
+            //if (vc.getIdLong() == 764495094375645205L || vc.getIdLong() == 636590365100474398L){
                 boolean mute = !vs.isGuildMuted();
                 for (Member m : vc.getMembers()){
                     m.mute(mute).queue();
                 }
                 e.getChannel().sendMessage(String.format("Succesfully %s all playing members", mute ? "muted" : "unmuted")).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
-            } else {
-                e.getChannel().sendMessage("Wrong voicechannel noob").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
-            }
+            //} else {
+            //    e.getChannel().sendMessage("Wrong voicechannel noob").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
+            //}
         } else {
             e.getChannel().sendMessage("You're not connected to a voice channel").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
         }

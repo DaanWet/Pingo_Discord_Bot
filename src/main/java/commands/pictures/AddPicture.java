@@ -24,6 +24,7 @@ public class AddPicture extends Command {
         this.commandHandler = commandHandler;
         this.description = "Adds a picture to the !<name> command";
         this.arguments = "<name> <picture>";
+        this.priveligedGuild = 203572340280262657L;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class Play extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        UnoGame unoGame = gameHandler.getUnoGame();
+        UnoGame unoGame = gameHandler.getUnoGame(e.getGuild().getIdLong());
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())) {
             int turn = unoGame.getTurn();
             ArrayList<UnoHand> hands = unoGame.getHands();
@@ -44,6 +44,10 @@ public class Play extends Command {
                 return;
             }
             if (turn != -1 && hands.get(turn).getPlayerId() == e.getMember().getIdLong()) {
+                if (args.length == 0) {
+                    e.getChannel().sendMessage(getUsage()).queue();
+                    return;
+                }
                 UnoCard card = UnoCard.fromString(args[0]);
                 Guild guild = e.getGuild();
                 if (card != null && unoGame.canPlay(card)) {
@@ -87,6 +91,8 @@ public class Play extends Command {
                                     eb2.setTitle(String.format("You had to draw %d cards because %s played a %s", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card.toString()));
                                     channel.sendMessage(eb2.build()).queue();
                                     channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
+                                } else {
+                                    // edit message
                                 }
                             });
                         } else {
@@ -114,7 +120,7 @@ public class Play extends Command {
                     }
                     if (unoGame.isFinished()) {
                         guild.getCategoryById(unoGame.getCategory()).delete().queueAfter(65, TimeUnit.SECONDS);
-                        gameHandler.removeUnoGame();
+                        gameHandler.removeUnoGame(guild.getIdLong());
                     }
                 } else {
                     e.getChannel().sendMessage("You need to play a valid card that's in your hand").queue();

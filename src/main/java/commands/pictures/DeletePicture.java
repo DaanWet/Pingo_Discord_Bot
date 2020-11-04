@@ -27,6 +27,7 @@ public class DeletePicture extends Command {
         this.category = "Pictures";
         this.description = "Gets the prompt to delete a picture";
         this.arguments = "<command>";
+        this.priveligedGuild = 203572340280262657L;
     }
 
     public OpenExplorerData getExplorerData(String command) {
@@ -47,6 +48,7 @@ public class DeletePicture extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
+        if (e.getGuild().getIdLong() != 203572340280262657L) return;
         if (args.length == 1 && commandHandler.getPcommands().contains(args[0].toLowerCase())) {
             if (openExplorers.containsKey(args[0])) {
                 e.getChannel().sendMessage("An explorer is already open").queue();

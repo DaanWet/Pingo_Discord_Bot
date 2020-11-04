@@ -41,7 +41,7 @@ public class MessageListener extends ListenerAdapter {
 
         // Minecraft update
         if (e.isWebhookMessage() || author.isBot()) {
-            if (channel.equals(guild.getTextChannelById(686645470835245079L)) && (!message.getContentRaw().startsWith("**Minecraft (Bedrock)"))) {
+            if (channel.getIdLong() == 686645470835245079L && (!message.getContentRaw().startsWith("**Minecraft (Bedrock)"))) {
                 guild.getTextChannelById(685146958997749801L).sendMessage(message).queue();
             }
         } else if (!author.isBot()) {

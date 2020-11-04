@@ -16,6 +16,7 @@ public class Eval extends Command{
         this.arguments = "<query>";
         this.hidden = true;
         this.description = "executes a SQL query";
+        this.priveligedGuild = 203572340280262657L;
     }
 
     @Override
