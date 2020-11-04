@@ -11,13 +11,11 @@ import utils.DataHandler;
 public class DoubleDown extends Command {
 
     private GameHandler gameHandler;
-    private DataHandler dataHandler;
 
     public DoubleDown(GameHandler gameHandler){
         this.gameHandler = gameHandler;
         this.name = "double";
         this.category = "Blackjack";
-        dataHandler = new DataHandler();
         this.hidden = true;
 
     }
@@ -29,23 +27,25 @@ public class DoubleDown extends Command {
             BlackJackGame bjg = gameHandler.getBlackJackGame(e.getAuthor().getIdLong());
             if (bjg != null) {
                 if (bjg.canDouble()){
-                    if (new DataHandler().getCredits(e.getAuthor().getId()) - 2*bjg.getBet() >= 0){
+                    long id = e.getAuthor().getIdLong();
+                    long guildId = e.getGuild().getIdLong();
+                    DataHandler dataHandler = new DataHandler();
+                    if (new DataHandler().getCredits(guildId, id) - 2*bjg.getBet() >= 0){
                         bjg.doubleDown();
                         e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
                             EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
                             if (bjg.hasEnded()) {
-                                String id = e.getAuthor().getId();
                                 int won_lose = bjg.getWonCreds();
-                                int credits = new DataHandler().addCredits(id, won_lose);
+                                int credits = dataHandler.addCredits(guildId, id, won_lose);
                                 eb.addField("Credits", String.format("You now have %d credits", credits), false);
                                 gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
-                                dataHandler.setRecord(id, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl(), false);
-                                Pair<Comparable, String> played_games = dataHandler.getRecord(id, "bj_games_played");
-                                Pair<Comparable, String> winrate = dataHandler.getRecord(id, "bj_win_rate");
-                                int temp = played_games == null ? 0 : (int) (long) played_games.getLeft();
-                                double tempw = winrate == null ? 0.0 : (double) winrate.getLeft();
-                                dataHandler.setRecord(id, "bj_games_played", temp + 1, false);
-                                dataHandler.setRecord(id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
+                                dataHandler.setRecord(guildId, id, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl(), false);
+                                Pair<Double, String> played_games = dataHandler.getRecord(guildId, id, "bj_games_played");
+                                Pair<Double, String> winrate = dataHandler.getRecord(guildId, id, "bj_win_rate");
+                                int temp = played_games == null ? 0 : played_games.getLeft().intValue();
+                                double tempw = winrate == null ? 0.0 : winrate.getLeft();
+                                dataHandler.setRecord(guildId, id, "bj_games_played", temp + 1, false);
+                                dataHandler.setRecord(guildId, id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
                             }
                             m.editMessage(eb.build()).queue();
                         });

@@ -9,12 +9,9 @@ import java.time.temporal.ChronoUnit;
 
 public class Weekly extends Command {
 
-    private DataHandler dataHandler;
-
     public Weekly() {
         this.name = "weekly";
         this.aliases = new String[]{"weeklycredits"};
-        this.dataHandler = new DataHandler();
         this.category = "Casino";
         this.description = "Collect your weekly credits";
     }
@@ -22,11 +19,12 @@ public class Weekly extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (args.length == 0) {
-            String id = e.getAuthor().getId();
-            LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(id);
-            if (LocalDateTime.now().minusDays(7).isAfter(latestcollect)) {
-                int creds = dataHandler.addCredits(id, 15000);
-                dataHandler.setLatestWeekCollect(id, LocalDateTime.now());
+            DataHandler dataHandler = new DataHandler();
+            Long id = e.getAuthor().getIdLong();
+            LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
+            if (latestcollect == null || LocalDateTime.now().minusDays(7).isAfter(latestcollect)) {
+                int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, 15000);
+                dataHandler.setLatestWeekCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
                 e.getChannel().sendMessage(String.format("You collected your weekly **15000 credits** \nYour new balance is now **%d credits**", creds)).queue();
             } else {
                 LocalDateTime till = latestcollect.plusDays(7);

@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class Play extends Command {
 
     private GameHandler gameHandler;
-    private DataHandler dataHandler;
 
     public Play(GameHandler gameHandler) {
         this.name = "play";
@@ -30,7 +29,6 @@ public class Play extends Command {
         this.arguments = "<color><value>";
         this.gameHandler = gameHandler;
         this.description = "Play a card from your hand, pick the color for a wildcard immediately";
-        dataHandler = new DataHandler();
         this.hidden = true;
     }
 
@@ -56,6 +54,7 @@ public class Play extends Command {
                         UnoHand hand = hands.get(i);
                         long player = hand.getPlayerId();
                         TextChannel channel = guild.getTextChannelById(hand.getChannelId());
+                        DataHandler dataHandler = new DataHandler();
                         if (player != e.getMember().getIdLong()) {
                             int finalI = i;
                             channel.retrieveMessageById(hand.getMessageId()).queue(message -> {
@@ -72,7 +71,7 @@ public class Play extends Command {
                                         eb2.setDescription(String.format("You lost **%d** credits", bet));
                                     }
 
-                                    if (bet != 0) dataHandler.addCredits(player + "", -1 * credits);
+                                    if (bet != 0) dataHandler.addCredits(e.getGuild().getIdLong(), player, -1 * credits);
                                     eb2.setColor(color);
                                     channel.sendMessage(eb2.build()).queue();
                                     channel.delete().queueAfter(1, TimeUnit.MINUTES);
@@ -100,7 +99,7 @@ public class Play extends Command {
                                 int size = hands.size() - 1;
                                 int credits = unoGame.getBet() == 0 ? 200 * size : unoGame.getBet() * size;
                                 eb2.setTitle(String.format("You played a **%s** and won, you won **%d** credits", card.toString(), credits));
-                                dataHandler.addCredits(player + "", credits);
+                                dataHandler.addCredits(guild.getIdLong(), player, credits);
                                 channel.sendMessage(eb2.build()).queue();
                                 guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
                                     EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));

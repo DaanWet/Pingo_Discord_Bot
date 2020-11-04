@@ -66,6 +66,7 @@ public class CommandHandler {
                 put("draw", new Draw(gameHandler));
                 put("challenge", new Challenge(gameHandler));
                 put("amongus", new AmongUs());
+                put("eval", new Eval());
             }
 
         };

@@ -12,13 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 public class AddRoleAssign extends Command {
 
-    private DataHandler dataHandler;
-
     public AddRoleAssign() {
         name = "addRoleAssign";
         aliases = new String[]{"addRole", "addRoleA", "addRA"};
         category = "Moderation";
-        dataHandler = new DataHandler();
         this.arguments = "<type> <emoji> <role> <name>";
         this.description = "Add a role to the role assigner";
     }
@@ -37,7 +34,8 @@ public class AddRoleAssign extends Command {
                 name.append(args[i]).append(" ");
             }
             if (role != null) {
-                long[] message = dataHandler.getMessage(args[0]);
+                DataHandler dataHandler = new DataHandler();
+                long[] message = dataHandler.getMessage(e.getGuild().getIdLong() ,args[0]);
                 String emote = args[1].substring(1, args[1].length() - 1);
                 if (message != null) {
                     e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
@@ -48,7 +46,7 @@ public class AddRoleAssign extends Command {
                         m.addReaction(emote).queue();
                     });
                 }
-                dataHandler.addRoleAssign(args[0], emote, name.toString().trim(), role.getIdLong());
+                dataHandler.addRoleAssign(e.getGuild().getIdLong(), args[0], emote, name.toString().trim(), role.getIdLong());
                 e.getMessage().addReaction(":green_tick:667450925677543454").queue();
                 e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
             }

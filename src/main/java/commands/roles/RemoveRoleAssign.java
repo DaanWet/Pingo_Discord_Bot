@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 public class RemoveRoleAssign extends Command {
 
-    private DataHandler dataHandler;
 
     public RemoveRoleAssign() {
         this.name = "removeRoleAssign";
@@ -21,13 +20,13 @@ public class RemoveRoleAssign extends Command {
         this.category = "Moderation";
         this.arguments = "<emoji>";
         this.description = "Removes a role from the board";
-        dataHandler = new DataHandler();
     }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (e.getMessage().getEmotes().size() == 1 && args.length >= 2) {
-            long[] message = dataHandler.getMessage(args[0]);
+            DataHandler dataHandler = new DataHandler();
+            long[] message = dataHandler.getMessage(e.getGuild().getIdLong(), args[0]);
             String emote = args[1].substring(1, args[1].length() - 1);
             if (message != null){
                 e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
@@ -57,7 +56,7 @@ public class RemoveRoleAssign extends Command {
                     }
                 });
             }
-            boolean found = dataHandler.removeRoleAssign(args[0], emote);
+            boolean found = dataHandler.removeRoleAssign(e.getGuild().getIdLong(), args[0], emote);
             if (!found){
                 e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
             }

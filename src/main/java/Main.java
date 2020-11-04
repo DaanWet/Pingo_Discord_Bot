@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import org.kohsuke.github.*;
+import utils.DataHandler;
 
 /**
  * https://discordapp.com/api/oauth2/authorize?client_id=589027434611867668&permissions=738716736&scope=bot
@@ -16,7 +17,12 @@ import org.kohsuke.github.*;
 
 public class Main {
 
+
+
+
     public static void main(String[] args) throws Exception{
+        DataHandler.setUserId(args[2]);
+        DataHandler.setPASSWD(args[3]);
         JDA jda = JDABuilder.createDefault(args[0]).build();
         GitHub github = new GitHubBuilder().withOAuthToken(args[1]).build();
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("with your balls"));
@@ -28,3 +34,4 @@ public class Main {
         jda.addEventListener(new ReactionListener(ch, github, ch.getGameHandler()));
     }
 }
+

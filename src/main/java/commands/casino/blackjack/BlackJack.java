@@ -13,11 +13,9 @@ import utils.Utils;
 public class BlackJack extends Command {
 
     private GameHandler gameHandler;
-    private DataHandler dataHandler;
 
     public BlackJack(GameHandler gameHandler) {
         this.gameHandler = gameHandler;
-        this.dataHandler = new DataHandler();
         this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
         this.category = "Casino";
@@ -28,35 +26,37 @@ public class BlackJack extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         User author = e.getAuthor();
+        long guildId = e.getGuild().getIdLong();
+        long playerId = author.getIdLong();
         int bet = args.length == 0 ? 0 : Utils.getInt(args[0]);
+        DataHandler dataHandler = new DataHandler();
         if (args.length != 0 && args[0].matches("(?i)all(-?in)?")) {
-            bet = dataHandler.getCredits(author.getId());
+            bet = dataHandler.getCredits(guildId, playerId);
         }
         if (bet >= 10) {
-            if (dataHandler.getCredits(author.getId()) - bet >= 0) {
-                BlackJackGame objg = gameHandler.getBlackJackGame(author.getIdLong());
+            if (dataHandler.getCredits(guildId, playerId) - bet >= 0) {
+                BlackJackGame objg = gameHandler.getBlackJackGame(playerId);
                 if (objg == null) {
                     BlackJackGame bjg = new BlackJackGame(bet);
                     EmbedBuilder eb = bjg.buildEmbed(author.getName());
                     if (!bjg.hasEnded()) {
-                        gameHandler.putBlackJackGame(author.getIdLong(), bjg);
+                        gameHandler.putBlackJackGame(playerId, bjg);
                     } else {
-                        int credits = dataHandler.addCredits(author.getId(), bjg.getWonCreds());
+                        int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
                         eb.addField("Credits", String.format("You now have %d credits", credits), false);
 
                     }
                     e.getChannel().sendMessage(eb.build()).queue(m -> {
                         if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());
                         else {
-                            String id = author.getId();
                             int won_lose = bjg.getWonCreds();
-                            dataHandler.setRecord(id, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl(), false);
-                            Pair<Comparable, String> played_games = dataHandler.getRecord(id, "bj_games_played");
-                            Pair<Comparable, String> winrate = dataHandler.getRecord(id, "bj_win_rate");
-                            int temp = played_games == null ? 0 : (int) (long) played_games.getLeft();
-                            double tempw = winrate == null ? 0.0 : (double) winrate.getLeft();
-                            dataHandler.setRecord(id, "bj_games_played", temp + 1, false);
-                            dataHandler.setRecord(id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
+                            dataHandler.setRecord(guildId, playerId, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl(), false);
+                            Pair<Double, String> played_games = dataHandler.getRecord(guildId, playerId, "bj_games_played");
+                            Pair<Double, String> winrate = dataHandler.getRecord(guildId, playerId, "bj_win_rate");
+                            int temp = played_games == null ? 0 : played_games.getLeft().intValue();
+                            double tempw = winrate == null ? 0.0 : winrate.getLeft();
+                            dataHandler.setRecord(guildId, playerId, "bj_games_played", temp + 1, false);
+                            dataHandler.setRecord(guildId, playerId, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
                         }
                     });
                 } else {

@@ -4,6 +4,7 @@ import casino.GameHandler;
 import commands.CommandHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
@@ -230,16 +231,16 @@ public class ReactionListener extends ListenerAdapter {
     public void handleRoleReaction(String emote, Message message, Member m, boolean add) {
         DataHandler dh = new DataHandler();
         Guild g = message.getGuild();
-        for (String type : dh.getRoleCategories()){
-            long[] longs = dh.getMessage(type);
+        for (String type : dh.getRoleCategories(g.getIdLong())){
+            long[] longs = dh.getMessage(g.getIdLong(), type);
             if (longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
-                ArrayList<JSONObject> gameroles = new DataHandler().getRoles(type);
-                for (JSONObject obj : gameroles) {
-                    if (emote.equals(obj.get("emoji").toString().substring(1))) {
+                ArrayList<Triple<String, String, Long>> gameroles = dh.getRoles(g.getIdLong(), type);
+                for (Triple<String, String, Long> obj : gameroles) {
+                    if (emote.equals(obj.getLeft().substring(1))) {
                         if (add) {
-                            g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
+                            g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById(obj.getRight()))).queue();
                         } else {
-                            g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById((long) obj.get("role")))).queue();
+                            g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById(obj.getRight()))).queue();
                         }
 
                     }
