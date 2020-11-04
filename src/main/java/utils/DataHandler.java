@@ -850,6 +850,43 @@ public class DataHandler {
 
     //</editor-fold>
 
+    public PrettyTable executeQuery(String query){
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement(query)){
+            try (ResultSet set = stm.executeQuery()) {
+                ResultSetMetaData data = set.getMetaData();
+                int columnCOunt = data.getColumnCount();
+                String[] headers = new String[columnCOunt];
+                for (int i = 0; i < columnCOunt; i++){
+                    headers[i] = data.getColumnName(i + 1);
+                }
+                PrettyTable table = new PrettyTable(headers);
+                while (set.next()){
+                    String[] values = new String[columnCOunt];
+                    for (int i = 0; i < columnCOunt; i++){
+                        Object obj = set.getObject(i + 1);
+                        values[i] = obj == null ? "null" : String.valueOf(obj);
+                    }
+                    table.addRow(values);
+                }
+
+                return table;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+    public int executeUpdate(String query){
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement(query)){
+            return stm.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return -1;
+    }
+
     void save() {
         try (FileWriter file = new FileWriter(PATH)) {
             file.write(jsonObject.toJSONString());
