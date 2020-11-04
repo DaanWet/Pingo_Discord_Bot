@@ -10,12 +10,10 @@ import java.time.temporal.ChronoUnit;
 
 public class CollectCredits extends Command {
 
-    private DataHandler dataHandler;
 
     public CollectCredits() {
         this.name = "daily";
         this.aliases = new String[]{"collect", "dailycredits"};
-        this.dataHandler = new DataHandler();
         this.category = "Casino";
         this.description = "Collect your daily credits";
     }
@@ -23,11 +21,12 @@ public class CollectCredits extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (args.length == 0) {
-            String id = e.getAuthor().getId();
-            LocalDateTime latestcollect = dataHandler.getLatestCollect(id);
-            if (LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
-                int creds = dataHandler.addCredits(id, 2500);
-                dataHandler.setLatestCollect(id, LocalDateTime.now());
+            long id = e.getAuthor().getIdLong();
+            DataHandler dataHandler = new DataHandler();
+            LocalDateTime latestcollect = dataHandler.getLatestCollect(e.getGuild().getIdLong(), id);
+            if (latestcollect == null || LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
+                int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, 2500);
+                dataHandler.setLatestCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
                 e.getChannel().sendMessage(String.format("You collected your daily **2,500 credits** \nYour new balance is now **%d credits**", creds)).queue();
             } else {
                 LocalDateTime till = latestcollect.plusDays(1);

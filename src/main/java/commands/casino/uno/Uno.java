@@ -10,8 +10,6 @@ import utils.Utils;
 
 public class Uno extends Command {
 
-
-    private DataHandler dataHandler;
     private GameHandler gameHandler;
 
     public Uno(GameHandler gameHandler) {
@@ -20,7 +18,6 @@ public class Uno extends Command {
         this.category = "Casino";
         this.arguments = "[<bet>]";
         this.description = "Start a game of Uno";
-        dataHandler = new DataHandler();
         this.gameHandler = gameHandler;
     }
 
@@ -35,7 +32,7 @@ public class Uno extends Command {
         if (args.length == 1) {
             bet = Utils.getInt(args[0]);
             if (bet >= 100) {
-                if (!(dataHandler.getCredits(e.getAuthor().getId()) - bet >= 0)) {
+                if (!(new DataHandler().getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) - bet >= 0)) {
                     e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
                     return;
                 }

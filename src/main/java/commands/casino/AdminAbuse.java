@@ -8,19 +8,17 @@ import utils.Utils;
 
 public class AdminAbuse extends Command {
 
-    private DataHandler dataHandler;
-
 
     public AdminAbuse() {
         this.name = "AdminAbuse";
         this.category = "Moderation";
         this.arguments = "[<member>] <amount>";
         this.description = "Give coins to someone";
-        dataHandler = new DataHandler();
     }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+        DataHandler dataHandler = new DataHandler();
         int coins = 0;
         Member target;
         String msg;
@@ -29,11 +27,12 @@ public class AdminAbuse extends Command {
             target = e.getMember();
             msg = "You now have **%d** credits";
         } else if (args.length == 2 && e.getMessage().mentionsEveryone()) {
-            coins = Utils.getInt(args[1]);
-            for (String uuid : dataHandler.getAllCredits().keySet()) {
-                dataHandler.addCredits(uuid, coins);
+            /*coins = Utils.getInt(args[1]);
+            for (Long uuid : dataHandler.getAllCredits(e.getGuild().getIdLong()).keySet()) {
+                dataHandler.addCredits(e.getGuild().getIdLong(), uuid, coins);
             }
             e.getChannel().sendMessage(String.format("Everyone have been given **%d** credits", coins)).queue();
+             */
             return;
         } else if (args.length == 2 && e.getMessage().getMentions().size() == 1) {
             coins = Utils.getInt(args[1]);
@@ -42,7 +41,8 @@ public class AdminAbuse extends Command {
         } else {
             return;
         }
-        int value = dataHandler.addCredits(target.getId(), coins);
+        if (target == null) return;
+        int value = dataHandler.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins);
         e.getChannel().sendMessage(String.format(msg, value)).queue();
     }
 }
