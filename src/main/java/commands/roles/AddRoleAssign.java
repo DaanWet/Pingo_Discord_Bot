@@ -36,18 +36,18 @@ public class AddRoleAssign extends Command {
             if (role != null) {
                 DataHandler dataHandler = new DataHandler();
                 long[] message = dataHandler.getMessage(e.getGuild().getIdLong() ,args[0]);
-                String emote = args[1].substring(1, args[1].length() - 1);
+                String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
                 if (message != null) {
                     e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
                         MessageEmbed me = m.getEmbeds().get(0);
                         EmbedBuilder eb = new EmbedBuilder(me);
-                        eb.setDescription(me.getDescription().concat(String.format("\n\n<%s>\t%s", emote, name.toString())));
+                        eb.setDescription(me.getDescription().concat(String.format("\n\n%s\t%s", args[1], name.toString())));
                         m.editMessage(eb.build()).queue();
                         m.addReaction(emote).queue();
                     });
                 }
-                dataHandler.addRoleAssign(e.getGuild().getIdLong(), args[0], emote, name.toString().trim(), role.getIdLong());
-                e.getMessage().addReaction(":green_tick:667450925677543454").queue();
+                dataHandler.addRoleAssign(e.getGuild().getIdLong(), args[0], args[1], name.toString().trim(), role.getIdLong());
+                e.getMessage().addReaction("✅").queue();
                 e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
             }
         } else {

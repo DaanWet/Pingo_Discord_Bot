@@ -24,10 +24,10 @@ public class RemoveRoleAssign extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (e.getMessage().getEmotes().size() == 1 && args.length >= 2) {
+        if (/*e.getMessage().getEmotes().size() == 1&& */args.length >= 2) {
             DataHandler dataHandler = new DataHandler();
             long[] message = dataHandler.getMessage(e.getGuild().getIdLong(), args[0]);
-            String emote = args[1].substring(1, args[1].length() - 1);
+            String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
             if (message != null){
                 e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
                     MessageEmbed me = m.getEmbeds().get(0);
@@ -36,7 +36,7 @@ public class RemoveRoleAssign extends Command {
                     int i = 0;
                     boolean found = false;
                     while (!found && i < lines.size()) {
-                        if (lines.get(i).contains(emote)) {
+                        if (lines.get(i).contains(args[1])) {
                             found = true;
                         } else {
                             i++;
@@ -48,7 +48,7 @@ public class RemoveRoleAssign extends Command {
                         eb.setDescription(String.join("\n", lines));
                         m.editMessage(eb.build()).queue();
                         m.removeReaction(emote).queue();
-                        e.getMessage().addReaction(":green_tick:667450925677543454").queue();
+                        e.getMessage().addReaction("✅").queue();
                         for (Member member : e.getGuild().getMembers()) {
                             m.removeReaction(emote, member.getUser()).queue();
                         }
@@ -56,7 +56,7 @@ public class RemoveRoleAssign extends Command {
                     }
                 });
             }
-            boolean found = dataHandler.removeRoleAssign(e.getGuild().getIdLong(), args[0], emote);
+            boolean found = dataHandler.removeRoleAssign(e.getGuild().getIdLong(), args[0], args[1]);
             if (!found){
                 e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
             }

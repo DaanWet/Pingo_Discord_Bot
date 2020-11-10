@@ -25,7 +25,7 @@ public class Eval extends Command{
             String query = String.join(" ", args);
             String lquery = query.trim().toLowerCase();
             StringBuilder sb = new StringBuilder();
-            if (query.trim().toLowerCase().startsWith("select")){
+            if (lquery.startsWith("select") ||lquery.startsWith("show")){
                 PrettyTable table = new DataHandler().executeQuery(query);
                 if (table != null){
                     sb.append("```").append(table).append("```");

@@ -36,7 +36,7 @@ public class RoleAssign extends Command {
             eb.setTitle(String.format("%s Roles", args[0]));
             StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", args[0]));
             for (Triple<String, String, Long> s : roles) {
-                sb.append("\n\n<").append(s.getLeft()).append(">\t").append(s.getMiddle());
+                sb.append("\n\n").append(s.getLeft()).append("\t").append(s.getMiddle());
             }
             eb.setDescription(sb.toString());
             e.getChannel().sendMessage(eb.build()).queue(m -> {

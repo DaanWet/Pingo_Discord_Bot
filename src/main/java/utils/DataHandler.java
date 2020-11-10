@@ -22,7 +22,7 @@ import org.sk.PrettyTable;
 @SuppressWarnings("unchecked")
 public class DataHandler {
 
-    private final String JDBC_URL = "jdbc:mysql://localhost:3306/pingo";
+    private final String JDBC_URL = "jdbc:mysql://localhost:3306/pingo?character_set_server=utf8mb4";
     private static String USER_ID;
     private static String PASSWD;
     private Properties properties;
@@ -32,6 +32,9 @@ public class DataHandler {
         properties.setProperty("user", USER_ID);
         properties.setProperty("password", PASSWD);
         properties.setProperty("allowMultiQueries", "true");
+        properties.setProperty("characterEncoding", "utf8");
+        properties.setProperty("CharSet", "utf8mb4");
+        properties.setProperty("useUnicode", "true");
         createDatabase();
     }
 
@@ -229,10 +232,11 @@ public class DataHandler {
     }
 
     public int addCredits(long guildId, long userId, int credits) {
+        int creds = getCredits(guildId, userId);
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO Member(UserId, GuildId, LastDaily, LastWeekly) VALUES(?, ?, ?, ?);" + //TODO Fix on duplicate
                      "UPDATE Member SET Credits = Credits + ? WHERE GuildId = ? AND UserId = ?;" +
-                     "INSERT INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, VALUE + ?);");
+                     "INSERT INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);");
              PreparedStatement stmnt2 = conn.prepareStatement("SELECT Credits FROM Member  WHERE GuildId = ? AND UserId = ?");
         ) {
             stm.setLong(1, userId);
@@ -245,8 +249,8 @@ public class DataHandler {
             stm.setTimestamp(3, Timestamp.valueOf(now.minusDays(1)));
             stm.setTimestamp(4, Timestamp.valueOf(now.minusDays(7)));
             stm.setInt(5, credits);
-            stm.setInt(11, credits);
-            stm.setInt(12, credits);
+            stm.setInt(11, creds + credits);
+            stm.setInt(12, creds + credits);
             stm.setString(10, "highest_credits");
             stm.executeUpdate();
             stmnt2.setLong(1, guildId);

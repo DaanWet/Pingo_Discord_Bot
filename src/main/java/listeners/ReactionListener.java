@@ -236,7 +236,7 @@ public class ReactionListener extends ListenerAdapter {
             if (longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
                 ArrayList<Triple<String, String, Long>> gameroles = dh.getRoles(g.getIdLong(), type);
                 for (Triple<String, String, Long> obj : gameroles) {
-                    if (emote.equals(obj.getLeft().substring(1))) {
+                    if (emote.equals(obj.getLeft().replaceFirst("<:", "").replaceFirst(">$", ""))) {
                         if (add) {
                             g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById(obj.getRight()))).queue();
                         } else {
