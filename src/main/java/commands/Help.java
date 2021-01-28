@@ -54,6 +54,7 @@ public class Help extends Command {
                 }
                 eb.setDescription(sb.toString());
             } else {
+                boolean found = false;
                 for (Command command : commands) {
                     if (command.isCommandFor(args[0])) {
                         eb.setTitle(String.format("%s Command Help", StringUtils.capitalize(command.getName())));
@@ -62,8 +63,12 @@ public class Help extends Command {
                         if (command.getAliases().length != 0) {
                             eb.addField("Aliases", String.join(", ", command.getAliases()), false);
                         }
-                        break;
+                        found = true;
                     }
+                }
+                if (!found){
+                    e.getChannel().sendMessage(String.format("No such command named %s", args[0])).queue();
+                    return;
                 }
             }
         } else {
@@ -106,7 +111,7 @@ public class Help extends Command {
 
             }
         }
-        if (guildId == 203572340280262657L) sbs.get("Pictures").append("\nFor a full list of all pictures command run !help pictures");
+        if (guildId == 203572340280262657L && !moderation) sbs.get("Pictures").append("\nFor a full list of all pictures command run !help pictures");
         sbs.keySet().forEach(s -> eb.addField(s, sbs.get(s).toString().trim(), false));
     }
 }
