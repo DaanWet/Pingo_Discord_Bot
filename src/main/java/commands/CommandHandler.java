@@ -12,6 +12,8 @@ import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
 import commands.roles.RemoveRoleAssign;
 import commands.roles.RoleAssign;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import org.kohsuke.github.GitHub;
 import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
@@ -67,6 +69,7 @@ public class CommandHandler {
                 put("challenge", new Challenge(gameHandler));
                 put("amongus", new AmongUs());
                 put("eval", new Eval());
+                put("teampicker", new TeamPicker());
             }
 
         };
