@@ -42,7 +42,7 @@ public class RoleAssign extends Command {
             e.getChannel().sendMessage(eb.build()).queue(m -> {
                 dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
                 for (Triple<String, String, Long> obj : roles) {
-                    m.addReaction(obj.getLeft()).queue();
+                    m.addReaction(obj.getLeft().replaceFirst("<", "").replaceFirst(">$", "")).queue();
                 }
             });
         } else {

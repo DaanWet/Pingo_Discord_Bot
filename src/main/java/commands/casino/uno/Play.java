@@ -92,7 +92,7 @@ public class Play extends Command {
                                     channel.sendMessage(eb2.build()).queue();
                                     channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
                                 } else {
-                                    // edit message
+                                    message.editMessage(eb.build()).queue();
                                 }
                             });
                         } else {

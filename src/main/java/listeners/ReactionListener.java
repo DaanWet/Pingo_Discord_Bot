@@ -3,6 +3,7 @@ package listeners;
 import casino.GameHandler;
 import commands.CommandHandler;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.kohsuke.github.GHIssueBuilder;
@@ -59,7 +60,12 @@ public class ReactionListener extends ListenerAdapter {
                             } else if (me.getTitle().equals("A game of uno is going to start!")) {
                                 handleUnoReaction(e.getMember(), m, e.getReactionEmote());
                             } else if (me.getTitle().contains("Roles")){
-                                handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, e.getMember(), true);
+                                try {
+                                    handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, e.getMember(), true);
+                                } catch (HierarchyException exc){
+                                    if (e.getGuild().getDefaultChannel() != null) e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+                                }
+
                             }
                         }
                     }
@@ -76,7 +82,11 @@ public class ReactionListener extends ListenerAdapter {
                     if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()) {
                         MessageEmbed me = m.getEmbeds().get(0);
                         if (me.getTitle() != null && me.getTitle().contains("Roles")) {
-                            handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, user, false);
+                            try {
+                                handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, e.getMember(), false);
+                            } catch (HierarchyException exc){
+                                if (e.getGuild().getDefaultChannel() != null) e.getGuild().getDefaultChannel().sendMessage("Unable to remove role due to lack of permissions, place my role above the roles you want me to remove").queue();
+                            }
                         }
                     }
                 });
@@ -233,7 +243,7 @@ public class ReactionListener extends ListenerAdapter {
         Guild g = message.getGuild();
         for (String type : dh.getRoleCategories(g.getIdLong())){
             long[] longs = dh.getMessage(g.getIdLong(), type);
-            if (longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
+            if (longs != null && longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
                 ArrayList<Triple<String, String, Long>> gameroles = dh.getRoles(g.getIdLong(), type);
                 for (Triple<String, String, Long> obj : gameroles) {
                     if (emote.equals(obj.getLeft().replaceFirst("<:", "").replaceFirst(">$", ""))) {
