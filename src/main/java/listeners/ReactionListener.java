@@ -233,7 +233,7 @@ public class ReactionListener extends ListenerAdapter {
         Guild g = message.getGuild();
         for (String type : dh.getRoleCategories(g.getIdLong())){
             long[] longs = dh.getMessage(g.getIdLong(), type);
-            if (longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
+            if (longs != null && longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
                 ArrayList<Triple<String, String, Long>> gameroles = dh.getRoles(g.getIdLong(), type);
                 for (Triple<String, String, Long> obj : gameroles) {
                     if (emote.equals(obj.getLeft().replaceFirst("<:", "").replaceFirst(">$", ""))) {
