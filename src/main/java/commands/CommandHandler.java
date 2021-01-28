@@ -111,7 +111,7 @@ public class CommandHandler {
                     /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
                         .toArray(String[]::new);*/
                     if (!c.getBannedChannels().contains(channel.getIdLong())){
-                        c.run(Arrays.stream(words, 1, words.length).toArray(String[]::new), e);
+                        c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.equalsIgnoreCase("")).toArray(String[]::new), e);
                     } else {
                         e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
                         channel.sendMessage("❌ You can't use that command here").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
