@@ -1,8 +1,8 @@
 package commands.roles;
 
 import commands.Command;
+import emoji4j.EmojiUtils;
 import utils.DataHandler;
-import com.vdurmont.emoji.EmojiManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -22,7 +22,7 @@ public class AddRoleAssign extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
-        if (args.length >= 4 && (EmojiManager.containsEmoji(args[1])) || (e.getMessage().getEmotes().size() == 1 && e.getMessage().getEmotes().get(0).getAsMention().equals(args[1]))) {
+        if (args.length >= 4 && (EmojiUtils.isEmoji(args[1])) || (e.getMessage().getEmotes().size() == 1 && e.getMessage().getEmotes().get(0).getAsMention().equals(args[1]))) {
             Role role = null;
             try {
                 role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);
