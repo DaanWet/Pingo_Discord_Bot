@@ -32,7 +32,7 @@ public class Eval extends Command{
                 } else {
                     sb.append("Invalid SQL Query Noob: `").append(query).append("`");
                 }
-            } else if (lquery.startsWith("insert") || lquery.startsWith("update") || lquery.startsWith("drop") || lquery.startsWith("create") || lquery.startsWith("delete")){
+            } else if (lquery.startsWith("insert") || lquery.startsWith("update") || lquery.startsWith("drop") || lquery.startsWith("create") || lquery.startsWith("delete") || lquery.startsWith("alter")){
                 if (e.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     int i = new DataHandler().executeUpdate(query);
                     if (i < 0){

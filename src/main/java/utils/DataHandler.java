@@ -26,6 +26,7 @@ public class DataHandler {
     private static String USER_ID;
     private static String PASSWD;
     private Properties properties;
+    private Properties nomultiproperties;
 
     public DataHandler() {
         properties = new Properties();
@@ -35,6 +36,8 @@ public class DataHandler {
         properties.setProperty("characterEncoding", "utf8");
         properties.setProperty("CharSet", "utf8mb4");
         properties.setProperty("useUnicode", "true");
+        nomultiproperties = new Properties(properties);
+        nomultiproperties.setProperty("allowMultiQueries", "false");
         createDatabase();
     }
 
@@ -234,24 +237,22 @@ public class DataHandler {
     public int addCredits(long guildId, long userId, int credits) {
         int creds = getCredits(guildId, userId);
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO Member(UserId, GuildId, LastDaily, LastWeekly) VALUES(?, ?, ?, ?);" + //TODO Fix on duplicate
-                     "UPDATE Member SET Credits = Credits + ? WHERE GuildId = ? AND UserId = ?;" +
+             PreparedStatement stm = conn.prepareStatement("INSERT INTO Member(UserId, GuildId, LastDaily, LastWeekly, Credits) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Credits = Credits + ?;" +
                      "INSERT INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);");
              PreparedStatement stmnt2 = conn.prepareStatement("SELECT Credits FROM Member  WHERE GuildId = ? AND UserId = ?");
         ) {
             stm.setLong(1, userId);
             stm.setLong(2, guildId);
-            stm.setLong(6, guildId);
             stm.setLong(7, userId);
-            stm.setLong(8, userId);
-            stm.setLong(9, guildId);
+            stm.setLong(8, guildId);
             LocalDateTime now = LocalDateTime.now();
             stm.setTimestamp(3, Timestamp.valueOf(now.minusDays(1)));
             stm.setTimestamp(4, Timestamp.valueOf(now.minusDays(7)));
             stm.setInt(5, credits);
+            stm.setInt(6, credits);
+            stm.setInt(10, creds + credits);
             stm.setInt(11, creds + credits);
-            stm.setInt(12, creds + credits);
-            stm.setString(10, "highest_credits");
+            stm.setString(9, "highest_credits");
             stm.executeUpdate();
             stmnt2.setLong(1, guildId);
             stmnt2.setLong(2, userId);
@@ -495,7 +496,7 @@ public class DataHandler {
     //</editor-fold>
 
     public PrettyTable executeQuery(String query) {
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, nomultiproperties);
              PreparedStatement stm = conn.prepareStatement(query)) {
             try (ResultSet set = stm.executeQuery()) {
                 ResultSetMetaData data = set.getMetaData();
