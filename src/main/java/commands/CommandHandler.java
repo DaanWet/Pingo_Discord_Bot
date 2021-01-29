@@ -70,6 +70,7 @@ public class CommandHandler {
                 put("amongus", new AmongUs());
                 put("eval", new Eval());
                 put("teampicker", new TeamPicker());
+                put("poll", new Poll());
             }
 
         };
