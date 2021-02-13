@@ -70,7 +70,7 @@ public class Play extends Command {
                                     int size = hands.size() - 1;
                                     int bet = unoGame.getBet();
                                     int credits = bet == 0 ? 200 * size : bet * size;
-                                    eb2.setTitle(String.format("%s played a **%s** and won, he/she won **%d** credits", e.getMember().getEffectiveName(), card.toString(), credits));
+                                    eb2.setTitle(String.format("%s played a **%s** and won **%d** credits by winning the game", e.getMember().getEffectiveName(), card.toString(), credits));
                                     if (bet != 0) {
                                         eb2.setDescription(String.format("You lost **%d** credits", bet));
                                     }
