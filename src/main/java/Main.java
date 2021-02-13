@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.kohsuke.github.*;
 import utils.DataHandler;
 
@@ -23,9 +25,9 @@ public class Main {
     public static void main(String[] args) throws Exception{
         DataHandler.setUserId(args[2]);
         DataHandler.setPASSWD(args[3]);
-        JDA jda = JDABuilder.createDefault(args[0]).build();
+        JDA jda = JDABuilder.createDefault(args[0]).enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).build();
         GitHub github = new GitHubBuilder().withOAuthToken(args[1]).build();
-        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("with your balls"));
+        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("!help"));
         jda.setAutoReconnect(true);
         MessageListener ml = new MessageListener(github);
         jda.addEventListener(ml);
