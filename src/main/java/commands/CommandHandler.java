@@ -12,6 +12,8 @@ import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
 import commands.roles.RemoveRoleAssign;
 import commands.roles.RoleAssign;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import org.kohsuke.github.GitHub;
 import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
@@ -21,6 +23,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandHandler {
 
@@ -67,6 +71,8 @@ public class CommandHandler {
                 put("challenge", new Challenge(gameHandler));
                 put("amongus", new AmongUs());
                 put("eval", new Eval());
+                put("teampicker", new TeamPicker());
+                put("poll", new Poll());
             }
 
         };
@@ -103,13 +109,11 @@ public class CommandHandler {
         TextChannel channel = e.getChannel();
         Message message = e.getMessage();
         updateNickName(e.getGuild().getSelfMember().getEffectiveName());
-        String[] words = message.getContentRaw().split(" ");
+        String[] words = split(message.getContentRaw()).toArray(new String[]{});
         String command = words[0].substring(1);
         for (Command c : commands.values()){
             if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){
                 if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    /*String[] args = Stream.concat(Arrays.stream(words, 1, words.length), Arrays.stream(words, 1, words.length))
-                        .toArray(String[]::new);*/
                     if (!c.getBannedChannels().contains(channel.getIdLong())){
                         c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.equalsIgnoreCase("")).toArray(String[]::new), e);
                     } else {
@@ -134,4 +138,23 @@ public class CommandHandler {
             }
         }
     }
+    private ArrayList<String> split(String subjectString){
+        ArrayList<String> matchList = new ArrayList<String>();
+        Pattern regex = Pattern.compile("\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|[^\\s]+");
+        Matcher regexMatcher = regex.matcher(subjectString);
+        while (regexMatcher.find()) {
+            if (regexMatcher.group(1) != null) {
+                // Add double-quoted string without the quotes
+                matchList.add(regexMatcher.group(1));
+            } else if (regexMatcher.group(2) != null) {
+                // Add single-quoted string without the quotes
+                matchList.add(regexMatcher.group(2));
+            } else {
+                // Add unquoted word
+                matchList.add(regexMatcher.group());
+            }
+        }
+        return matchList;
+    }
 }
+

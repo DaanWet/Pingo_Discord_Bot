@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -460,6 +457,24 @@ public class DataHandler {
         return map;
     }
 
+    public HashMap<Long, Pair<Double, String>> getRecords(long guildId, String type){
+        HashMap<Long, Pair<Double, String>> map = null;
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ?")) {
+            stm.setLong(1, guildId);
+            stm.setString(2, type);
+            try (ResultSet set = stm.executeQuery()) {
+                map = new HashMap<>();
+                while (set.next()) {
+                    map.put(set.getLong("UserId"), Pair.of(set.getDouble("Value"), set.getString("Link")));
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return map;
+    }
+
     public HashMap<Long, Pair<Double, String>> getRecord(long guildId, String record) {
         HashMap<Long, Pair<Double, String>> map = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
@@ -475,6 +490,21 @@ public class DataHandler {
             throwables.printStackTrace();
         }
         return map;
+    }
+
+    public ArrayList<String> getRecordTypes(){
+        ArrayList<String> types = null;
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT Type FROM Record");
+             ResultSet set = stm.executeQuery()){
+            types = new ArrayList<>();
+            while (set.next()){
+                types.add(set.getString(1));
+            }
+        } catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        return types;
     }
 
     public boolean isInt(String record) {

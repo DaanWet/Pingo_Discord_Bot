@@ -45,7 +45,10 @@ public class ShowCredits extends Command {
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
             });
-
+            if (sorted.size() == 0){
+                eb.setDescription("No leaderboard yet, nobody has claimed credits yet.");
+                e.getChannel().sendMessage(eb.build()).queue();
+            }
         } else {
             e.getChannel().sendMessage(this.getUsage()).queue();
         }

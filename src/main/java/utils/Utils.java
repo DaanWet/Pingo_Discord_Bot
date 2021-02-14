@@ -27,6 +27,7 @@ public class Utils {
         }
         return true;
     }
+
     public static Long isLong(String s) {
         Long l = null;
         try {
@@ -36,7 +37,7 @@ public class Utils {
         return l;
     }
 
-    public static int getInt(String s){
+    public static int getInt(String s) {
         if (s.matches("(?i)[0-9]*k?m?")) {
             s = s.replaceAll("m", "000000");
             s = s.replaceAll("k", "000");
@@ -44,13 +45,13 @@ public class Utils {
         int i;
         try {
             i = Integer.parseInt(s);
-        } catch (Exception e){
+        } catch (Exception e) {
             i = -1;
         }
         return i;
     }
 
-    public static boolean isBetween(UnoGame game, int turn, int between){
+    public static boolean isBetween(UnoGame game, int turn, int between) {
         int one = game.isClockwise() ? 1 : -1;
         int newturn = game.getTurn();
         int x1 = (turn + one) % game.getHands().size();
@@ -60,5 +61,19 @@ public class Utils {
         return between == x1 && between == x2;
     }
 
+    public static String upperCaseFirst(String string) {
+        return string.substring(0, 1).toUpperCase() + string.substring(1);
+    }
+
+    public static String regionalEmoji(int i) {
+        char x = (char) (97 + i);
+        return String.format(":regional_indicator_%c:", x);
+    }
+
+    public static String regionalUnicode(int i){
+        int base = 230 + i;
+        String s = Integer.toHexString(base);
+        return "U+1f1" + s;
+    }
 
 }
