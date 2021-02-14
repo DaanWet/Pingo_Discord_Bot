@@ -37,12 +37,11 @@ public class Records extends Command {
         DataHandler dataHandler = new DataHandler();
         Guild guild = e.getGuild();
         if (args.length == 0) {
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Casino Records");
             HashMap<String, Triple<Long, Double, String>> records = dataHandler.getRecords(e.getGuild().getIdLong());
-            if (records.size() == 0) return;
             e.getGuild().retrieveMembersByIds(records.values().stream().map(Triple::getLeft).collect(Collectors.toList())).onSuccess(list -> {
                 Map<Long, Member> m = list.stream().collect(Collectors.toMap(Member::getIdLong, member -> member));
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setTitle("Casino Records");
                 StringBuilder sb = new StringBuilder();
                 for (String record : records.keySet()) {
                     Triple<Long, Double, String> v = records.get(record);
@@ -62,6 +61,10 @@ public class Records extends Command {
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
             });
+            if (records.size() == 0) {
+                eb.setDescription("There are no records yet, claim credits and play a game to start the records");
+                e.getChannel().sendMessage(eb.build()).queue();
+            }
         } else if (args.length == 1) {
             Long l = Utils.isLong(args[0]);
             Member target = null;
@@ -132,8 +135,13 @@ public class Records extends Command {
                     }
                     sb.append("\n");
                 }
+                if (records.size() == 0){
+                    sb.append("No records yet for ").append(target.getUser().getName());
+                }
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
+            } else {
+                //TODO: show help message
             }
         }
     }
