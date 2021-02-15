@@ -4,7 +4,6 @@ import casino.GameHandler;
 import commands.CommandHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
@@ -17,7 +16,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.json.simple.JSONObject;
 import utils.ImageHandler;
 
 import java.io.File;

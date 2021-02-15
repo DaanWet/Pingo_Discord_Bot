@@ -1,9 +1,5 @@
 package commands;
 
-import com.vdurmont.emoji.EmojiManager;
-import com.vdurmont.emoji.EmojiParser;
-import emoji4j.Emoji;
-import emoji4j.EmojiUtils;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.Utils;
 

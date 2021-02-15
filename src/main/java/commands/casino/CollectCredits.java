@@ -1,7 +1,6 @@
 package commands.casino;
 
 import commands.Command;
-import net.dv8tion.jda.api.entities.User;
 import utils.DataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 

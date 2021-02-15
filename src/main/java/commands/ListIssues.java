@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListIssues extends Command {

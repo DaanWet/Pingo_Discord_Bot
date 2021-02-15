@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
