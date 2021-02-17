@@ -39,7 +39,7 @@ public class Records extends Command {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle("Casino Records");
             HashMap<String, Triple<Long, Double, String>> records = dataHandler.getRecords(e.getGuild().getIdLong());
-            e.getGuild().retrieveMembersByIds(records.values().stream().map(Triple::getLeft).collect(Collectors.toList())).onSuccess(list -> {
+            e.getGuild().retrieveMembersByIds(records.values().stream().map(Triple::getLeft).collect(Collectors.toSet())).onSuccess(list -> {
                 Map<Long, Member> m = list.stream().collect(Collectors.toMap(Member::getIdLong, member -> member));
                 StringBuilder sb = new StringBuilder();
                 for (String record : records.keySet()) {
