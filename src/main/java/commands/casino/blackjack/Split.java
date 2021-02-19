@@ -21,7 +21,7 @@ public class Split extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length == 0) {
             BlackJackGame bjg = gameHandler.getBlackJackGame(e.getAuthor().getIdLong());
             if (bjg != null) {

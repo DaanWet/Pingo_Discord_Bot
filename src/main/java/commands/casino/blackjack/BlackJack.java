@@ -24,7 +24,7 @@ public class BlackJack extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         User author = e.getAuthor();
         long guildId = e.getGuild().getIdLong();
         long playerId = author.getIdLong();

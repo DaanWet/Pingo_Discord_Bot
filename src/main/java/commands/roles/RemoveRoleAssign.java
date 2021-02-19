@@ -22,8 +22,9 @@ public class RemoveRoleAssign extends Command {
         this.description = "Removes a role from the board";
     }
 
+
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (/*e.getMessage().getEmotes().size() == 1&& */args.length >= 2) {
             DataHandler dataHandler = new DataHandler();
             long[] message = dataHandler.getMessage(e.getGuild().getIdLong(), args[0]);

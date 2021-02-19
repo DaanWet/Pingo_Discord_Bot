@@ -18,7 +18,7 @@ public class CollectCredits extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length == 0) {
             long id = e.getAuthor().getIdLong();
             DataHandler dataHandler = new DataHandler();

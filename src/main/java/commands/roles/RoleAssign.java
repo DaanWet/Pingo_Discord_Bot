@@ -19,7 +19,7 @@ public class RoleAssign extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length == 1) {
             DataHandler dataHandler = new DataHandler();
             ArrayList<Triple<String, String, Long>> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);

@@ -28,7 +28,7 @@ public class AddPicture extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         Message message = e.getMessage();
         String[] words = message.getContentRaw().split(" ");
         if (words.length == 2 && !message.getAttachments().isEmpty()) {

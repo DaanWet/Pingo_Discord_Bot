@@ -17,7 +17,7 @@ public class Weekly extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length == 0) {
             DataHandler dataHandler = new DataHandler();
             Long id = e.getAuthor().getIdLong();

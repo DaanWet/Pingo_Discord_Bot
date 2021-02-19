@@ -32,7 +32,7 @@ public class Help extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(e.getGuild().getSelfMember().getColor());
         long guildId = e.getGuild().getIdLong();

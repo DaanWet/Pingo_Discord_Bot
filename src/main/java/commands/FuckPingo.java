@@ -15,7 +15,7 @@ public class FuckPingo extends Command{
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         e.getChannel().sendMessage("No, Fuck You").queue();
     }
 }

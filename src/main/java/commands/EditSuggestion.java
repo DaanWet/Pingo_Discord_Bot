@@ -17,7 +17,7 @@ public class EditSuggestion extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length >= 3) {
             Long messageid = Utils.isLong(args[0]);
             StringBuilder sb = new StringBuilder();
