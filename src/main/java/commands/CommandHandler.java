@@ -10,6 +10,7 @@ import commands.casino.uno.Uno;
 import commands.pictures.AddPicture;
 import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
+import commands.roles.EditRoleAssign;
 import commands.roles.RemoveRoleAssign;
 import commands.roles.RoleAssign;
 import org.kohsuke.github.GitHub;
@@ -71,6 +72,8 @@ public class CommandHandler {
                 put("eval", new Eval());
                 put("teampicker", new TeamPicker());
                 put("poll", new Poll());
+                put("test", new Test());
+                put("editRA", new EditRoleAssign());
             }
 
         };
