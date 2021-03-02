@@ -11,21 +11,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class RemoveRoleAssign extends Command {
+public class RemoveRoleAssign extends RoleCommand {
 
 
     public RemoveRoleAssign() {
         this.name = "removeRoleAssign";
         this.aliases = new String[]{"removeRole", "removeRoleA", "removeRA"};
         this.category = "Moderation";
-        this.arguments = "<emoji>";
+        this.arguments = "<category> <emoji>";
         this.description = "Removes a role from the board";
     }
 
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        if (/*e.getMessage().getEmotes().size() == 1&& */args.length >= 2) {
+        if (args.length == 2 && hasEmoji(e.getMessage(), args[1])) {
             DataHandler dataHandler = new DataHandler();
             long[] message = dataHandler.getMessage(e.getGuild().getIdLong(), args[0]);
             String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
