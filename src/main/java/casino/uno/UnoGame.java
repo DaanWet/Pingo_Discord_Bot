@@ -10,7 +10,7 @@ import static java.lang.Math.min;
 
 public class UnoGame {
 
-    private final String PATH = "http://zwervers.wettinck.be/uno/";
+    private final String PATH = "https://pingo.wettinck.be/uno/";
 
     private ArrayList<UnoHand> hands;
     private ArrayList<UnoCard> trekstapel;
