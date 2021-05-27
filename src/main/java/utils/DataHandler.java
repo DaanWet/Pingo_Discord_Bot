@@ -1,12 +1,14 @@
 package utils;
 
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.*;
-
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.sk.PrettyTable;
+
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Properties;
 
 
 @SuppressWarnings("unchecked")
@@ -42,15 +44,17 @@ public class DataHandler {
     private void createDatabase() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (Type VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
-                     "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
-                     "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, PRIMARY KEY(Name, GuildId));" +
-                     "CREATE TABLE IF NOT EXISTS Role (RoleId BIGINT NOT NULL, Name VARCHAR(255) NOT NULL, Emoji VARCHAR(255) NOT NULL, Type VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, FOREIGN KEY (Type, GuildId) REFERENCES RoleAssign(Name, GuildId), PRIMARY KEY (Emoji, Type, GuildId));" +
-                     "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Type));" +
-                     "INSERT IGNORE INTO Record VALUES ('highest_credits', TRUE);" +
-                     "INSERT IGNORE INTO Record VALUES ('biggest_bj_win', TRUE);" +
-                     "INSERT IGNORE INTO Record VALUES ('biggest_bj_lose', TRUE);" +
-                     "INSERT IGNORE INTO Record VALUES ('bj_win_rate', FALSE);" +
-                     "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);")
+                                                                          "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
+                                                                          "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, PRIMARY KEY(Name, GuildId));" +
+                                                                          "CREATE TABLE IF NOT EXISTS Role (RoleId BIGINT NOT NULL, Name VARCHAR(255) NOT NULL, Emoji VARCHAR(255) NOT NULL, Type VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, FOREIGN KEY (Type, GuildId) REFERENCES RoleAssign(Name, GuildId), PRIMARY KEY (Emoji, Type, GuildId));" +
+                                                                          "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Type));" +
+                                                                          "CREATE TABLE IF NOT EXISTS Setting (ID INT AUTO_INCREMENT PRIMARY KEY,  Name VARCHAR(50) NOT NULL, ValueType VARCHAR(10) NOT NULL, Type VARCHAR(50), Multiple BOOLEAN NOT NULL,  UNIQUE (Name, Type));" +
+                                                                          "CREATE TABLE IF NOT EXISTS GuildSetting (GuildId BIGINT NOT NULL, ID INT NOT NULL, Value VARCHAR(255) NOT NULL, Type VARCHAR(50), FOREIGN KEY(ID) REFERENCES Settings(ID), PRIMARY KEY(GuildId, ID, Value));" +
+                                                                          "INSERT IGNORE INTO Record VALUES ('highest_credits', TRUE);" +
+                                                                          "INSERT IGNORE INTO Record VALUES ('biggest_bj_win', TRUE);" +
+                                                                          "INSERT IGNORE INTO Record VALUES ('biggest_bj_lose', TRUE);" +
+                                                                          "INSERT IGNORE INTO Record VALUES ('bj_win_rate', FALSE);" +
+                                                                          "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);")
         ) {
             setuptable.executeUpdate();
         } catch (SQLException throwables) {
@@ -128,7 +132,7 @@ public class DataHandler {
     public boolean addRoleAssign(long guildId, String type, String emoji, String name, long roleId) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO RoleAssign (Name, GuildId) VALUES (?, ?);" +
-                     "INSERT IGNORE INTO Role VALUES (?, ?, ?, ?, ?)")
+                                                                   "INSERT IGNORE INTO Role VALUES (?, ?, ?, ?, ?)")
         ) {
             stm.setLong(2, guildId);
             stm.setLong(3, roleId);
@@ -201,9 +205,9 @@ public class DataHandler {
     public void setCredits(long guildId, long userId, int credits) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO Member(UserId, GuildId, LastDaily, LastWeekly) VALUES(?, ?, ?, ?);" +
-                     "UPDATE Member SET Credits = ? WHERE GuildId = ? AND UserId = ?;" +
-                     "INSERT IGNORE INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, 'highest_credits', 0.0);" +
-                     "UPDATE UserRecord SET Value = GREATEST(Value, ?) WHERE UserId = ? AND GuildId = ? AND Name LIKE 'highest_credits'") //TODO: Use insert INto and ON Duplicate Keys
+                                                                   "UPDATE Member SET Credits = ? WHERE GuildId = ? AND UserId = ?;" +
+                                                                   "INSERT IGNORE INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, 'highest_credits', 0.0);" +
+                                                                   "UPDATE UserRecord SET Value = GREATEST(Value, ?) WHERE UserId = ? AND GuildId = ? AND Name LIKE 'highest_credits'") //TODO: Use insert INto and ON Duplicate Keys
         ) {
             stm.setLong(1, userId);
             stm.setLong(2, guildId);
@@ -228,7 +232,7 @@ public class DataHandler {
         int creds = getCredits(guildId, userId);
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("INSERT INTO Member(UserId, GuildId, LastDaily, LastWeekly, Credits) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Credits = Credits + ?;" +
-                     "INSERT INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);");
+                                                                   "INSERT INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);");
              PreparedStatement stmnt2 = conn.prepareStatement("SELECT Credits FROM Member  WHERE GuildId = ? AND UserId = ?");
         ) {
             stm.setLong(1, userId);
@@ -450,7 +454,7 @@ public class DataHandler {
         return map;
     }
 
-    public HashMap<Long, Pair<Double, String>> getRecords(long guildId, String type){
+    public HashMap<Long, Pair<Double, String>> getRecords(long guildId, String type) {
         HashMap<Long, Pair<Double, String>> map = null;
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ?")) {
@@ -485,16 +489,16 @@ public class DataHandler {
         return map;
     }
 
-    public ArrayList<String> getRecordTypes(){
+    public ArrayList<String> getRecordTypes() {
         ArrayList<String> types = null;
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT Type FROM Record");
-             ResultSet set = stm.executeQuery()){
+             ResultSet set = stm.executeQuery()) {
             types = new ArrayList<>();
-            while (set.next()){
+            while (set.next()) {
                 types.add(set.getString(1));
             }
-        } catch (SQLException throwables){
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return types;
@@ -517,6 +521,136 @@ public class DataHandler {
     }
 
     //</editor-fold>
+
+
+    //<editor-fold desc="Settings Code">
+
+    public ResultSet getSetting(long guildId, String setting, String type, String valueType) throws SQLException {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT Value, GuildSetting.Type FROM GuildSetting INNER JOIN (SELECT * FROM Setting WHERE Name LIKE ? AND ValueType LIKE ?" +
+                                                                   (type != null ? " AND Type LIKE ?" : "") + ") AS setting USING(ID) WHERE GuildId = ?;")) {
+            stm.setString(1, setting);
+            stm.setString(2, valueType);
+            if (type != null) {
+                stm.setString(3, type);
+            }
+            stm.setLong(3 + (type != null ? 1 : 0), guildId);
+            return stm.executeQuery();
+        }
+    }
+
+    public Integer getIntSetting(long guildId, String setting, String type) {
+        try (ResultSet resultSet = getSetting(guildId, setting, type, "Integer")) {
+            if (resultSet != null && resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public Boolean getBoolSetting(long guildId, String setting, String type) {
+        try (ResultSet resultSet = getSetting(guildId, setting, type, "Boolean")) {
+            if (resultSet != null && resultSet.next()) {
+                return resultSet.getBoolean(1);
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getStringSetting(long guildId, String setting, String type) {
+        try (ResultSet resultSet = getSetting(guildId, setting, type, "String")) {
+            if (resultSet != null && resultSet.next()) {
+                return resultSet.getString(1);
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public Pair<Long, String> getLongSetting(long guildId, String setting, String type) {
+        try (ResultSet resultSet = getSetting(guildId, setting, type, "Long")) {
+            if (resultSet != null && resultSet.next()) {
+                return Pair.of(resultSet.getLong(1), resultSet.getString(2));
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    private PreparedStatement prepareSetSetting(Connection conn, String valueType) throws SQLException{
+        return conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE " + valueType +
+                                        ";UPDATE GuildSetting SET Value = ? WHERE  GuildId = ? AND ID = @id;" +
+                                        "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value, Type) VALUES(?, @id, ?, null);");
+    }
+
+    public void setIntSetting(long guildId, String setting, String type, int value) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = prepareSetSetting(conn, "Integer")){
+            stm.setString(1, setting);
+            stm.setString(2, type);
+            stm.setInt(3, value);
+            stm.setLong(4, guildId);
+            stm.setLong(5, guildId);
+            stm.setInt(6, value);
+            stm.executeUpdate();
+        } catch (SQLException exception){
+            exception.printStackTrace();
+        }
+    }
+
+    public void setBoolSetting(long guildId, String setting, String type, boolean value) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = prepareSetSetting(conn, "Boolean")){
+            stm.setString(1, setting);
+            stm.setString(2, type);
+            stm.setBoolean(3, value);
+            stm.setLong(4, guildId);
+            stm.setLong(5, guildId);
+            stm.setBoolean(6, value);
+            stm.executeUpdate();
+        } catch (SQLException exception){
+            exception.printStackTrace();
+        }
+    }
+
+    public void setStringSetting(long guildId, String setting, String type, String value) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = prepareSetSetting(conn, "String")){
+            stm.setString(1, setting);
+            stm.setString(2, type);
+            stm.setString(3, value);
+            stm.setLong(4, guildId);
+            stm.setLong(5, guildId);
+            stm.setString(6, value);
+            stm.executeUpdate();
+        } catch (SQLException exception){
+            exception.printStackTrace();
+        }
+    }
+
+    public void setLongSetting(long guildId, String setting, String type, long value) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = prepareSetSetting(conn, "Long")){
+            stm.setString(1, setting);
+            stm.setString(2, type);
+            stm.setLong(3, value);
+            stm.setLong(4, guildId);
+            stm.setLong(5, guildId);
+            stm.setLong(6, value);
+            stm.executeUpdate();
+        } catch (SQLException exception){
+            exception.printStackTrace();
+        }
+    }
+
+    //</editor-fold
+
 
     public PrettyTable executeQuery(String query) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, nomultiproperties);
