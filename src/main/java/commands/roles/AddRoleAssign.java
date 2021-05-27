@@ -21,6 +21,13 @@ public class AddRoleAssign extends Command {
     }
 
     @Override
+    public boolean canBeExecuted(long guildId, long channelId, long userId){
+        DataHandler dataHandler = new DataHandler();
+        Boolean setting = dataHandler.getBoolSetting(guildId, "roleAssign", "commands");
+        return setting == null || setting;
+    }
+
+    @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (args.length >= 4 && (EmojiUtils.isEmoji(args[1])) || (e.getMessage().getEmotes().size() == 1 && e.getMessage().getEmotes().get(0).getAsMention().equals(args[1]))) {
             Role role = null;

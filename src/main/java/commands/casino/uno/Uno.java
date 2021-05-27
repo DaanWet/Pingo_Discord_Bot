@@ -21,7 +21,6 @@ public class Uno extends Command {
         this.gameHandler = gameHandler;
     }
 
-
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         if (gameHandler.getUnoGame(e.getGuild().getIdLong()) != null) {
@@ -29,7 +28,7 @@ public class Uno extends Command {
             return;
         }
         int bet = 0;
-        if (args.length == 1) {
+        if (args.length == 1) { // TODO: Check if betting is enabled
             bet = Utils.getInt(args[0]);
             if (bet >= 100) {
                 if (!(new DataHandler().getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) - bet >= 0)) {

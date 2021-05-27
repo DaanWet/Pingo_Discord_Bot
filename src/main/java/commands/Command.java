@@ -1,6 +1,7 @@
 package commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.DataHandler;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,12 @@ public abstract class Command {
     protected long priveligedGuild = -1;
 
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
+
+    public boolean canBeExecuted(long guildId, long channelId, long userId){
+        DataHandler dataHandler = new DataHandler();
+        Boolean setting = dataHandler.getBoolSetting(guildId, name, "commands");
+        return setting == null || setting && (priveligedGuild == -1 || guildId == priveligedGuild);
+    }
 
     public String getDescription(){
         return description;

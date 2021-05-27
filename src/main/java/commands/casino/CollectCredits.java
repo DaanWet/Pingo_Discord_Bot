@@ -18,6 +18,13 @@ public class CollectCredits extends Command {
     }
 
     @Override
+    public boolean canBeExecuted(long guildId, long channelId, long userId){
+        DataHandler dataHandler = new DataHandler();
+        Boolean betting = dataHandler.getBoolSetting(guildId, "betting", "commands");
+        return betting == null || betting;
+    }
+
+    @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (args.length == 0) {
             long id = e.getAuthor().getIdLong();

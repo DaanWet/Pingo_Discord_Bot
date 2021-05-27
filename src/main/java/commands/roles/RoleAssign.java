@@ -19,6 +19,13 @@ public class RoleAssign extends Command {
     }
 
     @Override
+    public boolean canBeExecuted(long guildId, long channelId, long userId){
+        DataHandler dataHandler = new DataHandler();
+        Boolean setting = dataHandler.getBoolSetting(guildId, "roleAssign", "commands");
+        return setting == null || setting;
+    }
+
+    @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (args.length == 1) {
             DataHandler dataHandler = new DataHandler();

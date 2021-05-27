@@ -24,6 +24,14 @@ public class BlackJack extends Command {
     }
 
     @Override
+    public boolean canBeExecuted(long guildId, long channelId, long userId){
+        DataHandler dataHandler = new DataHandler();
+        Boolean betting = dataHandler.getBoolSetting(guildId, "betting", "commands");
+        Boolean blackjack = dataHandler.getBoolSetting(guildId, "blackjack", "commands");
+        return (betting == null || betting) && (blackjack == null || blackjack);
+    }
+
+    @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         User author = e.getAuthor();
         long guildId = e.getGuild().getIdLong();

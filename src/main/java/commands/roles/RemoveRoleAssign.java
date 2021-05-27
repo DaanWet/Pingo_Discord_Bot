@@ -23,6 +23,13 @@ public class RemoveRoleAssign extends Command {
     }
 
     @Override
+    public boolean canBeExecuted(long guildId, long channelId, long userId){
+        DataHandler dataHandler = new DataHandler();
+        Boolean setting = dataHandler.getBoolSetting(guildId, "roleAssign", "commands");
+        return setting == null || setting;
+    }
+
+    @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         if (/*e.getMessage().getEmotes().size() == 1&& */args.length >= 2) {
             DataHandler dataHandler = new DataHandler();
