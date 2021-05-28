@@ -1,5 +1,6 @@
 package utils;
 
+import commands.settings.Setting;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.sk.PrettyTable;
@@ -57,6 +58,16 @@ public class DataHandler {
                                                                           "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);")
         ) {
             setuptable.executeUpdate();
+            for (Setting s : Setting.values()) {
+                PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
+                stm.setString(1, s.name());
+                stm.setString(2, s.getValueType());
+                stm.setString(3, s.getType());
+                stm.setBoolean(4, s.isMultiple());
+                stm.executeUpdate();
+            }
+
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -525,22 +536,21 @@ public class DataHandler {
 
     //<editor-fold desc="Settings Code">
 
-    public ResultSet getSetting(long guildId, String setting, String type, String valueType) throws SQLException {
+    public ResultSet getSetting(long guildId, Setting setting) throws SQLException {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Value, GuildSetting.Type FROM GuildSetting INNER JOIN (SELECT * FROM Setting WHERE Name LIKE ? AND ValueType LIKE ?" +
-                                                                   (type != null ? " AND Type LIKE ?" : "") + ") AS setting USING(ID) WHERE GuildId = ?;")) {
-            stm.setString(1, setting);
-            stm.setString(2, valueType);
-            if (type != null) {
-                stm.setString(3, type);
-            }
-            stm.setLong(3 + (type != null ? 1 : 0), guildId);
+             PreparedStatement stm = conn.prepareStatement("SELECT Value, GuildSetting.Type, Multiple FROM GuildSetting " +
+                                                                   "INNER JOIN (SELECT * FROM Setting WHERE Name LIKE ? AND ValueType LIKE ? AND Type LIKE ?) " +
+                                                                   "AS setting USING(ID) WHERE GuildId = ?;")) {
+            stm.setString(1, setting.name());
+            stm.setString(2, setting.getValueType());
+            stm.setString(3, setting.getType());
+            stm.setLong(4, guildId);
             return stm.executeQuery();
         }
     }
 
-    public Integer getIntSetting(long guildId, String setting, String type) {
-        try (ResultSet resultSet = getSetting(guildId, setting, type, "Integer")) {
+    public Integer getIntSetting(long guildId, Setting setting) {
+        try (ResultSet resultSet = getSetting(guildId, setting)) {
             if (resultSet != null && resultSet.next()) {
                 return resultSet.getInt(1);
             }
@@ -550,8 +560,8 @@ public class DataHandler {
         return null;
     }
 
-    public Boolean getBoolSetting(long guildId, String setting, String type) {
-        try (ResultSet resultSet = getSetting(guildId, setting, type, "Boolean")) {
+    public Boolean getBoolSetting(long guildId, Setting setting) {
+        try (ResultSet resultSet = getSetting(guildId, setting)) {
             if (resultSet != null && resultSet.next()) {
                 return resultSet.getBoolean(1);
             }
@@ -561,8 +571,8 @@ public class DataHandler {
         return null;
     }
 
-    public String getStringSetting(long guildId, String setting, String type) {
-        try (ResultSet resultSet = getSetting(guildId, setting, type, "String")) {
+    public String getStringSetting(long guildId, Setting setting) {
+        try (ResultSet resultSet = getSetting(guildId, setting)) {
             if (resultSet != null && resultSet.next()) {
                 return resultSet.getString(1);
             }
@@ -572,8 +582,8 @@ public class DataHandler {
         return null;
     }
 
-    public Pair<Long, String> getLongSetting(long guildId, String setting, String type) {
-        try (ResultSet resultSet = getSetting(guildId, setting, type, "Long")) {
+    public Pair<Long, String> getLongSetting(long guildId, Setting setting) {
+        try (ResultSet resultSet = getSetting(guildId, setting)) {
             if (resultSet != null && resultSet.next()) {
                 return Pair.of(resultSet.getLong(1), resultSet.getString(2));
             }
@@ -583,68 +593,72 @@ public class DataHandler {
         return null;
     }
 
-    private PreparedStatement prepareSetSetting(Connection conn, String valueType) throws SQLException{
-        return conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE " + valueType +
+    private PreparedStatement prepareSetSetting(Connection conn) throws SQLException {
+        return conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?" +
                                         ";UPDATE GuildSetting SET Value = ? WHERE  GuildId = ? AND ID = @id;" +
                                         "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value, Type) VALUES(?, @id, ?, null);");
     }
 
-    public void setIntSetting(long guildId, String setting, String type, int value) {
+    public void setIntSetting(long guildId, Setting setting, int value) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, "Integer")){
-            stm.setString(1, setting);
-            stm.setString(2, type);
-            stm.setInt(3, value);
-            stm.setLong(4, guildId);
+             PreparedStatement stm = prepareSetSetting(conn)) {
+            stm.setString(1, setting.getName());
+            stm.setString(2, setting.getType());
+            stm.setString(3, setting.getValueType());
+            stm.setInt(4, value);
             stm.setLong(5, guildId);
-            stm.setInt(6, value);
+            stm.setLong(6, guildId);
+            stm.setInt(7, value);
             stm.executeUpdate();
-        } catch (SQLException exception){
+        } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void setBoolSetting(long guildId, String setting, String type, boolean value) {
+    public void setBoolSetting(long guildId, Setting setting, boolean value) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, "Boolean")){
-            stm.setString(1, setting);
-            stm.setString(2, type);
-            stm.setBoolean(3, value);
-            stm.setLong(4, guildId);
+             PreparedStatement stm = prepareSetSetting(conn)) {
+            stm.setString(1, setting.getName());
+            stm.setString(2, setting.getType());
+            stm.setString(3, setting.getValueType());
+            stm.setBoolean(4, value);
             stm.setLong(5, guildId);
-            stm.setBoolean(6, value);
+            stm.setLong(6, guildId);
+            stm.setBoolean(7, value);
             stm.executeUpdate();
-        } catch (SQLException exception){
+        } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void setStringSetting(long guildId, String setting, String type, String value) {
+    public void setStringSetting(long guildId, Setting setting, String value) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, "String")){
-            stm.setString(1, setting);
-            stm.setString(2, type);
-            stm.setString(3, value);
-            stm.setLong(4, guildId);
+             PreparedStatement stm = prepareSetSetting(conn)) {
+            stm.setString(1, setting.getName());
+            stm.setString(2, setting.getType());
+            stm.setString(3, setting.getValueType());
+            stm.setString(4, value);
             stm.setLong(5, guildId);
-            stm.setString(6, value);
+            stm.setLong(6, guildId);
+            stm.setString(7, value);
             stm.executeUpdate();
-        } catch (SQLException exception){
+        } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void setLongSetting(long guildId, String setting, String type, long value) {
+    public void setLongSetting(long guildId, Setting setting, long value) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, "Long")){
-            stm.setString(1, setting);
-            stm.setString(2, type);
-            stm.setLong(3, value);
-            stm.setLong(4, guildId);
+             PreparedStatement stm = prepareSetSetting(conn)) {
+            stm.setString(1, setting.getName());
+            stm.setString(2, setting.getType());
+            stm.setString(3, setting.getValueType());
+            stm.setLong(4, value);
             stm.setLong(5, guildId);
-            stm.setLong(6, value);
+            stm.setLong(6, guildId);
+            stm.setLong(7, value);
             stm.executeUpdate();
-        } catch (SQLException exception){
+        } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }

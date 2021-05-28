@@ -1,6 +1,7 @@
 package commands.roles;
 
 import commands.Command;
+import commands.settings.Setting;
 import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -21,7 +22,7 @@ public class RoleAssign extends Command {
     @Override
     public boolean canBeExecuted(long guildId, long channelId, long userId){
         DataHandler dataHandler = new DataHandler();
-        Boolean setting = dataHandler.getBoolSetting(guildId, "roleAssign", "commands");
+        Boolean setting = dataHandler.getBoolSetting(guildId, Setting.ROLEASSIGN);
         return setting == null || setting;
     }
 

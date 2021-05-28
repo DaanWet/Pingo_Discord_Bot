@@ -1,6 +1,7 @@
 package commands.casino;
 
 import commands.Command;
+import commands.settings.Setting;
 import utils.DataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -20,7 +21,7 @@ public class CollectCredits extends Command {
     @Override
     public boolean canBeExecuted(long guildId, long channelId, long userId){
         DataHandler dataHandler = new DataHandler();
-        Boolean betting = dataHandler.getBoolSetting(guildId, "betting", "commands");
+        Boolean betting = dataHandler.getBoolSetting(guildId, Setting.BETTING);
         return betting == null || betting;
     }
 
