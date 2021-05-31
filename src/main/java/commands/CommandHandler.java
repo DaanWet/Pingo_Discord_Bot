@@ -12,7 +12,10 @@ import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
 import commands.roles.RemoveRoleAssign;
 import commands.roles.RoleAssign;
+import commands.settings.Setting;
+import commands.settings.Settings;
 import org.kohsuke.github.GitHub;
+import utils.DataHandler;
 import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -71,6 +74,7 @@ public class CommandHandler {
                 put("eval", new Eval());
                 put("teampicker", new TeamPicker());
                 put("poll", new Poll());
+                put("settings", new Settings());
             }
 
         };
@@ -108,11 +112,12 @@ public class CommandHandler {
         Message message = e.getMessage();
         updateNickName(e.getGuild().getSelfMember().getEffectiveName());
         String[] words = split(message.getContentRaw()).toArray(new String[]{});
-        String command = words[0].substring(1);
+        String prefix = new DataHandler().getStringSetting(e.getGuild().getIdLong(), Setting.PREFIX);
+        String command = words[0].substring(prefix.length());
         for (Command c : commands.values()){
             if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){
                 if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    if (!c.getBannedChannels().contains(channel.getIdLong())){
+                    if (c.canBeExecuted(e.getGuild().getIdLong(), channel.getIdLong(), author.getIdLong())){
                         c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.equalsIgnoreCase("")).toArray(String[]::new), e);
                     } else {
                         e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);

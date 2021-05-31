@@ -11,7 +11,6 @@ public abstract class Command {
     protected String name;
     protected String[] aliases = new String[0];
     protected String category = "Other";
-    protected ArrayList<Long> bannedChannels = new ArrayList<>();
     protected String arguments = "";
     protected String description;
     protected boolean hidden = false;
@@ -53,9 +52,6 @@ public abstract class Command {
         return hidden;
     }
 
-    public ArrayList<Long> getBannedChannels() {
-        return bannedChannels;
-    }
 
     public long getPriveligedGuild() {
         return priveligedGuild;
