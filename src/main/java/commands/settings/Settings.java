@@ -4,10 +4,12 @@ import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 import utils.Utils;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 
 public class Settings extends Command {
@@ -45,20 +47,28 @@ public class Settings extends Command {
                         String name = Utils.upperCaseFirst(setting.getName());
                         if (args.length == 2) {
                             eb.setTitle(String.format("%s Settings", name));
-                            addField(eb, setting, null, dataHandler, guildId, prefix);
+                            addField(eb, setting, null, dataHandler, e.getGuild(), prefix);
                             for (Setting.SubSetting subs : setting.getSubSettings()) {
-                                addField(eb, setting, subs, dataHandler, guildId, prefix);
+                                addField(eb, setting, subs, dataHandler, e.getGuild(), prefix);
                             }
                             e.getChannel().sendMessage(eb.build()).queue();
                         } else {
                             Setting.SubSetting subs = Setting.SubSetting.fromString(args[2]);
                             if (subs != null) {
                                 if (setting.getSubSettings().contains(subs)) {
-                                    if (args.length == 4) {
-                                        handleSet(eb, setting, subs, guildId, args[3], dataHandler, e.getMessage());
+                                    if (args.length >= 4) {
+                                        if (subs.isMultiple()) {
+                                            if (args.length == 4 && args[3].equalsIgnoreCase("clear")) {
+                                                handleClear(setting, subs, guildId, dataHandler);
+                                            } else if (args.length >= 5 && args[3].matches("(?i)^(add|remove)$")) {
+                                                handleMultiSet(setting, subs, guildId, Arrays.copyOfRange(args, 4, args.length), args[3].equalsIgnoreCase("add"), dataHandler, e.getMessage());
+                                            }
+                                        } else {
+                                            handleSet(setting, subs, guildId, args[3], dataHandler, e.getMessage());
+                                        }
                                     } else {
                                         eb.setTitle(String.format("%s %s Settings", name, subs.toString().toLowerCase()));
-                                        addField(eb, setting, subs, dataHandler, guildId, prefix);
+                                        addField(eb, setting, subs, dataHandler, e.getGuild(), prefix);
                                         e.getChannel().sendMessage(eb.build()).queue();
                                     }
                                 } else {
@@ -67,7 +77,15 @@ public class Settings extends Command {
                                     e.getChannel().sendMessage(eb.build()).queue();
                                 }
                             } else {
-                                handleSet(eb, setting, null, guildId, args[2], dataHandler, e.getMessage());
+                                if (setting.isMultiple()) {
+                                    if (args.length == 3 && args[2].equalsIgnoreCase("clear")) {
+                                        handleClear(setting, null, guildId, dataHandler);
+                                    } else if (args.length >= 4 && args[2].matches("(?i)^(add|remove)$")) {
+                                        handleMultiSet(setting, null, guildId, Arrays.copyOfRange(args, 3, args.length), args[2].equalsIgnoreCase("add"), dataHandler, e.getMessage());
+                                    }
+                                } else {
+                                    handleSet(setting, null, guildId, args[2], dataHandler, e.getMessage());
+                                }
                             }
                         }
                     } else {
@@ -85,7 +103,8 @@ public class Settings extends Command {
 
     }
 
-    public void addField(EmbedBuilder eb, Setting setting, Setting.SubSetting subs, DataHandler dataHandler, long guildId, String prefix) {
+    public void addField(EmbedBuilder eb, Setting setting, Setting.SubSetting subs, DataHandler dataHandler, Guild guild, String prefix) {
+        long guildId = guild.getIdLong();
         StringBuilder fieldName = new StringBuilder();
         StringBuilder fieldValue = new StringBuilder();
         fieldName.append("The ").append(Utils.upperCaseFirst(setting.getName()));
@@ -133,53 +152,155 @@ public class Settings extends Command {
         eb.addField(fieldName.toString(), fieldValue.toString(), false);
     }
 
-    public void handleSet(EmbedBuilder eb, Setting setting, Setting.SubSetting subSetting, long guildId, String value, DataHandler dataHandler, Message message) {
+    public void handleSet(Setting setting, Setting.SubSetting subSetting, long guildId, String value, DataHandler dataHandler, Message message) throws Exception {
         switch (subSetting == null ? setting.getValueType() : subSetting.getValueType()) {
             case BOOLEAN:
                 if (value.matches("(?i)^(on|enable|off|disable)$")) {
-                    dataHandler.setBoolSetting(guildId, setting, subSetting, value.matches("(?i)(on|enable)"));
+                    dataHandler.setBoolSetting(guildId, setting, subSetting, value.matches("(?i)(on|enable)"), null);
                     message.addReaction(":greentick:804432208483844146").queue();
                 } else {
+                    EmbedBuilder eb = new EmbedBuilder();
                     eb.setTitle("Invalid input");
                     eb.setColor(Color.RED);
                     message.getChannel().sendMessage(eb.build()).queue();
                 }
                 break;
             case STRING:
-                dataHandler.setStringSetting(guildId, setting, subSetting, value);
+                dataHandler.setStringSetting(guildId, setting, subSetting, value, null);
                 message.addReaction(":greentick:804432208483844146").queue();
                 break;
             case LONG:
-                if (message.getMentions().size() == 1){
+                if (message.getMentions().size() == 1) {
                     IMentionable mention = message.getMentions().get(0);
-                    Setting.LongType type = null;
-                    if (mention instanceof TextChannel){
-                        type = Setting.LongType.CHANNEL;
-                    } else if (mention instanceof Role){
-                        type = Setting.LongType.ROLE;
-                    } else if (mention instanceof Member){
-                        type = Setting.LongType.USER;
-                    }
-                    if (type == null){
+                    Setting.LongType type = getLongType(mention);
+                    if (type == null) {
+                        EmbedBuilder eb = new EmbedBuilder();
                         eb.setTitle("Invalid input");
                         eb.setColor(Color.RED);
                         eb.setDescription(mention.getClass().toString());
+                        message.getChannel().sendMessage(eb.build()).queue();
                     } else {
-                        dataHandler.setLongSetting(guildId, setting, subSetting, mention.getIdLong(), type);
+                        dataHandler.setLongSetting(guildId, setting, subSetting, mention.getIdLong(), type, null);
                         message.addReaction(":greentick:804432208483844146").queue();
                     }
                 }
                 break;
             case INTEGER:
                 if (Utils.isInteger(value)) {
-                    dataHandler.setIntSetting(guildId, setting, subSetting, Utils.getInt(value));
+                    dataHandler.setIntSetting(guildId, setting, subSetting, Utils.getInt(value), null);
                 } else {
+                    EmbedBuilder eb = new EmbedBuilder();
                     eb.setTitle("Invalid input");
                     eb.setColor(Color.RED);
                     message.getChannel().sendMessage(eb.build()).queue();
                 }
                 break;
+            // TODO: CHANNEL_LONG AND ROLE_LONG
         }
     }
-}
 
+    private void handleMultiSet(Setting setting, Setting.SubSetting subSetting, long guildId, String[] values, boolean add, DataHandler dataHandler, Message message) throws Exception {
+        boolean good = true;
+        Boolean clear = add ? null : false;
+        StringBuilder wrongValues = new StringBuilder();
+        String wrongType = "";
+        switch (subSetting == null ? setting.getValueType() : subSetting.getValueType()) {
+            case INTEGER:
+                for (String value : values) {
+                    if (Utils.isInteger(value)) {
+                        dataHandler.setIntSetting(guildId, setting, subSetting, Utils.getInt(value), clear);
+                    } else {
+                        good = false;
+                        wrongValues.append(value).append(", ");
+                        wrongType = "a number";
+                    }
+                }
+                break;
+            case STRING:
+                for (String value : values) {
+                    dataHandler.setStringSetting(guildId, setting, subSetting, value, clear);
+                }
+                message.addReaction(":greentick:804432208483844146").queue();
+                break;
+            case LONG:
+                List<IMentionable> mentions = message.getMentions();
+                int i = 0;
+                for (String value : values) {
+                    if (i < mentions.size() && value.equalsIgnoreCase(mentions.get(i).getAsMention())) {
+                        IMentionable mention = mentions.get(i);
+                        Setting.LongType type = getLongType(mention);
+                        if (type == null){
+                            good = false;
+                            wrongValues.append(mention.getAsMention()).append(", ");
+                        } else {
+                            dataHandler.setLongSetting(guildId, setting, subSetting, mention.getIdLong(), type, clear);
+                        }
+                        i++;
+                    } else if(Utils.isLong(value) != null){
+                        Long id = Utils.isLong(value);
+                        TextChannel channel = message.getGuild().getTextChannelById(id);
+                        Role role = message.getGuild().getRoleById(id);
+                        Member member = message.getGuild().getMemberById(id);
+                        if (channel != null){
+                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.CHANNEL, clear);
+                        } else if (role != null){
+                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.ROLE, clear);
+                        } else if (member != null){
+                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.USER, clear);
+                        } else {
+                            good = false;
+                            wrongValues.append(value).append(", ");
+                        }
+                    } else {
+                        good = false;
+                        wrongValues.append(value).append(", ");
+                    }
+                }
+                if (!good){
+                    wrongType = "a channel, role or member";
+                }
+                break;
+            // TODO: CHANNEL_LONG AND ROLE_LONG
+        }
+        if (good) {
+            message.addReaction(":greentick:804432208483844146").queue();
+        } else {
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Invalid input");
+            eb.setDescription(String.format("Could not %s %s as it is not %s", add ? "add" : "remove", wrongValues.substring(0, wrongValues.length() - 3), wrongType));
+            eb.setColor(Color.RED);
+            message.getChannel().sendMessage(eb.build()).queue();
+        }
+    }
+
+    private void handleClear(Setting setting, Setting.SubSetting subSetting, long guildId, DataHandler dataHandler) throws Exception {
+        switch (subSetting == null ? setting.getValueType() : subSetting.getValueType()) {
+            case INTEGER:
+                dataHandler.setIntSetting(guildId, setting, subSetting, 0, true);
+                break;
+            case STRING:
+                dataHandler.setStringSetting(guildId, setting, subSetting, null, true);
+                break;
+            case LONG:
+            case CHANNEL_LONG:
+            case ROLE_LONG:
+                dataHandler.setLongSetting(guildId, setting, subSetting, 0, null, true);
+                break;
+            case BOOLEAN:
+                dataHandler.setBoolSetting(guildId, setting, subSetting, false, true);
+                break;
+        }
+    }
+
+    private Setting.LongType getLongType(IMentionable mention) {
+        Setting.LongType type = null;
+        if (mention instanceof TextChannel) {
+            type = Setting.LongType.CHANNEL;
+        } else if (mention instanceof Role) {
+            type = Setting.LongType.ROLE;
+        } else if (mention instanceof Member) {
+            type = Setting.LongType.USER;
+        }
+        return type;
+    }
+}

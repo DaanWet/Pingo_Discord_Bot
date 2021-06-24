@@ -545,6 +545,10 @@ public class DataHandler {
 
     //<editor-fold desc="Settings Code">
 
+    private int extra(boolean multiple){
+        return !multiple ? 3 : 0;
+    }
+
     public List<Pair<String, String>> getSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
         ArrayList<Pair<String, String>> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
@@ -619,77 +623,107 @@ public class DataHandler {
                                                          (multiple ? "" : "UPDATE GuildSetting SET Value = ?, Type = ? WHERE  GuildId = ? AND ID = @id;")+
                                                          "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value, Type) VALUES(?, @id, ?, ?);");
 
-        int extra = !multiple ? 3 : 0;
+        String longTypeName = longType == null ? null : longType.name();
         stm.setString(1, setting.getName() + (subSetting != null ? "_" + subSetting : ""));
         stm.setString(2, setting.getType());
         stm.setString(3, subSetting == null ? setting.getValueType().getName() : subSetting.getValueType().getName());
         if (!multiple){
-            stm.setString(5, longType.name());
+            stm.setString(5, longTypeName);
             stm.setLong(6, guildId);
         }
-        stm.setLong(4 + extra, guildId);
-        stm.setString(6 + extra, longType.name());
+        stm.setLong(4 + extra(multiple), guildId);
+        stm.setString(6 + extra(multiple), longTypeName);
         return stm;
     }
 
-    public void setIntSetting(long guildId, Setting setting, Setting.SubSetting subSetting, int value) {
+    private PreparedStatement prepareRemoveSetting(Connection conn, Setting setting, Setting.SubSetting subSetting, long guildId, boolean clear) throws Exception {
+        boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
+        if (!multiple) {
+            throw new WrongArgumentException("Setting must be multiple");
+        }
+        PreparedStatement stm = conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
+                                                         "DELETE FROM GuildSetting WHERE GuildId = ? AND ID = @id" + (clear ? "" : "AND Value = ?;"));
+        stm.setString(1, setting.getName() + (subSetting != null ? "_" + subSetting : ""));
+        stm.setString(2, setting.getType());
+        stm.setString(3, subSetting == null ? setting.getValueType().getName() : subSetting.getValueType().getName());
+        stm.setLong(4, guildId);
+        return stm;
+    }
+
+    public void setIntSetting(long guildId, Setting setting, Setting.SubSetting subSetting, int value, Boolean clear) throws Exception{
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, setting, subSetting, guildId, null)) {
-            stm.setInt(4, value);
-            stm.setInt(7, value);
+             PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, null)
+                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+            boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
+            if (!multiple)
+                stm.setInt(4, value);
+            if (clear == null || !clear)
+                stm.setInt(5 + extra(multiple), value);
             stm.executeQuery();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void setIntSetting(long guildId, Setting setting, int value) {
-        setIntSetting(guildId, setting, null, value);
+    public void setIntSetting(long guildId, Setting setting, int value, Boolean clear) throws Exception {
+        setIntSetting(guildId, setting, null, value, clear);
     }
 
-    public void setBoolSetting(long guildId, Setting setting, Setting.SubSetting subSetting, boolean value) {
+    public void setBoolSetting(long guildId, Setting setting, Setting.SubSetting subSetting, boolean value, Boolean clear) throws Exception{
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, setting, subSetting, guildId, null)) {
-            stm.setBoolean(4, value);
-            stm.setBoolean(7, value);
+             PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, null)
+                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+            boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
+            if (!multiple)
+                stm.setBoolean(4, value);
+            if (clear == null || !clear)
+                stm.setBoolean(5 + extra(multiple), value);
             stm.executeQuery();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void setBoolSetting(long guildId, Setting setting, boolean value) {
-        setBoolSetting(guildId, setting, null, value);
+    public void setBoolSetting(long guildId, Setting setting, boolean value, Boolean clear) throws Exception {
+        setBoolSetting(guildId, setting, null, value, clear);
     }
 
-    public void setStringSetting(long guildId, Setting setting, Setting.SubSetting subSetting, String value) {
+    public void setStringSetting(long guildId, Setting setting, Setting.SubSetting subSetting, String value, Boolean clear) throws Exception {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, setting, subSetting, guildId, null)) {
-            stm.setString(4, value);
-            stm.setString(7, value);
+             PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, null)
+                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+            boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
+            if (!multiple)
+                stm.setString(4, value);
+            if (clear == null || !clear)
+                stm.setString(5 + extra(multiple), value);
             stm.executeQuery();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void setStringSetting(long guildId, Setting setting, String value) {
-        setStringSetting(guildId, setting, null, value);
+    public void setStringSetting(long guildId, Setting setting, String value, Boolean clear) throws Exception{
+        setStringSetting(guildId, setting, null, value, clear);
     }
 
-    public void setLongSetting(long guildId, Setting setting, Setting.SubSetting subSetting, long value, Setting.LongType longType) {
+    public void setLongSetting(long guildId, Setting setting, Setting.SubSetting subSetting, long value, Setting.LongType longType, Boolean clear) throws Exception{
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = prepareSetSetting(conn, setting, subSetting, guildId, longType)) {
-            stm.setLong(4, value);
-            stm.setLong(7, value);
+             PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, longType)
+                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+            boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
+            if (!multiple)
+                stm.setLong(4, value);
+            if(clear ==  null || !clear)
+                stm.setLong(5 + extra(multiple), value);
             stm.executeQuery();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void setLongSetting(long guildId, Setting setting, long value, Setting.LongType longType) {
-        setLongSetting(guildId, setting, null, value, longType);
+    public void setLongSetting(long guildId, Setting setting, long value, Setting.LongType longType, Boolean clear) throws Exception {
+        setLongSetting(guildId, setting, null, value, longType, clear);
     }
 
     //</editor-fold
