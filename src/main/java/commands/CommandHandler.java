@@ -112,7 +112,7 @@ public class CommandHandler {
         Message message = e.getMessage();
         updateNickName(e.getGuild().getSelfMember().getEffectiveName());
         String[] words = split(message.getContentRaw()).toArray(new String[]{});
-        String prefix = new DataHandler().getStringSetting(e.getGuild().getIdLong(), Setting.PREFIX);
+        String prefix = new DataHandler().getStringSetting(e.getGuild().getIdLong(), Setting.PREFIX).get(0);
         String command = words[0].substring(prefix.length());
         for (Command c : commands.values()){
             if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){

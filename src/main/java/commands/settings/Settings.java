@@ -24,7 +24,7 @@ public class Settings extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         DataHandler dataHandler = new DataHandler();
         long guildId = e.getGuild().getIdLong();
-        String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX);
+        String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(e.getGuild().getSelfMember().getColor());
         if (args.length == 0) {
@@ -60,6 +60,7 @@ public class Settings extends Command {
                                         if (subs.isMultiple()) {
                                             if (args.length == 4 && args[3].equalsIgnoreCase("clear")) {
                                                 handleClear(setting, subs, guildId, dataHandler);
+                                                e.getMessage().addReaction(":greentick:804432208483844146").queue();
                                             } else if (args.length >= 5 && args[3].matches("(?i)^(add|remove)$")) {
                                                 handleMultiSet(setting, subs, guildId, Arrays.copyOfRange(args, 4, args.length), args[3].equalsIgnoreCase("add"), dataHandler, e.getMessage());
                                             }
@@ -79,6 +80,7 @@ public class Settings extends Command {
                             } else {
                                 if (setting.isMultiple()) {
                                     if (args.length == 3 && args[2].equalsIgnoreCase("clear")) {
+                                        e.getMessage().addReaction(":greentick:804432208483844146").queue();
                                         handleClear(setting, null, guildId, dataHandler);
                                     } else if (args.length >= 4 && args[2].matches("(?i)^(add|remove)$")) {
                                         handleMultiSet(setting, null, guildId, Arrays.copyOfRange(args, 3, args.length), args[2].equalsIgnoreCase("add"), dataHandler, e.getMessage());
@@ -107,9 +109,9 @@ public class Settings extends Command {
         long guildId = guild.getIdLong();
         StringBuilder fieldName = new StringBuilder();
         StringBuilder fieldValue = new StringBuilder();
-        fieldName.append("The ").append(Utils.upperCaseFirst(setting.getName()));
+        fieldName.append("The ").append(setting.getName());
         fieldValue.append("Modify this setting using \n`").append(prefix).append("settings ")
-                .append(setting.getType()).append(" ").append(name);
+                .append(setting.getType().toLowerCase()).append(" ").append(setting.getName().toLowerCase());
         Setting.ValueType v = setting.getValueType();
         if (subs != null) {
             fieldName.append(" ").append(subs.toString().toLowerCase());
@@ -127,23 +129,76 @@ public class Settings extends Command {
                 break;
             case LONG:
                 fieldValue.append(" <channel|role|member>");
-                fieldName.append(dataHandler.getLongSetting(guildId, setting, subs));
+                List<Pair<Long, Setting.LongType>> longSettings = dataHandler.getLongSetting(guildId, setting, subs);
+                if (longSettings != null) {
+                    StringBuilder sb = new StringBuilder();
+                    for (Pair<Long, Setting.LongType> longSetting : longSettings) {
+                        switch (longSetting.getRight()) {
+                            case CHANNEL:
+                                sb.append(guild.getTextChannelById(longSetting.getLeft()).getAsMention());
+                                break;
+                            case ROLE:
+                                sb.append(guild.getRoleById(longSetting.getLeft()).getAsMention());
+                                break;
+                            case USER:
+                                sb.append(guild.getMemberById(longSetting.getLeft()).getAsMention());
+                                break;
+                        }
+                        sb.append("\n");
+                    }
+                    fieldValue.insert(0, sb);
+                    fieldName.append(":");
+                } else {
+                    fieldName.append("not set");
+                }
                 break;
             case CHANNEL_LONG:
                 fieldValue.append(" <channel>");
-                fieldName.append(dataHandler.getLongSetting(guildId, setting, subs));
+                longSettings = dataHandler.getLongSetting(guildId, setting, subs);
+                if (longSettings != null) {
+                    StringBuilder sb = new StringBuilder();
+                    for (Pair<Long, Setting.LongType> longSetting : longSettings) {
+                        sb.append(guild.getTextChannelById(longSetting.getLeft()).getAsMention());
+                        sb.append("\n");
+                    }
+                    fieldValue.insert(0, sb);
+                    fieldName.append(":");
+                } else {
+                    fieldName.append("not set");
+                }
                 break;
             case ROLE_LONG:
                 fieldValue.append(" <role>");
-                fieldName.append(dataHandler.getLongSetting(guildId, setting, subs));
+                longSettings = dataHandler.getLongSetting(guildId, setting, subs);
+                if (longSettings != null) {
+                    StringBuilder sb = new StringBuilder();
+                    for (Pair<Long, Setting.LongType> longSetting : longSettings) {
+                        sb.append(guild.getRoleById(longSetting.getLeft()).getAsMention());
+                        sb.append("\n");
+                    }
+                    fieldValue.insert(0, sb);
+                    fieldName.append(":");
+                } else {
+                    fieldName.append("not set");
+                }
                 break;
             case INTEGER:
                 fieldValue.append(" <number>");
-                fieldName.append(dataHandler.getIntSetting(guildId, setting, subs));
+                List<Integer> settings = dataHandler.getIntSetting(guildId, setting, subs);
+                if (settings.size() == 1){
+                    fieldName.append(settings.get(0));
+                } else {
+                    fieldName.append(settings);
+                }
                 break;
             case STRING:
                 fieldValue.append(" <value>");
-                fieldName.append(dataHandler.getStringSetting(guildId, setting, subs));
+                List<String> sSettings = dataHandler.getStringSetting(guildId, setting, subs);
+                if (sSettings.size() == 1){
+                    fieldName.append(sSettings.get(0));
+                } else {
+                    fieldName.append(sSettings);
+                }
                 break;
         }
 
@@ -229,23 +284,23 @@ public class Settings extends Command {
                     if (i < mentions.size() && value.equalsIgnoreCase(mentions.get(i).getAsMention())) {
                         IMentionable mention = mentions.get(i);
                         Setting.LongType type = getLongType(mention);
-                        if (type == null){
+                        if (type == null) {
                             good = false;
                             wrongValues.append(mention.getAsMention()).append(", ");
                         } else {
                             dataHandler.setLongSetting(guildId, setting, subSetting, mention.getIdLong(), type, clear);
                         }
                         i++;
-                    } else if(Utils.isLong(value) != null){
+                    } else if (Utils.isLong(value) != null) {
                         Long id = Utils.isLong(value);
                         TextChannel channel = message.getGuild().getTextChannelById(id);
                         Role role = message.getGuild().getRoleById(id);
                         Member member = message.getGuild().getMemberById(id);
-                        if (channel != null){
+                        if (channel != null) {
                             dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.CHANNEL, clear);
-                        } else if (role != null){
+                        } else if (role != null) {
                             dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.ROLE, clear);
-                        } else if (member != null){
+                        } else if (member != null) {
                             dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.USER, clear);
                         } else {
                             good = false;
@@ -256,7 +311,7 @@ public class Settings extends Command {
                         wrongValues.append(value).append(", ");
                     }
                 }
-                if (!good){
+                if (!good) {
                     wrongType = "a channel, role or member";
                 }
                 break;

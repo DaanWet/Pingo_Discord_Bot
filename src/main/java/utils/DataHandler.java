@@ -1,5 +1,6 @@
 package utils;
 
+import com.mysql.cj.exceptions.WrongArgumentException;
 import commands.settings.Setting;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 
 @SuppressWarnings("unchecked")
@@ -569,18 +571,20 @@ public class DataHandler {
         return list;
     }
 
-    public int getIntSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
+    public List<Integer> getIntSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
         List<Pair<String, String>> resultSet = getSetting(guildId, setting, subSetting);
+
         if (resultSet.size() != 0) {
-            return Utils.getInt(resultSet.get(0).getLeft());
+            return resultSet.stream().map(pair -> Utils.getInt(pair.getLeft())).collect(Collectors.toList());
         }
-        return (int) (subSetting == null ? setting.getDefaultValue() : subSetting.getDefaultValue());
+        return List.of((int) (subSetting == null ? setting.getDefaultValue() : subSetting.getDefaultValue()));
     }
 
-    public int getIntSetting(long guildId, Setting setting) {
+    public List<Integer> getIntSetting(long guildId, Setting setting) {
         return getIntSetting(guildId, setting, null);
     }
 
+    // Bool setting will never be a list?
     public boolean getBoolSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
         List<Pair<String, String>> resultSet = getSetting(guildId, setting, subSetting);
         if (resultSet.size() != 0) {
@@ -593,27 +597,27 @@ public class DataHandler {
         return getBoolSetting(guildId, setting, null);
     }
 
-    public String getStringSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
+    public List<String> getStringSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
         List<Pair<String, String>> resultSet = getSetting(guildId, setting, subSetting);
         if (resultSet.size() != 0) {
-            return resultSet.get(0).getLeft();
+            return resultSet.stream().map(Pair::getLeft).collect(Collectors.toList());
         }
-        return (String) (subSetting == null ? setting.getDefaultValue() : subSetting.getDefaultValue());
+        return List.of((String) (subSetting == null ? setting.getDefaultValue() : subSetting.getDefaultValue()));
     }
 
-    public String getStringSetting(long guildId, Setting setting) {
+    public List<String> getStringSetting(long guildId, Setting setting) {
         return getStringSetting(guildId, setting, null);
     }
 
-    public Pair<Long, String> getLongSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
+    public List<Pair<Long, Setting.LongType>> getLongSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
         List<Pair<String, String>> resultSet = getSetting(guildId, setting, subSetting);
         if (resultSet.size() != 0) {
-            return Pair.of(Long.parseLong(resultSet.get(0).getLeft()), resultSet.get(0).getRight());
+            return  resultSet.stream().map(pair -> Pair.of(Long.parseLong(pair.getLeft()), Setting.LongType.valueOf(pair.getRight()))).collect(Collectors.toList());
         }
         return null;
     }
 
-    public Pair<Long, String> getLongSetting(long guildId, Setting setting) {
+    public List<Pair<Long, Setting.LongType>> getLongSetting(long guildId, Setting setting) {
         return getLongSetting(guildId, setting, null);
     }
 

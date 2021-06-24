@@ -65,7 +65,7 @@ public class MessageListener extends ListenerAdapter {
                 message.delete().queue();
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
             } // Check for commands
-            else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX))) {
+            else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))) {
                 try  {
                     commandListener.onCommandReceived(e);
                 } catch (Exception exc){
