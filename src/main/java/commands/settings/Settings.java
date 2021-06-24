@@ -63,6 +63,8 @@ public class Settings extends Command {
                                                 e.getMessage().addReaction(":greentick:804432208483844146").queue();
                                             } else if (args.length >= 5 && args[3].matches("(?i)^(add|remove)$")) {
                                                 handleMultiSet(setting, subs, guildId, Arrays.copyOfRange(args, 4, args.length), args[3].equalsIgnoreCase("add"), dataHandler, e.getMessage());
+                                            } else if (args.length == 4 && args[3].matches("(?i)^(enable|disable)$")){
+                                                dataHandler.setListEnabled(guildId, setting, subs, args[3].equalsIgnoreCase("enable"));
                                             }
                                         } else {
                                             handleSet(setting, subs, guildId, args[3], dataHandler, e.getMessage());
@@ -84,6 +86,8 @@ public class Settings extends Command {
                                         handleClear(setting, null, guildId, dataHandler);
                                     } else if (args.length >= 4 && args[2].matches("(?i)^(add|remove)$")) {
                                         handleMultiSet(setting, null, guildId, Arrays.copyOfRange(args, 3, args.length), args[2].equalsIgnoreCase("add"), dataHandler, e.getMessage());
+                                    }  else if (args.length == 3 && args[2].matches("(?i)^(enable|disable)$")){
+                                        dataHandler.setListEnabled(guildId, setting, subs, args[2].equalsIgnoreCase("enable"));
                                     }
                                 } else {
                                     handleSet(setting, null, guildId, args[2], dataHandler, e.getMessage());
@@ -119,8 +123,10 @@ public class Settings extends Command {
             v = subs.getValueType();
         }
         fieldName.append(" setting is currently ");
-        if ((subs != null && subs.isMultiple()) || (subs == null && setting.isMultiple())) {
-            fieldValue.append(" [add|remove|clear]");
+        boolean multiple = (subs != null && subs.isMultiple()) || (subs == null && setting.isMultiple());
+        if (multiple) {
+            fieldValue.append(" [add|remove|clear|enable|disable]");
+            fieldName.append(dataHandler.getListEnabled(guildId, setting, subs) ? "enabled <:greentick:804432208483844146>" : "disabled <:redtick:804432244469923890>");
         }
         switch (v) {
             case BOOLEAN:
@@ -147,8 +153,7 @@ public class Settings extends Command {
                         sb.append("\n");
                     }
                     fieldValue.insert(0, sb);
-                    fieldName.append(":");
-                } else {
+                } else if (!multiple){
                     fieldName.append("not set");
                 }
                 break;
@@ -162,8 +167,7 @@ public class Settings extends Command {
                         sb.append("\n");
                     }
                     fieldValue.insert(0, sb);
-                    fieldName.append(":");
-                } else {
+                } else if (!multiple){
                     fieldName.append("not set");
                 }
                 break;
@@ -177,8 +181,7 @@ public class Settings extends Command {
                         sb.append("\n");
                     }
                     fieldValue.insert(0, sb);
-                    fieldName.append(":");
-                } else {
+                } else if (!multiple){
                     fieldName.append("not set");
                 }
                 break;

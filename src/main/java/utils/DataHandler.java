@@ -68,6 +68,14 @@ public class DataHandler {
                 stm.setString(3, s.getType());
                 stm.setBoolean(4, s.isMultiple());
                 stm.executeUpdate();
+                if (s.isMultiple()){
+                    PreparedStatement stm1 = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
+                    stm1.setString(1, s.name() + "_on");
+                    stm1.setString(2, Setting.ValueType.BOOLEAN.getName());
+                    stm1.setString(3, s.getType());
+                    stm1.setBoolean(4, false);
+                    stm1.executeUpdate();
+                }
                 for (Setting.SubSetting subs : s.getSubSettings()) {
                     PreparedStatement stmn = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
                     stmn.setString(1, String.format("%s_%s", s.getName(), subs));
@@ -75,6 +83,14 @@ public class DataHandler {
                     stmn.setString(3, s.getType());
                     stmn.setBoolean(4, subs.isMultiple());
                     stmn.executeUpdate();
+                    if (subs.isMultiple()){
+                        PreparedStatement stmn1 = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
+                        stmn1.setString(1,  String.format("%s_%s_on", s.getName(), subs));
+                        stmn1.setString(2, Setting.ValueType.BOOLEAN.getName());
+                        stmn1.setString(3, s.getType());
+                        stmn1.setBoolean(4, false);
+                        stmn1.executeUpdate();
+                    }
                 }
             }
 
@@ -621,6 +637,28 @@ public class DataHandler {
         return getLongSetting(guildId, setting, null);
     }
 
+    public boolean getListEnabled(long guildId, Setting setting, Setting.SubSetting subSetting) throws WrongArgumentException{
+        if (!(subSetting == null ? setting.isMultiple() : subSetting.isMultiple())){
+            throw new WrongArgumentException("Setting must be multiple");
+        }
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT Value FROM GuildSetting " +
+                                                                   "INNER JOIN (SELECT * FROM Setting WHERE Name LIKE ? AND ValueType LIKE ? AND Type LIKE ?) " +
+                                                                   "AS setting USING(ID) WHERE GuildId = ?;")) {
+            stm.setString(1, setting.getName() + (subSetting != null ? "_" + subSetting : "") + "_on");
+            stm.setString(2, Setting.ValueType.BOOLEAN.getName());
+            stm.setString(3, setting.getType());
+            stm.setLong(4, guildId);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()){
+                return rs.getBoolean(1);
+            }
+        } catch (SQLException exc){
+            exc.printStackTrace();
+        }
+        return false;
+    }
+
     private PreparedStatement prepareSetSetting(Connection conn, Setting setting, Setting.SubSetting subSetting, long guildId, Setting.LongType longType) throws SQLException {
         boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
         PreparedStatement stm = conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
@@ -728,6 +766,29 @@ public class DataHandler {
 
     public void setLongSetting(long guildId, Setting setting, long value, Setting.LongType longType, Boolean clear) throws Exception {
         setLongSetting(guildId, setting, null, value, longType, clear);
+    }
+
+    public void setListEnabled(long guildId, Setting setting, Setting.SubSetting subSetting, boolean enabled){
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+            PreparedStatement stm = conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
+                                                         "UPDATE GuildSetting SET Value = ? WHERE GuildId = ? AND ID = @id;"+
+                                                         "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value) VALUES(?, @id, ?);");
+        ) {
+            stm.setString(1, setting.getName() + (subSetting != null ? "_" + subSetting : "") + "_on");
+            stm.setString(2, setting.getType());
+            stm.setString(3, Setting.ValueType.BOOLEAN.getName());
+            stm.setBoolean(4, enabled);
+            stm.setLong(5, guildId);
+            stm.setLong(6, guildId);
+            stm.setBoolean(7, enabled);
+            stm.executeQuery();
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    public void setListEnabled(long guildId, Setting setting, boolean enabled){
+        setListEnabled(guildId, setting, null, enabled);
     }
 
     //</editor-fold
