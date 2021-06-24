@@ -1,7 +1,9 @@
 package commands.casino;
 
 import commands.Command;
+import commands.settings.CommandState;
 import commands.settings.Setting;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
 
@@ -18,10 +20,8 @@ public class Weekly extends Command {
     }
 
     @Override
-    public boolean canBeExecuted(long guildId, long channelId, long userId){
-        DataHandler dataHandler = new DataHandler();
-        Boolean betting = dataHandler.getBoolSetting(guildId, Setting.BETTING);
-        return betting == null || betting;
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.BETTING);
     }
 
     @Override

@@ -3,8 +3,10 @@ package commands.casino.blackjack;
 import casino.BlackJackGame;
 import casino.GameHandler;
 import commands.Command;
+import commands.settings.CommandState;
 import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
@@ -25,11 +27,10 @@ public class BlackJack extends Command {
     }
 
     @Override
-    public boolean canBeExecuted(long guildId, long channelId, long userId){
-        DataHandler dataHandler = new DataHandler();
-        Boolean betting = dataHandler.getBoolSetting(guildId, Setting.BETTING);
-        Boolean blackjack = dataHandler.getBoolSetting(guildId, Setting.BLACKJACK);
-        return (betting == null || betting) && (blackjack == null || blackjack);
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        CommandState betting = canBeExecuted(guildId, channelId, member, Setting.BETTING);
+        CommandState blackjack = canBeExecuted(guildId, channelId, member, Setting.BLACKJACK);
+        return betting.worst(blackjack);
     }
 
     @Override

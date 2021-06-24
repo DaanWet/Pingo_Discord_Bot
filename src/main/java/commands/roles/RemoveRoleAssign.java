@@ -1,6 +1,7 @@
 package commands.roles;
 
 import commands.Command;
+import commands.settings.CommandState;
 import commands.settings.Setting;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,10 +25,8 @@ public class RemoveRoleAssign extends Command {
     }
 
     @Override
-    public boolean canBeExecuted(long guildId, long channelId, long userId){
-        DataHandler dataHandler = new DataHandler();
-        Boolean setting = dataHandler.getBoolSetting(guildId, Setting.ROLEASSIGN);
-        return setting == null || setting;
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.ROLEASSIGN);
     }
 
     @Override
