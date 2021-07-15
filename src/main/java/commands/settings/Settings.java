@@ -301,7 +301,8 @@ public class Settings extends Command {
                 List<IMentionable> mentions = message.getMentions();
                 int i = 0;
                 for (String value : values) {
-                    if (i < mentions.size() && value.equalsIgnoreCase(mentions.get(i).getAsMention())) {
+                    // Apparently discord's mention is different as a mention than it is a raw text in the message
+                    if (i < mentions.size() && value.replaceFirst("!", "").equalsIgnoreCase(mentions.get(i).getAsMention())) {
                         IMentionable mention = mentions.get(i);
                         Setting.LongType type = getLongType(mention);
                         if (type == null) {
@@ -342,7 +343,7 @@ public class Settings extends Command {
         } else {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle("Invalid input");
-            eb.setDescription(String.format("Could not %s %s as it is not %s", add ? "add" : "remove", wrongValues.substring(0, wrongValues.length() - 3), wrongType));
+            eb.setDescription(String.format("Could not %s %s as it is not %s", add ? "add" : "remove", wrongValues.substring(0, wrongValues.length() - 2), wrongType));
             eb.setColor(Color.RED);
             message.getChannel().sendMessage(eb.build()).queue();
         }
@@ -374,6 +375,8 @@ public class Settings extends Command {
         } else if (mention instanceof Role) {
             type = Setting.LongType.ROLE;
         } else if (mention instanceof Member) {
+            type = Setting.LongType.USER;
+        } else if (mention instanceof User) {
             type = Setting.LongType.USER;
         }
         return type;
