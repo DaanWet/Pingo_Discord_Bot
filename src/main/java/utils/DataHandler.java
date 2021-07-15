@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class DataHandler {
 
-    private final String JDBC_URL = "jdbc:mysql://localhost:3307/pingo?character_set_server=utf8mb4&serverTimezone=CET";
+    private final String JDBC_URL = "jdbc:mysql://localhost:3306/pingo?character_set_server=utf8mb4&serverTimezone=CET";
     private static String USER_ID;
     private static String PASSWD;
     private Properties properties;
@@ -604,7 +604,7 @@ public class DataHandler {
     public boolean getBoolSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
         List<Pair<String, String>> resultSet = getSetting(guildId, setting, subSetting);
         if (resultSet.size() != 0) {
-            return Boolean.parseBoolean(resultSet.get(0).getLeft());
+            return "1".equalsIgnoreCase(resultSet.get(0).getLeft());
         }
         return (boolean) (subSetting == null ? setting.getDefaultValue() : subSetting.getDefaultValue());
     }

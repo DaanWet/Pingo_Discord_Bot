@@ -99,7 +99,7 @@ public enum Setting {
             return eb.addField("Available commands or modules are", sb.toString(), false);
         }),
         GENERAL("General", (list, eb, prefix) -> {
-            return eb.addField("Prefix", String.format("Change the prefix with `%ssettings prefix <newprefix>`", prefix), false);
+            return eb.addField("Prefix", String.format("Change the prefix with `%ssettings general prefix <newprefix>`", prefix), false);
         }),
         UNO("Uno", (list, eb, prefix) -> {
             return eb.addField("Uno", "Change uno idk ", false);

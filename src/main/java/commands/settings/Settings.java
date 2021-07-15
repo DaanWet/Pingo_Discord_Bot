@@ -65,6 +65,7 @@ public class Settings extends Command {
                                                 handleMultiSet(setting, subs, guildId, Arrays.copyOfRange(args, 4, args.length), args[3].equalsIgnoreCase("add"), dataHandler, e.getMessage());
                                             } else if (args.length == 4 && args[3].matches("(?i)^(enable|disable)$")){
                                                 dataHandler.setListEnabled(guildId, setting, subs, args[3].equalsIgnoreCase("enable"));
+                                                e.getMessage().addReaction(":greentick:804432208483844146").queue();
                                             }
                                         } else {
                                             handleSet(setting, subs, guildId, args[3], dataHandler, e.getMessage());
@@ -91,6 +92,7 @@ public class Settings extends Command {
                                     }
                                 } else {
                                     handleSet(setting, null, guildId, args[2], dataHandler, e.getMessage());
+                                    e.getMessage().addReaction(":greentick:804432208483844146").queue();
                                 }
                             }
                         }
@@ -109,29 +111,32 @@ public class Settings extends Command {
 
     }
 
-    public void addField(EmbedBuilder eb, Setting setting, Setting.SubSetting subs, DataHandler dataHandler, Guild guild, String prefix) {
+   private void addField(EmbedBuilder eb, Setting setting, Setting.SubSetting subs, DataHandler dataHandler, Guild guild, String prefix){
         long guildId = guild.getIdLong();
         StringBuilder fieldName = new StringBuilder();
         StringBuilder fieldValue = new StringBuilder();
-        fieldName.append("The ").append(setting.getName());
-        fieldValue.append("Modify this setting using \n`").append(prefix).append("settings ")
+        fieldValue.append("`").append(prefix).append("settings ")
                 .append(setting.getType().toLowerCase()).append(" ").append(setting.getName().toLowerCase());
-        Setting.ValueType v = setting.getValueType();
-        if (subs != null) {
-            fieldName.append(" ").append(subs.toString().toLowerCase());
-            fieldValue.append(" ").append(subs.toString().toLowerCase());
-            v = subs.getValueType();
-        }
-        fieldName.append(" setting is currently ");
+
         boolean multiple = (subs != null && subs.isMultiple()) || (subs == null && setting.isMultiple());
         if (multiple) {
             fieldValue.append(" [add|remove|clear|enable|disable]");
-            fieldName.append(dataHandler.getListEnabled(guildId, setting, subs) ? "enabled <:greentick:804432208483844146>" : "disabled <:redtick:804432244469923890>");
+            fieldName.append(dataHandler.getListEnabled(guildId, setting, subs) ? "<:greentick:804432208483844146> " : "<:redtick:804432244469923890> ");
         }
+
+        Setting.ValueType v = setting.getValueType();
+        if (subs != null) {
+            fieldName.append(Utils.upperCaseFirst(subs.toString().toLowerCase())).append(": ");
+            fieldValue.append(" ").append(subs.toString().toLowerCase());
+            v = subs.getValueType();
+        } else {
+            fieldName.append(Utils.upperCaseFirst(setting.getName())).append(": ");
+        }
+
         switch (v) {
             case BOOLEAN:
                 fieldValue.append(" [on|off]");
-                fieldName.append("turned ").append(dataHandler.getBoolSetting(guildId, setting, subs) ? "on <:greentick:804432208483844146>" : "off <:redtick:804432244469923890>");
+                fieldName.insert(0, dataHandler.getBoolSetting(guildId, setting, subs) ? "<:greentick:804432208483844146>" : "<:redtick:804432244469923890>");
                 break;
             case LONG:
                 fieldValue.append(" <channel|role|member>");
@@ -153,8 +158,12 @@ public class Settings extends Command {
                         sb.append("\n");
                     }
                     fieldValue.insert(0, sb);
-                } else if (!multiple){
-                    fieldName.append("not set");
+                } else {
+                    if (!multiple){
+                        fieldName.append("not set");
+                    } else {
+                        fieldValue.insert(0, "None set\n");
+                    }
                 }
                 break;
             case CHANNEL_LONG:
@@ -167,8 +176,12 @@ public class Settings extends Command {
                         sb.append("\n");
                     }
                     fieldValue.insert(0, sb);
-                } else if (!multiple){
-                    fieldName.append("not set");
+                } else {
+                    if (!multiple){
+                        fieldName.append("not set");
+                    } else {
+                        fieldValue.insert(0, "None set\n");
+                    }
                 }
                 break;
             case ROLE_LONG:
@@ -181,8 +194,12 @@ public class Settings extends Command {
                         sb.append("\n");
                     }
                     fieldValue.insert(0, sb);
-                } else if (!multiple){
-                    fieldName.append("not set");
+                } else {
+                    if (!multiple){
+                        fieldName.append("not set");
+                    } else {
+                        fieldValue.insert(0, "None set\n");
+                    }
                 }
                 break;
             case INTEGER:
@@ -214,7 +231,7 @@ public class Settings extends Command {
         switch (subSetting == null ? setting.getValueType() : subSetting.getValueType()) {
             case BOOLEAN:
                 if (value.matches("(?i)^(on|enable|off|disable)$")) {
-                    dataHandler.setBoolSetting(guildId, setting, subSetting, value.matches("(?i)(on|enable)"), null);
+                    dataHandler.setBoolSetting(guildId, setting, subSetting, value.matches("(?i)^(on|enable)$"), null);
                     message.addReaction(":greentick:804432208483844146").queue();
                 } else {
                     EmbedBuilder eb = new EmbedBuilder();
