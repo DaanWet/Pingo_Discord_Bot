@@ -127,22 +127,24 @@ public class DataHandler {
 
     public boolean addRoleAssign(long guildId, String type, String emoji, String name, long roleId) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO RoleAssign (Name, GuildId) VALUES (?, ?);" +
-                     "INSERT IGNORE INTO Role VALUES (?, ?, ?, ?, ?)")
+             PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO RoleAssign (Name, GuildId) VALUES (?, ?);");
+             PreparedStatement stm2 = conn.prepareStatement("INSERT IGNORE INTO Role VALUES (?, ?, ?, ?, ?);")
         ) {
-            stm.setLong(2, guildId);
-            stm.setLong(3, roleId);
-            stm.setLong(7, guildId);
             stm.setString(1, type);
-            stm.setString(4, name);
-            stm.setString(5, emoji);
-            stm.setString(6, type);
+            stm.setLong(2, guildId);
+            stm2.setLong(1, roleId);
+            stm2.setString(2, name);
+            stm2.setString(3, emoji);
+            stm2.setString(4, type);
+            stm2.setLong(5, guildId);
+
             int i = stm.executeUpdate();
-            return i != 0;
-        } catch (SQLException throwables) {
+            int j = stm2.executeUpdate();
+            return i + j > 0;
+        } catch (Exception throwables) {
             throwables.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public boolean removeRoleAssign(long guildId, String type, String emoji) {

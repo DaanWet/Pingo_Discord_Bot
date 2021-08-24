@@ -1,15 +1,13 @@
 package commands.roles;
 
-import com.vdurmont.emoji.EmojiManager;
-import com.vdurmont.emoji.EmojiParser;
-import commands.Command;
-import emoji4j.EmojiUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class AddRoleAssign extends RoleCommand {
@@ -46,15 +44,15 @@ public class AddRoleAssign extends RoleCommand {
                     if (message != null) {
                         e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
                             MessageEmbed me = m.getEmbeds().get(0);
-                            EmbedBuilder eb = new EmbedBuilder(me);
-                            eb.setDescription(me.getDescription().concat(String.format("\n\n%s\t%s", args[1], name.toString())));
-                            m.editMessage(eb.build()).queue();
+                            Compacting comp = detectCompact(me);
+                            ArrayList<Triple<String, String, Long>> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
+                            m.editMessage(getRoleEmbed(roles, args[0], Sorting.NONE, comp).build()).queue();
                             m.addReaction(emote).queue();
                         });
                     }
                 } else {
                     e.getMessage().addReaction("❌").queue();
-                    e.getChannel().sendMessage("Unable to add to database");
+                    e.getChannel().sendMessage("Unable to add to database, that emoji is already used in the role picker").queue();
                 }
             }
         } else {

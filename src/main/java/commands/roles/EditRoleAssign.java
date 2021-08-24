@@ -53,12 +53,9 @@ public class EditRoleAssign extends RoleCommand {
                         m.editMessage(eb.build()).queue();
                     }
                 });
-            } else {
-                //Invalid sorting type
-                //TODO: show error
+            } else if (hasEmoji(e.getMessage(), args[1])) {
+                //TODO: Write name update code
             }
-        } else if (hasEmoji(e.getMessage(), args[1])) {
-            //TODO: Write name update code
         }
     }
 }

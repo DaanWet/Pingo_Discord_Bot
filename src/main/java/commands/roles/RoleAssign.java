@@ -41,7 +41,7 @@ public class RoleAssign extends RoleCommand{
             if (message != null) {
                 e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {if(m != null){ m.delete().queue();}});
             }
-            EmbedBuilder eb = getRoleEmbed(roles, args[0], null, compact);
+            EmbedBuilder eb = getRoleEmbed(roles, args[0], Sorting.NONE, compact);
             e.getChannel().sendMessage(eb.build()).queue(m -> {
                 dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
                 for (Triple<String, String, Long> obj : roles) {
