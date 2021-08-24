@@ -2,8 +2,11 @@ package casino;
 
 
 import casino.uno.UnoGame;
+import casino.uno.UnoHand;
 
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class GameHandler {
 
@@ -43,5 +46,12 @@ public class GameHandler {
 
     public void setUnoGame(long guildId, UnoGame unoGame){
         unoGames.put(guildId, unoGame);
+    }
+
+    public boolean isUnoChannel(long guildId, long channelId){
+        if (unoGames.containsKey(guildId)) {
+            return unoGames.get(guildId).getHands().stream().map(UnoHand::getChannelId).anyMatch(id -> id == channelId);
+        }
+        return false;
     }
 }

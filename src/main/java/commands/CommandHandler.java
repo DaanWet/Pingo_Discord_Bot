@@ -137,7 +137,7 @@ public class CommandHandler {
         }
     }
     private ArrayList<String> split(String subjectString){
-        ArrayList<String> matchList = new ArrayList<String>();
+        ArrayList<String> matchList = new ArrayList<>();
         Pattern regex = Pattern.compile("\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|[^\\s]+");
         Matcher regexMatcher = regex.matcher(subjectString);
         while (regexMatcher.find()) {
