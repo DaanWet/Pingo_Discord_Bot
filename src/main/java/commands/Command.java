@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public abstract class Command {
         DataHandler dataHandler = new DataHandler();
         CommandState state = CommandState.DISABLED;
         boolean enabled = dataHandler.getBoolSetting(guildId, setting);
+        long userId = member.getIdLong();
         if (enabled){
             if (dataHandler.getListEnabled(guildId, setting, Setting.SubSetting.WHITELIST)){
                 List<Pair<Long, Setting.LongType>> whitelist = dataHandler.getLongSetting(guildId, setting, Setting.SubSetting.WHITELIST);
@@ -34,7 +36,7 @@ public abstract class Command {
                 state = CommandState.CHANNEL;
                 while (state != CommandState.ENABLED && i < whitelist.size()){
                     Pair<Long, Setting.LongType> pair = whitelist.get(i);
-                    if (pair.getLeft().equals(channelId) || pair.getLeft().equals(member.getIdLong()) || member.getRoles().stream().map(ISnowflake::getIdLong). anyMatch(id -> id.equals(pair.getLeft()))) {
+                    if (pair.getLeft().equals(channelId) || pair.getLeft().equals(userId) || member.getRoles().stream().map(ISnowflake::getIdLong). anyMatch(id -> id.equals(pair.getLeft()))) {
                         state = CommandState.ENABLED;
                     }
                     i++;
@@ -49,15 +51,21 @@ public abstract class Command {
                     Pair<Long, Setting.LongType> pair = blacklist.get(i);
                     if (pair.getLeft().equals(channelId)){
                         state = CommandState.CHANNEL;
-                    } else if (pair.getLeft().equals(member.getIdLong()) || member.getRoles().stream().map(ISnowflake::getIdLong).anyMatch(id -> id.equals(pair.getLeft()))) {
+                    } else if (pair.getLeft().equals(userId) || member.getRoles().stream().map(ISnowflake::getIdLong).anyMatch(id -> id.equals(pair.getLeft()))) {
                         state = CommandState.USER;
                     }
                     i++;
                 }
             }
-
-
-            // TODO: Check cooldown
+            if (state == CommandState.ENABLED && setting.getSubSettings().contains(Setting.SubSetting.COOLDOWN)){
+                int cooldown = dataHandler.getIntSetting(guildId, setting, Setting.SubSetting.COOLDOWN).get(0);
+                if (cooldown != 0){
+                    LocalDateTime t = dataHandler.getCooldown(guildId, userId, setting);
+                    if (t != null && LocalDateTime.now().isBefore(t.plusSeconds(cooldown))){
+                        state = CommandState.COOLDOWN;
+                    }
+                }
+            }
         }
         return state;
     }
