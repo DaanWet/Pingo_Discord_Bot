@@ -1,7 +1,11 @@
 package commands;
 
 
+import commands.settings.Setting;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.DataHandler;
+
+import java.time.LocalDateTime;
 
 public class FuckPingo extends Command{
 
@@ -17,5 +21,6 @@ public class FuckPingo extends Command{
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) {
         e.getChannel().sendMessage("No, Fuck You").queue();
+        new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.FUCKPINGO, LocalDateTime.now());
     }
 }

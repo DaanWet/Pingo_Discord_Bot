@@ -13,6 +13,8 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 import utils.Utils;
 
+import java.time.LocalDateTime;
+
 public class BlackJack extends Command {
 
     private GameHandler gameHandler;
@@ -47,6 +49,7 @@ public class BlackJack extends Command {
             if (dataHandler.getCredits(guildId, playerId) - bet >= 0) {
                 BlackJackGame objg = gameHandler.getBlackJackGame(playerId);
                 if (objg == null) {
+                    dataHandler.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
                     BlackJackGame bjg = new BlackJackGame(bet);
                     EmbedBuilder eb = bjg.buildEmbed(author.getName());
                     if (!bjg.hasEnded()) {

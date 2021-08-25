@@ -1,10 +1,13 @@
 package commands;
 
+import commands.settings.Setting;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
+import utils.DataHandler;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Nickname extends Command {
@@ -36,6 +39,7 @@ public class Nickname extends Command {
                 }
                 if (sb.toString().trim().length() <= 32) {
                     target.modifyNickname(sb.toString().trim()).queue();
+                    new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.NICKNAME, LocalDateTime.now());
                 } else {
                     e.getChannel().sendMessage("Nickname too long").queue();
                 }

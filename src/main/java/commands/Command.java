@@ -57,7 +57,7 @@ public abstract class Command {
                     i++;
                 }
             }
-            if (state == CommandState.ENABLED){
+            if (state == CommandState.ENABLED && setting.getSubSettings().contains(Setting.SubSetting.COOLDOWN)){
                 int cooldown = dataHandler.getIntSetting(guildId, setting, Setting.SubSetting.COOLDOWN).get(0);
                 if (cooldown != 0){
                     LocalDateTime t = dataHandler.getCooldown(guildId, userId, setting);

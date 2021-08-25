@@ -7,7 +7,7 @@ public enum Setting {
     ROLEASSIGN("roleAssign", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     BLACKJACK("blackjack", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     UNO("uno", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
-    AMONGUS("amongUs", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
+    AMONGUS("amongUs", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     CLEAN("clean", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     FUCKPINGO("fuckPingo", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     NICKNAME("nickname", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),

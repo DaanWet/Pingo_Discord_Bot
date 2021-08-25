@@ -2,11 +2,14 @@ package commands.casino.uno;
 
 import casino.GameHandler;
 import commands.Command;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import casino.uno.UnoGame;
 import utils.DataHandler;
 import utils.Utils;
+
+import java.time.LocalDateTime;
 
 public class Uno extends Command {
 
@@ -43,6 +46,7 @@ public class Uno extends Command {
             e.getChannel().sendMessage("You need to place a valid bet").queue();
             return;
         }
+        new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.UNO, LocalDateTime.now());
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
         gameHandler.setUnoGame(e.getGuild().getIdLong(), unogame);
         EmbedBuilder eb = new EmbedBuilder();
