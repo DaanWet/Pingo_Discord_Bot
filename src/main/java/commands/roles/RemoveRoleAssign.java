@@ -1,6 +1,5 @@
 package commands.roles;
 
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -32,13 +31,12 @@ public class RemoveRoleAssign extends RoleCommand {
             if (!found) {
                 e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
             } else {
-                long[] message = dataHandler.getMessage(guildId, args[0]);
-                if (message != null) {
-                    e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
+                RoleAssignData data = dataHandler.getRoleAssignData(guildId, args[0]);
+                if (data.getMessageId() != null) {
+                    e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                         MessageEmbed me = m.getEmbeds().get(0);
                         ArrayList<Triple<String, String, Long>> roles = dataHandler.getRoles(guildId, args[0]);
-                        Compacting comp = detectCompact(me);
-                        m.editMessage(getRoleEmbed(roles, args[0], Sorting.NONE, comp).build()).queue();
+                        m.editMessage(getRoleEmbed(roles, args[0], data.getSorting(), data.getCompacting()).build()).queue();
                         e.getMessage().addReaction("✅").queue();
                         for (MessageReaction mr : e.getMessage().getReactions()) {
                             if (mr.getReactionEmote().getAsReactionCode().equals(emote)){

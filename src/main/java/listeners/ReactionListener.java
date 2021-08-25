@@ -2,6 +2,7 @@ package listeners;
 
 import casino.GameHandler;
 import commands.CommandHandler;
+import commands.roles.RoleAssignData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import org.apache.commons.lang3.tuple.Triple;
@@ -240,8 +241,8 @@ public class ReactionListener extends ListenerAdapter {
         DataHandler dh = new DataHandler();
         Guild g = message.getGuild();
         for (String type : dh.getRoleCategories(g.getIdLong())){
-            long[] longs = dh.getMessage(g.getIdLong(), type);
-            if (longs != null && longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
+            RoleAssignData data = dh.getRoleAssignData(g.getIdLong(), type);
+            if (data != null && data.getChannelId() == message.getChannel().getIdLong() && data.getMessageId() == message.getIdLong()){
                 ArrayList<Triple<String, String, Long>> gameroles = dh.getRoles(g.getIdLong(), type);
                 for (Triple<String, String, Long> obj : gameroles) {
                     if (emote.equals(obj.getLeft().replaceFirst("<:", "").replaceFirst(">$", ""))) {

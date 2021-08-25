@@ -72,7 +72,6 @@ public class CommandHandler {
                 put("eval", new Eval());
                 put("teampicker", new TeamPicker());
                 put("poll", new Poll());
-                put("test", new Test());
                 put("editRA", new EditRoleAssign());
             }
 

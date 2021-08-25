@@ -4,6 +4,8 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import commands.roles.RoleAssignData;
+import commands.roles.RoleCommand;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.sk.PrettyTable;
@@ -43,14 +45,16 @@ public class DataHandler {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (Type VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
                      "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
-                     "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, PRIMARY KEY(Name, GuildId));" +
+                     "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, Sorting VARCHAR(20) DEFAULT 'NONE', Compacting VARCHAR(20) DEFAULT 'NORMAL', PRIMARY KEY(Name, GuildId));" +
                      "CREATE TABLE IF NOT EXISTS Role (RoleId BIGINT NOT NULL, Name VARCHAR(255) NOT NULL, Emoji VARCHAR(255) NOT NULL, Type VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, FOREIGN KEY (Type, GuildId) REFERENCES RoleAssign(Name, GuildId), PRIMARY KEY (Emoji, Type, GuildId));" +
                      "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Type));" +
                      "INSERT IGNORE INTO Record VALUES ('highest_credits', TRUE);" +
                      "INSERT IGNORE INTO Record VALUES ('biggest_bj_win', TRUE);" +
-                     "INSERT IGNORE INTO Record VALUES ('biggest_bj_lose', TRUE);" +
+                     "INSERT IGNORE INTO Record VALUES ('biggest_bj_loss', TRUE);" +
                      "INSERT IGNORE INTO Record VALUES ('bj_win_rate', FALSE);" +
-                     "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);")
+                     "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);"+
+                     "INSERT IGNORE INTO Record VALUES ('bj_win_streak', TRUE);" +
+                     "INSERT IGNORE INTO Record VALUES ('bj_loss_streak', TRUE);")
         ) {
             setuptable.executeUpdate();
         } catch (SQLException throwables) {
@@ -109,17 +113,51 @@ public class DataHandler {
         return false;
     }
 
-    public long[] getMessage(long guildId, String type) {
+    public boolean setCompacting(long guildId, String type, RoleCommand.Compacting compacting, RoleCommand.Sorting sorting){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
-             PreparedStatement stmn = conn.prepareStatement("SELECT ChannelId, MessageId FROM RoleAssign WHERE GuildId = ? AND Name LIKE ? AND ChannelId IS NOT NULL AND MessageId IS NOT NULL")) {
+             PreparedStatement stmnt = conn.prepareStatement("UPDATE RoleAssign SET Compacting = ?, Sorting = ? WHERE GuildId = ? AND Name LIKE ?")) {
+            stmnt.setLong(3, guildId);
+            stmnt.setString(1, compacting.toString());
+            stmnt.setString(2, sorting.toString());
+            stmnt.setString(4, type);
+            int i = stmnt.executeUpdate();
+            return i != 0;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
+
+
+    public RoleAssignData getRoleAssignData(long guildId, String type) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
+             PreparedStatement stmn = conn.prepareStatement("SELECT ChannelId, MessageId, Compacting, Sorting FROM RoleAssign WHERE GuildId = ? AND Name LIKE ? AND ChannelId IS NOT NULL AND MessageId IS NOT NULL")) {
             stmn.setLong(1, guildId);
             stmn.setString(2, type);
             try (ResultSet set = stmn.executeQuery()) {
                 if (set.next()) {
-                    return new long[]{set.getLong("ChannelId"), set.getLong("MessageId")};
+                    return new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), RoleCommand.Sorting.valueOf(set.getString(4)));
                 }
             }
         } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new RoleAssignData(null, null, RoleCommand.Compacting.NORMAL, RoleCommand.Sorting.NONE);
+    }
+
+    public String getCategory(long guildId, long channelId, long messageId){
+        try(Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
+            PreparedStatement stm = conn.prepareStatement("SELECT Name FROM RoleAssign WHERE GuildId = ? AND ChannelId = ? AND MessageId = ?")) {
+            stm.setLong(1, guildId);
+            stm.setLong(2, channelId);
+            stm.setLong(3, messageId);
+            try(ResultSet set = stm.executeQuery()) {
+                if (set.next()){
+                    return set.getString(1);
+                }
+            }
+        } catch( SQLException throwables){
             throwables.printStackTrace();
         }
         return null;

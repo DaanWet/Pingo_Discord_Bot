@@ -2,7 +2,6 @@ package commands.roles;
 
 import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -39,14 +38,13 @@ public class AddRoleAssign extends RoleCommand {
                 if (succeeded){
                     e.getMessage().addReaction("✅").queue();
                     e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
-                    long[] message = dataHandler.getMessage(e.getGuild().getIdLong() ,args[0]);
+                    RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong() , args[0]);
                     String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
-                    if (message != null) {
-                        e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
+                    if (data.getMessageId() != null) {
+                        e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                             MessageEmbed me = m.getEmbeds().get(0);
-                            Compacting comp = detectCompact(me);
                             ArrayList<Triple<String, String, Long>> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
-                            m.editMessage(getRoleEmbed(roles, args[0], Sorting.NONE, comp).build()).queue();
+                            m.editMessage(getRoleEmbed(roles, args[0], data.getSorting(), data.getCompacting()).build()).queue();
                             m.addReaction(emote).queue();
                         });
                     }

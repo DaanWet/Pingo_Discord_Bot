@@ -46,13 +46,16 @@ public class EditRoleAssign extends RoleCommand {
                 } else {
                     compact = Compacting.NORMAL;
                 }
-                long[] message = dh.getMessage(guildId, args[0]);
-                e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
-                    if (m != null) {
-                        EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], sort, compact);
-                        m.editMessage(eb.build()).queue();
-                    }
-                });
+                RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
+                dh.setCompacting(guildId, args[0], compact, sort);
+                if (data.getMessageId() != null) {
+                    e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
+                        if (m != null) {
+                            EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], sort, compact);
+                            m.editMessage(eb.build()).queue();
+                        }
+                    });
+                }
             } else if (hasEmoji(e.getMessage(), args[1])) {
                 //TODO: Write name update code
             }

@@ -37,11 +37,11 @@ public class RoleAssign extends RoleCommand{
                     return;
                 }
             }
-            long[] message = dataHandler.getMessage(e.getGuild().getIdLong(), args[0]);
-            if (message != null) {
-                e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {if(m != null){ m.delete().queue();}});
+            RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
+            if (data != null) {
+                e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {if(m != null){ m.delete().queue();}});
             }
-            EmbedBuilder eb = getRoleEmbed(roles, args[0], Sorting.NONE, compact);
+            EmbedBuilder eb = getRoleEmbed(roles, args[0], data.getSorting(), data.getCompacting());
             e.getChannel().sendMessage(eb.build()).queue(m -> {
                 dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
                 for (Triple<String, String, Long> obj : roles) {
