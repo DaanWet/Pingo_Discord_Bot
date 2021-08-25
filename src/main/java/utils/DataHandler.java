@@ -54,6 +54,7 @@ public class DataHandler {
                                                                           "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Type));" +
                                                                           "CREATE TABLE IF NOT EXISTS Setting (ID INT AUTO_INCREMENT PRIMARY KEY,  Name VARCHAR(50) NOT NULL, ValueType VARCHAR(10) NOT NULL, Type VARCHAR(50), Multiple BOOLEAN NOT NULL,  UNIQUE (Name, Type));" +
                                                                           "CREATE TABLE IF NOT EXISTS GuildSetting (GuildId BIGINT NOT NULL, ID INT NOT NULL, Value VARCHAR(255) NOT NULL, Type VARCHAR(50), FOREIGN KEY(ID) REFERENCES Setting(ID), PRIMARY KEY(GuildId, ID, Value));" +
+                                                                          "CREATE TABLE IF NOT EXISTS Cooldown (GuildId BIGINT NOT NULL, UserId BIGINT NOT NULL, Setting INT NOT NULL, Time TIMESTAMP, PRIMARY KEY (GuildId, UserId, Setting), FOREIGN KEY (Setting) REFERENCES Setting(ID));" +
                                                                           "INSERT IGNORE INTO Record VALUES ('highest_credits', TRUE);" +
                                                                           "INSERT IGNORE INTO Record VALUES ('biggest_bj_win', TRUE);" +
                                                                           "INSERT IGNORE INTO Record VALUES ('biggest_bj_lose', TRUE);" +
@@ -790,6 +791,41 @@ public class DataHandler {
     public void setListEnabled(long guildId, Setting setting, boolean enabled){
         setListEnabled(guildId, setting, null, enabled);
     }
+
+    public void setCooldown(long guildId, long userId, Setting setting, LocalDateTime time) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+            PreparedStatement stm = conn.prepareStatement("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
+                                                                  "INSERT INTO Cooldown(GuildId, UserId, Setting, Time) VALUES(?, ?, @id, ?) ON DUPLICATE KEY UPDATE Time = ?;")) {
+            stm.setString(1, setting.getName());
+            stm.setString(2, setting.getType());
+            stm.setString(3,setting.getValueType().getName());
+            stm.setLong(4, guildId);
+            stm.setLong(5, userId);
+            stm.setTimestamp(6, Timestamp.valueOf(time));
+            stm.setTimestamp(7, Timestamp.valueOf(time));
+            stm.executeUpdate();
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+    public LocalDateTime getCooldown(long guildId, long userId, Setting setting) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
+                                                                   "SELECT Time FROM Cooldown WHERE Setting = @id AND GuildId = ? AND UserId = ?")) {
+            stm.setString(1, setting.getName());
+            stm.setString(2, setting.getType());
+            stm.setString(3,setting.getValueType().getName());
+            stm.setLong(4, guildId);
+            stm.setLong(5, userId);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()){
+                return rs.getTimestamp(1).toLocalDateTime();
+            }
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
 
     //</editor-fold
 
