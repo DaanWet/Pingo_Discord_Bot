@@ -61,7 +61,7 @@ public abstract class Command {
                 int cooldown = dataHandler.getIntSetting(guildId, setting, Setting.SubSetting.COOLDOWN).get(0);
                 if (cooldown != 0){
                     LocalDateTime t = dataHandler.getCooldown(guildId, userId, setting);
-                    if (LocalDateTime.now().isAfter(t.plusSeconds(cooldown))){
+                    if (t != null && LocalDateTime.now().isBefore(t.plusSeconds(cooldown))){
                         state = CommandState.COOLDOWN;
                     }
                 }

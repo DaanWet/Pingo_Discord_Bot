@@ -824,6 +824,7 @@ public class DataHandler {
         } catch (SQLException exc) {
             exc.printStackTrace();
         }
+        return null;
     }
 
 
