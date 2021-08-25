@@ -33,7 +33,6 @@ public class TeamPicker extends Command{
             }
             if (playerspt != 0) ateams = (int)Math.ceil((args.length - offset) / (double)playerspt);
             playerspt = (int)Math.ceil((args.length - offset) / (double)ateams);
-            System.out.printf("Players per team: %d\nTeams: %d", playerspt, ateams);
             ArrayList<String> players = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(args, offset, args.length)));
             Collections.shuffle(players);
             ArrayList<ArrayList<String>> teams = new ArrayList<>();
@@ -52,7 +51,6 @@ public class TeamPicker extends Command{
             EmbedBuilder eb = new EmbedBuilder();
             for (int i = 0; i < teams.size(); i++){
                 String teamString = "```\n" + String.join("\n", teams.get(i)) + "```";
-                System.out.println(teamString);
                 eb.addField("Team " + (i + 1), teamString, true);
                 if (i % 2 == 1 && teams.size() % 3 != 0 && teams.size() % 2 == 0)eb.addBlankField(true);
             }

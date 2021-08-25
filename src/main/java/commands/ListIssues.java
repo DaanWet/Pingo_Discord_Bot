@@ -20,7 +20,7 @@ public class ListIssues extends Command {
 
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         if (args.length == 1 || args.length == 2) {
             try {
                 GHRepository repo = null;

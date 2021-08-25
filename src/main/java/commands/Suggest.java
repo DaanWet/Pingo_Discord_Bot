@@ -16,7 +16,7 @@ public class Suggest extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length >= 4) {
             String repo;
             if (args[0].equalsIgnoreCase("bot")) {

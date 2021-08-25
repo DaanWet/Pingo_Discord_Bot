@@ -19,7 +19,7 @@ public class FuckPingo extends Command{
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         e.getChannel().sendMessage("No, Fuck You").queue();
         new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.FUCKPINGO, LocalDateTime.now());
     }

@@ -10,7 +10,7 @@ import static java.lang.Math.min;
 
 public class UnoGame {
 
-    private final String PATH = "http://zwervers.wettinck.be/uno/";
+    private final String PATH = "https://pingo.wettinck.be/uno/";
 
     private ArrayList<UnoHand> hands;
     private ArrayList<UnoCard> trekstapel;
@@ -74,9 +74,7 @@ public class UnoGame {
 
     public boolean canPlayDrawFour(int turn){
         UnoCard topcard = aflegstapel.get(aflegstapel.size() - 2);
-        System.out.printf("\nTopcard: %s\n", topcard.toString());
         for (UnoCard card : hands.get(turn).getCards()){
-            System.out.printf("Handcard: %s, ", card.toString());
             if (card.getColor() == topcard.getColor() && card.getValue() != UnoCard.Value.PLUSFOUR && card.getValue() != UnoCard.Value.WILD){
                 return false;
             }

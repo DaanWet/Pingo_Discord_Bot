@@ -16,6 +16,7 @@ public class AdminAbuse extends Command {
         this.category = "Moderation";
         this.arguments = "[<member>] <amount>";
         this.description = "Give coins to someone";
+        this.priveligedGuild = 203572340280262657L;
     }
 
     @Override

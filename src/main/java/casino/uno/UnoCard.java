@@ -29,7 +29,7 @@ public class UnoCard {
         ZERO("zero", "0", 0),
         ONE("one", "1", 1),
         TWO("two", "2", 2),
-        THREE("tree", "3", 3),
+        THREE("three", "3", 3),
         FOUR("four", "4", 4),
         FIVE("five", "5", 5),
         SIX("six", "6", 6),

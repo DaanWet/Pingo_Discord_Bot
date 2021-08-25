@@ -144,8 +144,8 @@ public class CommandHandler {
         }
     }
     private ArrayList<String> split(String subjectString){
-        ArrayList<String> matchList = new ArrayList<String>();
-        Pattern regex = Pattern.compile("\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|[^\\s]+");
+        ArrayList<String> matchList = new ArrayList<>();
+        Pattern regex = Pattern.compile("\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|“([^“\\\\]*(?:\\\\.[^“\\\\]*)*)“|”([^”\\\\]*(?:\\\\.[^”\\\\]*)*)”|“([^“”\\\\]*(?:\\\\.[^“”\\\\]*)*)”|‘([^‘\\\\]*(?:\\\\.[^‘\\\\]*)*)‘|’([^’\\\\]*(?:\\\\.[^’\\\\]*)*)’|‘([^‘’\\\\]*(?:\\\\.[^‘’\\\\]*)*)’|[^\\s]+");
         Matcher regexMatcher = regex.matcher(subjectString);
         while (regexMatcher.find()) {
             if (regexMatcher.group(1) != null) {
@@ -154,7 +154,25 @@ public class CommandHandler {
             } else if (regexMatcher.group(2) != null) {
                 // Add single-quoted string without the quotes
                 matchList.add(regexMatcher.group(2));
-            } else {
+            } else if (regexMatcher.group(3) != null) {
+                // Add left double-quoted string without the quotes
+                matchList.add(regexMatcher.group(3));
+            }else if (regexMatcher.group(4) != null) {
+                // Add right double-quoted string without the quotes
+                matchList.add(regexMatcher.group(4));
+            }else if (regexMatcher.group(5) != null) {
+                // Add left right double-quoted string without the quotes
+                matchList.add(regexMatcher.group(5));
+            } else if (regexMatcher.group(6) != null) {
+                // Add left right double-quoted string without the quotes
+                matchList.add(regexMatcher.group(6));
+            } else if (regexMatcher.group(7) != null) {
+                // Add left right double-quoted string without the quotes
+                matchList.add(regexMatcher.group(7));
+            }else if (regexMatcher.group(8) != null) {
+                // Add left right double-quoted string without the quotes
+                matchList.add(regexMatcher.group(8));
+            }else {
                 // Add unquoted word
                 matchList.add(regexMatcher.group());
             }

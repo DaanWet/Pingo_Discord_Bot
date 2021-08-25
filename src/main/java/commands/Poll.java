@@ -33,7 +33,6 @@ public class Poll extends Command{
                 }
                 e.getChannel().sendMessage(sb.toString()).queue(m -> {
                     for (int i = 0; i < args.length - 1; i++){
-                        System.out.println(Utils.regionalUnicode(i));
                         m.addReaction(Utils.regionalUnicode(i)).queue();
                     }
                 });

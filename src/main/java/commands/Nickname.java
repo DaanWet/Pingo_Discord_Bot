@@ -21,7 +21,7 @@ public class Nickname extends Command {
 
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         Message m = e.getMessage();
         List<Member> mentionedmembers = m.getMentionedMembers();
         Member target;

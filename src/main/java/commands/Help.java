@@ -1,8 +1,6 @@
 package commands;
 
 import casino.GameHandler;
-import casino.uno.UnoGame;
-import casino.uno.UnoHand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -10,8 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static commands.CommandHandler.pathname;
 
@@ -32,7 +31,7 @@ public class Help extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(e.getGuild().getSelfMember().getColor());
         long guildId = e.getGuild().getIdLong();
@@ -66,34 +65,23 @@ public class Help extends Command {
                         found = true;
                     }
                 }
-                if (!found){
+                if (!found) {
                     e.getChannel().sendMessage(String.format("No such command named %s", args[0])).queue();
                     return;
                 }
             }
-        } else {
-            UnoGame game = gameHandler.getUnoGame(guildId);
-            boolean uno = false;
-            if (game != null) {
-                for (Long channelId : gameHandler.getUnoGame(guildId).getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList())) {
-                    if (channelId == e.getChannel().getIdLong()) {
-                        eb.setTitle("Uno commands");
-                        uno = true;
-                        StringBuilder sb = new StringBuilder();
-                        for (Command c : commands) {
-                            if (c.getCategory() != null && c.getCategory().equalsIgnoreCase("Uno")) {
-                                sb.append(String.format("\n!%s %s: *%s*", c.getName(), c.getArguments(), c.getDescription() == null ? "No help availabe" : c.getDescription().trim()));
-                            }
-                        }
-                        eb.setDescription(sb.toString());
-                    }
+        } else if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong())) {
+            eb.setTitle("Uno commands");
+            StringBuilder sb = new StringBuilder();
+            for (Command c : commands) {
+                if (c.getCategory() != null && c.getCategory().equalsIgnoreCase("Uno")) {
+                    sb.append(String.format("\n!%s %s: *%s*", c.getName(), c.getArguments(), c.getDescription() == null ? "No help availabe" : c.getDescription().trim()));
                 }
             }
-            if (!uno) {
-                eb.setTitle("Pingo commands");
-                fillCommands(eb, false, guildId);
-            }
-
+            eb.setDescription(sb.toString());
+        } else {
+            eb.setTitle("Pingo commands");
+            fillCommands(eb, false, guildId);
         }
         e.getChannel().sendMessage(eb.build()).queue();
     }

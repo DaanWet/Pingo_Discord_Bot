@@ -428,13 +428,15 @@ public class DataHandler {
 
     public void setRecord(long guildId, long userId, String record, double value, String link, boolean ignore) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("INSERT INTO UserRecord VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = " + (ignore ? "?" : "GREATEST(Value, ?)"))) {
+             PreparedStatement stm = conn.prepareStatement("INSERT INTO UserRecord VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Link = IF(Value < ?, ?, Link), Value = " + (ignore ? "?" : "GREATEST(Value, ?)" ))) {
             stm.setLong(1, userId);
             stm.setLong(2, guildId);
             stm.setString(3, record);
             stm.setString(4, link);
             stm.setDouble(5, value);
             stm.setDouble(6, value);
+            stm.setString(7, link);
+            stm.setDouble(8, value);
             stm.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -480,7 +482,7 @@ public class DataHandler {
     public HashMap<String, Triple<Long, Double, String>> getRecords(long guildId) {
         HashMap<String, Triple<Long, Double, String>> map = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max, GuildId FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max and a.GuildId = m.GuildId")) {
             stm.setLong(1, guildId);
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {

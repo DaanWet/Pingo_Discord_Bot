@@ -18,7 +18,7 @@ public class Eval extends Command{
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         if (args.length >= 1){
-            String query = String.join(" ", args);
+            String query = e.getMessage().getContentRaw().substring(5);
             String lquery = query.trim().toLowerCase();
             StringBuilder sb = new StringBuilder();
             if (lquery.startsWith("select") ||lquery.startsWith("show")){

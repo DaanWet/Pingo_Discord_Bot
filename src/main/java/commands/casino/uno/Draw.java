@@ -92,7 +92,6 @@ public class Draw extends Command {
                                 }
                             });
                         }
-
                     } else {
                         channel.sendMessage(deb.build()).queue();
                         EmbedBuilder eb = unoGame.createEmbed(player);
