@@ -793,19 +793,21 @@ public class DataHandler {
     }
 
     public void setCooldown(long guildId, long userId, Setting setting, LocalDateTime time) {
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-            PreparedStatement stm = conn.prepareStatement("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
-                                                                  "INSERT INTO Cooldown(GuildId, UserId, Setting, Time) VALUES(?, ?, @id, ?) ON DUPLICATE KEY UPDATE Time = ?;")) {
-            stm.setString(1, setting.getName());
-            stm.setString(2, setting.getType());
-            stm.setString(3,setting.getValueType().getName());
-            stm.setLong(4, guildId);
-            stm.setLong(5, userId);
-            stm.setTimestamp(6, Timestamp.valueOf(time));
-            stm.setTimestamp(7, Timestamp.valueOf(time));
-            stm.executeUpdate();
-        } catch (SQLException exc) {
-            exc.printStackTrace();
+        if (getIntSetting(guildId, setting, Setting.SubSetting.COOLDOWN).get(0) != 0) {
+            try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+                 PreparedStatement stm = conn.prepareStatement("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
+                                                                       "INSERT INTO Cooldown(GuildId, UserId, Setting, Time) VALUES(?, ?, @id, ?) ON DUPLICATE KEY UPDATE Time = ?;")) {
+                stm.setString(1, setting.getName());
+                stm.setString(2, setting.getType());
+                stm.setString(3, setting.getValueType().getName());
+                stm.setLong(4, guildId);
+                stm.setLong(5, userId);
+                stm.setTimestamp(6, Timestamp.valueOf(time));
+                stm.setTimestamp(7, Timestamp.valueOf(time));
+                stm.executeUpdate();
+            } catch (SQLException exc) {
+                exc.printStackTrace();
+            }
         }
     }
     public LocalDateTime getCooldown(long guildId, long userId, Setting setting) {
