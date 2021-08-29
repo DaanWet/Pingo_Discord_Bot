@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class RoleAssign extends RoleCommand{
@@ -26,7 +27,8 @@ public class RoleAssign extends RoleCommand{
                 e.getChannel().sendMessage(String.format("%s is not an existing category", args[0])).queue();
                 return;
             }
-            Compacting compact = Compacting.NORMAL;
+            RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
+            Compacting compact = Objects.requireNonNullElse(data.getCompacting(), Compacting.NORMAL);
             if (args.length == 2) {
                 if ( args[1].equalsIgnoreCase("compact")){
                     compact = Compacting.COMPACT;
@@ -37,11 +39,11 @@ public class RoleAssign extends RoleCommand{
                     return;
                 }
             }
-            RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
-            if (data != null) {
+
+            if (data.getMessageId() != null) {
                 e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {if(m != null){ m.delete().queue();}});
             }
-            EmbedBuilder eb = getRoleEmbed(roles, args[0], data.getSorting(), data.getCompacting());
+            EmbedBuilder eb = getRoleEmbed(roles, args[0], data.getSorting(), compact, data.getTitle());
             e.getChannel().sendMessage(eb.build()).queue(m -> {
                 dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
                 for (Triple<String, String, Long> obj : roles) {

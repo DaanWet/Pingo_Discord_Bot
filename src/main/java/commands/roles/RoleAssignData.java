@@ -6,15 +6,25 @@ public class RoleAssignData {
     private Long messageId;
     private RoleCommand.Compacting compacting;
     private RoleCommand.Sorting sorting;
+    private String title;
 
     public RoleAssignData(){};
 
 
-    public RoleAssignData(Long channelId, Long messageId, RoleCommand.Compacting compacting, RoleCommand.Sorting sorting){
+    public RoleAssignData(Long channelId, Long messageId, RoleCommand.Compacting compacting, RoleCommand.Sorting sorting, String title){
         this.channelId = channelId;
         this.messageId = messageId;
         this.compacting = compacting;
         this.sorting = sorting;
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Long getChannelId() {

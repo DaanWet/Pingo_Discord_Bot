@@ -32,9 +32,9 @@ public abstract class RoleCommand extends Command {
         this.category = "moderation";
     }
 
-    protected EmbedBuilder getRoleEmbed(ArrayList<Triple<String, String, Long>> roles, String category, Sorting sort, Compacting compact){
+    protected EmbedBuilder getRoleEmbed(ArrayList<Triple<String, String, Long>> roles, String category, Sorting sort, Compacting compact, String title){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(String.format("%s Roles", category));
+        eb.setTitle(title == null ? String.format("%s Roles", category) : title);
         StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", category));
         Stream<Triple<String, String, Long>> sorted;
         switch(sort){

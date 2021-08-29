@@ -51,11 +51,18 @@ public class EditRoleAssign extends RoleCommand {
                 if (data.getMessageId() != null) {
                     e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                         if (m != null) {
-                            EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], sort, compact);
+                            EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], sort, compact, data.getTitle());
                             m.editMessage(eb.build()).queue();
                         }
                     });
                 }
+            } else if (args[1].equalsIgnoreCase("title")) {
+                StringBuilder name = new StringBuilder();
+                for (int i = 2; i < args.length; i++) {
+                    name.append(args[i]).append(" ");
+                }
+                dh.setTitle(guildId, category, name.toString().trim());
+                e.getMessage().addReaction("✅").queue();
             } else if (hasEmoji(e.getMessage(), args[1])) {
                 StringBuilder name = new StringBuilder();
                 for (int i = 2; i < args.length; i++) {
@@ -68,7 +75,7 @@ public class EditRoleAssign extends RoleCommand {
                     if (data.getMessageId() != null) {
                         e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                             if (m != null) {
-                                EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], data.getSorting(), data.getCompacting());
+                                EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], data.getSorting(), data.getCompacting(), data.getTitle());
                                 m.editMessage(eb.build()).queue();
                             }
                         });
