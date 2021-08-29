@@ -198,6 +198,23 @@ public class DataHandler {
         }
         return false;
     }
+
+    public boolean editRoleName(long guildId, String type, String emoji, String name){
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+            PreparedStatement stm = conn.prepareStatement("UPDATE Role SET Name = ? WHERE GuildId = ? AND Type LIKE ? AND Emoji LIKE ?")) {
+            stm.setLong(2, guildId);
+            stm.setString(1, name);
+            stm.setString(3, type);
+            stm.setString(4, emoji);
+            int a = stm.executeUpdate();
+            return a == 1;
+        } catch(SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
+
     //</editor-fold>
 
     //<editor-fold desc="Credits code">

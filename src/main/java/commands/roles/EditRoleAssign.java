@@ -57,7 +57,26 @@ public class EditRoleAssign extends RoleCommand {
                     });
                 }
             } else if (hasEmoji(e.getMessage(), args[1])) {
-                //TODO: Write name update code
+                StringBuilder name = new StringBuilder();
+                for (int i = 2; i < args.length; i++) {
+                    name.append(args[i]).append(" ");
+                }
+                boolean succeeded = dh.editRoleName(guildId, category, args[1], name.toString().trim());
+                if (succeeded) {
+                    e.getMessage().addReaction("✅").queue();
+                    RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
+                    if (data.getMessageId() != null) {
+                        e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
+                            if (m != null) {
+                                EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], data.getSorting(), data.getCompacting());
+                                m.editMessage(eb.build()).queue();
+                            }
+                        });
+                    }
+                } else {
+                    e.getMessage().addReaction("❌").queue();
+                    e.getChannel().sendMessage(String.format("No such emoji for category %s", args[0])).queue();
+                }
             }
         }
     }
