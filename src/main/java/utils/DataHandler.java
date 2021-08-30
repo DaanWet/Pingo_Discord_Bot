@@ -135,7 +135,7 @@ public class DataHandler {
             stmn.setString(2, type);
             try (ResultSet set = stmn.executeQuery()) {
                 if (set.next()) {
-                    return new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), RoleCommand.Sorting.valueOf(set.getString(4)));
+                    return new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), RoleCommand.Sorting.valueOf(set.getString(4)), set.getString(5));
                 }
             }
         } catch (SQLException throwables) {

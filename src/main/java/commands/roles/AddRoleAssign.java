@@ -15,25 +15,37 @@ public class AddRoleAssign extends RoleCommand {
         name = "addRoleAssign";
         aliases = new String[]{"addRole", "addRoleA", "addRA"};
         category = "Moderation";
-        this.arguments = "<type> <emoji> <role> <name>";
+        this.arguments = "<category> <emoji> <role> <name>";
         this.description = "Add a role to the role assigner";
     }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        if (args.length >= 4 &&  hasEmoji(e.getMessage(), args[1])) {
+        DataHandler dataHandler = new DataHandler();
+        long guildId = e.getGuild().getIdLong();
+        if (args.length == 1){
+            e.getChannel().sendMessage("No emoji, role and name given\n" + getUsage()).queue();
+        } else if (args.length == 2) {
+            e.getChannel().sendMessage("No role and name given\n" + getUsage()).queue();
+        } else if (args.length == 3) {
+            e.getChannel().sendMessage("No name given\n" + getUsage()).queue();
+        } else if (args.length >= 4 && dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0])) {
+            if (!hasEmoji(e.getMessage(), args[1])){
+                e.getChannel().sendMessage(String.format("%s is not a valid emoji\n%s", args[1], getUsage())).queue();
+                return;
+            }
             Role role = null;
             try {
                 role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);
             } catch (Exception exc) {
-                e.getChannel().sendMessage("Could not get the role \n Usage: !addRoleAssign <type> <emoji> <role> <name>").queue();
+                e.getChannel().sendMessage("Could not get the role \n"+ getUsage()).queue();
+                return;
             }
             StringBuilder name = new StringBuilder();
             for (int i = 3; i < args.length; i++) {
                 name.append(args[i]).append(" ");
             }
             if (role != null) {
-                DataHandler dataHandler = new DataHandler();
                 boolean succeeded = dataHandler.addRoleAssign(e.getGuild().getIdLong(), args[0], args[1], name.toString().trim(), role.getIdLong());
                 if (succeeded){
                     e.getMessage().addReaction("✅").queue();
@@ -54,7 +66,7 @@ public class AddRoleAssign extends RoleCommand {
                 }
             }
         } else {
-            e.getChannel().sendMessage("Usage: !addRoleAssign <type> <emoji> <role> <name>").queue();
+            e.getChannel().sendMessage("No valid category given\n" + getUsage()).queue();
         }
     }
 }

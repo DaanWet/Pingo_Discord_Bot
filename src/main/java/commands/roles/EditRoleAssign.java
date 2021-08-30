@@ -4,13 +4,15 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
 
+import java.util.Objects;
+
 public class EditRoleAssign extends RoleCommand {
 
     public EditRoleAssign() {
         this.name = "editRoleAssign";
         this.category = "moderation";
         this.aliases = new String[]{"editRA"};
-        this.arguments = "<category> sort {emoji|name|none} {compact|supercompact|normal}\n<category> <emoji> <name>";
+        this.arguments = "<category> sort {emoji|name|none} {compact|supercompact|normal}\n<category> <emoji> <name>\n<category> {title} <newtitle>";
     }
 
 
@@ -18,8 +20,11 @@ public class EditRoleAssign extends RoleCommand {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         DataHandler dh = new DataHandler();
         long guildId = e.getGuild().getIdLong();
-        if (args.length >= 3 && dh.getRoleCategories(guildId).contains(args[0])) {
+        if (args.length == 1){
+            e.getChannel().sendMessage("Please supply what you want to edit: sort, title or an emoji which name you want to edit\n" + getUsage()).queue();
+        } else if (args.length >= 3 && dh.getRoleCategories(guildId).contains(args[0])) {
             if (args[1].equalsIgnoreCase("sort")) {
+                RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
                 final Compacting compact;
                 final Sorting sort;
                 if (args[2].equalsIgnoreCase("emoji")) {
@@ -30,7 +35,7 @@ public class EditRoleAssign extends RoleCommand {
                     e.getChannel().sendMessage(String.format("%s is not an valid sorting method", args[1])).queue();
                     return;
                 } else {
-                    sort = Sorting.NONE;
+                     sort = Sorting.NONE;
                 }
                 if (args.length == 4) {
                     if (args[3].equalsIgnoreCase("compact")) {
@@ -44,9 +49,8 @@ public class EditRoleAssign extends RoleCommand {
                         compact = Compacting.NORMAL;
                     }
                 } else {
-                    compact = Compacting.NORMAL;
+                    compact = Objects.requireNonNullElse(data.getCompacting(), Compacting.NORMAL);
                 }
-                RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
                 dh.setCompacting(guildId, args[0], compact, sort);
                 if (data.getMessageId() != null) {
                     e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
@@ -84,7 +88,11 @@ public class EditRoleAssign extends RoleCommand {
                     e.getMessage().addReaction("❌").queue();
                     e.getChannel().sendMessage(String.format("No such emoji for category %s", args[0])).queue();
                 }
+            } else {
+                e.getChannel().sendMessage(String.format("%s is not a valid emoji.\n%s", args[1], getUsage())).queue();
             }
+        } else {
+            e.getChannel().sendMessage("No valid category provided\n" + getUsage()).queue();
         }
     }
 }

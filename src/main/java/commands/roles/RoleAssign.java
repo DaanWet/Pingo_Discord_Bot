@@ -53,7 +53,6 @@ public class RoleAssign extends RoleCommand{
         } else {
             e.getChannel().sendMessage(getUsage()).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
         }
-
         e.getMessage().delete().queue();
     }
 }
