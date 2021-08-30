@@ -1,5 +1,6 @@
 package commands.roles;
 
+import net.dv8tion.jda.api.Permission;
 import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -39,6 +40,12 @@ public class AddRoleAssign extends RoleCommand {
                 role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);
             } catch (Exception exc) {
                 e.getChannel().sendMessage("Could not get the role \n"+ getUsage()).queue();
+                return;
+            }
+            int pos = role.getPosition();
+            if (e.getGuild().getSelfMember().getRoles().stream().noneMatch(r -> r.getPosition() > pos) || !e.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)){
+                e.getChannel().sendMessage("I have insufficient permissions to assign that role to somebody. Make sure that I have a role that's higher than the role you're trying to assign and that I have the _manage roles_ permission").queue();
+                e.getMessage().addReaction("❌").queue();
                 return;
             }
             StringBuilder name = new StringBuilder();
