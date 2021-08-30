@@ -21,8 +21,8 @@ public class Records extends Command {
     public Records() {
         this.name = "records";
         this.category = "Casino";
-        this.description = "Show records";
-        this.arguments = "[<member>]";
+        this.description = "Show all records, records for one member or one record. List all possible records using the `list` argument";
+        this.arguments = "[<member>|<record>|list]";
         properties = new Properties();
         try {
             properties.load(Records.class.getClassLoader().getResourceAsStream("config.properties"));
@@ -138,8 +138,10 @@ public class Records extends Command {
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
             } else {
-                //TODO: show help message
+                e.getChannel().sendMessage(String.format("%s is not a valid member name or record name", args[0])).queue();
             }
+        } else {
+            e.getChannel().sendMessage(String.format("This commands takes only 1 optional argument. \n%s\n If the name of the member consists of multiple words, put it between quotes for it to be recognised as a name.", getUsage())).queue();
         }
     }
 
