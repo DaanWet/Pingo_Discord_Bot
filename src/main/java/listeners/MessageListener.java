@@ -66,6 +66,8 @@ public class MessageListener extends ListenerAdapter {
             else if (contentRaw.length() > 0 && contentRaw.charAt(0) == '!') {
                 try  {
                     commandListener.onCommandReceived(e);
+                } catch (MessageException exc){
+                    e.getChannel().sendMessage(exc.getMessage()).queue();
                 } catch (Exception exc){
                     e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
                     exc.printStackTrace();
