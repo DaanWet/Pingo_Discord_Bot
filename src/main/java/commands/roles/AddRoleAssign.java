@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,7 @@ public class AddRoleAssign extends Command {
             try {
                 role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);
             } catch (Exception exc) {
-                e.getChannel().sendMessage("Usage: !addRoleAssign <type> <emoji> <role> <name>").queue();
+                throw new MessageException(getUsage());
             }
             StringBuilder name = new StringBuilder();
             for (int i = 3; i < args.length; i++) {
@@ -51,7 +52,7 @@ public class AddRoleAssign extends Command {
                 e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
             }
         } else {
-            e.getChannel().sendMessage("Usage: !addRoleAssign <type> <emoji> <role> <name>").queue();
+            e.getChannel().sendMessage(getUsage()).queue();
         }
     }
 }

@@ -1,6 +1,7 @@
 package commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 import utils.Utils;
 
 public class Poll extends Command{
@@ -33,12 +34,10 @@ public class Poll extends Command{
                     }
                 });
             } else {
-                e.getChannel().sendMessage("More than 20 options is not allowed").queue();
-                return;
+                throw new MessageException("More than 20 options is not allowed");
             }
         } else {
-            e.getChannel().sendMessage("You have to give a question and/or at least 2 options").queue();
-            return;
+            throw new MessageException("You have to give a question and/or at least 2 options");
         }
         e.getMessage().delete().queue();
     }

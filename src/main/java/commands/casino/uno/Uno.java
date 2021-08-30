@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import casino.uno.UnoGame;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.Utils;
 
 public class Uno extends Command {
@@ -25,24 +26,20 @@ public class Uno extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         if (gameHandler.getUnoGame(e.getGuild().getIdLong()) != null) {
-            e.getChannel().sendMessage("A game has already started").queue();
-            return;
+            throw new MessageException("A game has already started");
         }
         int bet = 0;
         if (args.length == 1) {
             bet = Utils.getInt(args[0]);
             if (bet >= 100) {
                 if (!(new DataHandler().getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) - bet >= 0)) {
-                    e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
-                    return;
+                    throw new MessageException(String.format("You don't have enough credits to make a %d credits bet", bet));
                 }
             } else {
-                e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
-                return;
+                throw new MessageException("You need to place a bet for at least 10 credits");
             }
         } else if (args.length > 1) {
-            e.getChannel().sendMessage("You need to place a valid bet").queue();
-            return;
+            throw new MessageException("You need to place a valid bet");
         }
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
         gameHandler.setUnoGame(e.getGuild().getIdLong(), unogame);

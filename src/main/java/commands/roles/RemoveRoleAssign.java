@@ -59,6 +59,7 @@ public class RemoveRoleAssign extends Command {
             }
             boolean found = dataHandler.removeRoleAssign(e.getGuild().getIdLong(), args[0], args[1]);
             if (!found){
+                //Cannot be a throw MessageException, needs to be deleted after
                 e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
             }
 

@@ -30,6 +30,7 @@ public class AmongUs extends Command{
             //    e.getChannel().sendMessage("Wrong voicechannel noob").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
             //}
         } else {
+            //This can't be a throw, the message needs to be deleted after 10 seconds
             e.getChannel().sendMessage("You're not connected to a voice channel").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
         }
         e.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);

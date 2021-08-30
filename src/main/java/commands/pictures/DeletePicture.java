@@ -67,7 +67,7 @@ public class DeletePicture extends Command {
                 });
             }
         } else {
-            e.getChannel().sendMessage("Usage: !delete <command>").queue();
+            e.getChannel().sendMessage(getUsage()).queue();
         }
     }
 }

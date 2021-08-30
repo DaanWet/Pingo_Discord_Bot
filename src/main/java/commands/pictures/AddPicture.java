@@ -4,6 +4,7 @@ import commands.Command;
 import commands.CommandHandler;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,14 +41,13 @@ public class AddPicture extends Command {
                 String p = String.format("%s/%s/%d.jpg", pathname, words[1].toLowerCase(), i);
                 message.getAttachments().get(0).downloadToFile(p).exceptionally(t -> {
                     t.printStackTrace();
-                    e.getChannel().sendMessage("Something went wrong").queue();
-                    return null;
+                    throw new MessageException("Something went wrong");
                 }).thenAccept(a -> e.getMessage().addReaction(":green_tick:667450925677543454").queue());
             } catch (IOException exc1) {
                 exc1.printStackTrace();
             }
         } else {
-            e.getChannel().sendMessage("Usage: !add <name> <picture>").queue();
+            e.getChannel().sendMessage(getUsage()).queue();
         }
     }
 }

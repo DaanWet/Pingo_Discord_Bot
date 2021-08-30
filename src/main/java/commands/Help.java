@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
+import utils.MessageException;
 
 import java.awt.*;
 import java.io.File;
@@ -66,8 +67,7 @@ public class Help extends Command {
                     }
                 }
                 if (!found) {
-                    e.getChannel().sendMessage(String.format("No such command named %s", args[0])).queue();
-                    return;
+                    throw new MessageException(String.format("No such command named %s", args[0]));
                 }
             }
         } else if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong())) {

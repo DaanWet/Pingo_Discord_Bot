@@ -11,6 +11,7 @@ import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import utils.DataHandler;
 import utils.ImageHandler;
+import utils.MessageException;
 import utils.Utils;
 
 import java.awt.*;
@@ -40,13 +41,11 @@ public class Play extends Command {
             int turn = unoGame.getTurn();
             ArrayList<UnoHand> hands = unoGame.getHands();
             if (unoGame.isFinished()) {
-                e.getChannel().sendMessage("The game has already ended").queue();
-                return;
+                throw new MessageException("The game has already ended");
             }
             if (turn != -1 && hands.get(turn).getPlayerId() == e.getMember().getIdLong()) {
                 if (args.length == 0) {
-                    e.getChannel().sendMessage(getUsage()).queue();
-                    return;
+                    throw new MessageException(getUsage());
                 }
                 UnoCard card = UnoCard.fromString(args[0]);
                 Guild guild = e.getGuild();
@@ -123,10 +122,10 @@ public class Play extends Command {
                         gameHandler.removeUnoGame(guild.getIdLong());
                     }
                 } else {
-                    e.getChannel().sendMessage("You need to play a valid card that's in your hand").queue();
+                    throw new MessageException("You need to play a valid card that's in your hand");
                 }
             } else {
-                e.getChannel().sendMessage("It's not your turn yet").queue();
+                throw new MessageException("It's not your turn yet");
             }
 
         }
