@@ -42,7 +42,7 @@ public class DataHandler {
     private void createDatabase() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (Type VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
-                     "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
+                     "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, CurrentStreak  INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
                      "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, PRIMARY KEY(Name, GuildId));" +
                      "CREATE TABLE IF NOT EXISTS Role (RoleId BIGINT NOT NULL, Name VARCHAR(255) NOT NULL, Emoji VARCHAR(255) NOT NULL, Type VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, FOREIGN KEY (Type, GuildId) REFERENCES RoleAssign(Name, GuildId), PRIMARY KEY (Emoji, Type, GuildId));" +
                      "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Type));" +
@@ -50,7 +50,9 @@ public class DataHandler {
                      "INSERT IGNORE INTO Record VALUES ('biggest_bj_win', TRUE);" +
                      "INSERT IGNORE INTO Record VALUES ('biggest_bj_lose', TRUE);" +
                      "INSERT IGNORE INTO Record VALUES ('bj_win_rate', FALSE);" +
-                     "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);")
+                     "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);" +
+                     "INSERT IGNORE INTO Record VALUES ('bj_win_streak', TRUE);" +
+                     "INSERT IGNORE INTO Record VALUES ('bj_loss_streak', TRUE);")
         ) {
             setuptable.executeUpdate();
         } catch (SQLException throwables) {
@@ -516,6 +518,41 @@ public class DataHandler {
             throwables.printStackTrace();
         }
         return false;
+    }
+
+    public int getStreak(long guildId, long userId){
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT CurrentStreak FROM Member WHERE GuildId LIKE ? AND UserId LIKE ?")){
+            stm.setLong(1, guildId);
+            stm.setLong(2, userId);
+            try(ResultSet set = stm.executeQuery()){
+                if(set.next()){
+                    return set.getInt(1);
+                }
+            }
+        } catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void setStreak(long guildId, long userId, int value, String link){ //Addstreak would be more useful
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("UPDATE Member SET CurrentStreak = ? WHERE GuildId = ? AND UserId = ?;" +
+                                                                   "INSERT INTO UserRecord(UserId, GuildId, Name, Value, Link) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);"
+             )){
+            stm.setInt(1, value);
+            stm.setLong(3, userId);
+            stm.setLong(4, userId);
+            stm.setLong(5, guildId);
+            stm.setString(6, value > 0 ? "bj_win_streak" : "bj_loss_streak");
+            stm.setInt(7, Math.abs(value));
+            stm.setString(8, link);
+            stm.setInt(9, Math.abs(value));
+            stm.executeUpdate();
+        } catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
     }
 
     //</editor-fold>

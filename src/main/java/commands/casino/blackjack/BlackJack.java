@@ -58,8 +58,14 @@ public class BlackJack extends Command {
                                 double tempw = winrate == null ? 0.0 : winrate.getLeft();
                                 dataHandler.setRecord(guildId, playerId, "bj_games_played", temp + 1, false);
                                 dataHandler.setRecord(guildId, playerId, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw) / (temp + 1.0)), true);
-                                int streak = dataHandler.getStreak(guildId, playerId, won_lose > 0);
-                                dataHandler.setStreak(guildId, playerId, won_lose != 0 ? streak + 1 : 0, won_lose > 0, m.getJumpUrl());
+                                int streak = dataHandler.getStreak(guildId, playerId);
+                                int newstreak = 0;
+                                if (won_lose > 0){
+                                    newstreak = streak < 0 ? 1 : streak + 1;
+                                } else if (won_lose < 0){
+                                    newstreak = streak > 0 ? -1 : streak - 1;
+                                }
+                                dataHandler.setStreak(guildId, playerId, newstreak, m.getJumpUrl());
                             }
                         });
                     } else {

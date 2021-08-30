@@ -67,12 +67,19 @@ public class Records extends Command {
             Long l = Utils.isLong(args[0]);
             Member target = null;
             EmbedBuilder eb = new EmbedBuilder();
+            ArrayList<String> recordTypes = dataHandler.getRecordTypes();
             if (e.getMessage().getMentionedMembers().size() == 1) {
                 target = e.getMessage().getMentionedMembers().get(0);
             } else if (args[0].equalsIgnoreCase("me")) {
                 target = e.getMember();
             } else if (args[0].equalsIgnoreCase("list")) {
-
+                eb.setTitle("Records list");
+                StringBuilder sb = new StringBuilder();
+                for (String record : recordTypes) {
+                    sb.append(":small_blue_diamond: ").append(record)/*.append(": ").append(properties.getProperty(record))*/.append("\n");
+                }
+                eb.setDescription(sb.toString());
+                e.getChannel().sendMessage(eb.build()).queue();
             } else if (l != null) {
                 target = e.getGuild().getMemberById(l);
             } else if (e.getGuild().getMembersByNickname(args[0], true).size() > 0) {
@@ -80,7 +87,7 @@ public class Records extends Command {
             } else if (guild.getMembersByName(args[0], true).size() > 0) {
                 target = guild.getMembersByName(args[0], true).get(0);
             }
-            ArrayList<String> recordTypes = dataHandler.getRecordTypes();
+
             if (recordTypes.contains(args[0].toLowerCase())) {
                 boolean isInt = dataHandler.isInt(args[0]);
                 HashMap<Long, Pair<Double, String>> records = dataHandler.getRecords(e.getGuild().getIdLong(), args[0]);
@@ -101,14 +108,6 @@ public class Records extends Command {
                         sb.append(" [jump](").append(v.getRight()).append(")");
                     }
                     sb.append("\n");
-                }
-                eb.setDescription(sb.toString());
-                e.getChannel().sendMessage(eb.build()).queue();
-            } else if (args[0].equalsIgnoreCase("list")) {
-                eb.setTitle("Records list");
-                StringBuilder sb = new StringBuilder();
-                for (String record : recordTypes) {
-                    sb.append(":small_blue_diamond: ").append(record)/*.append(": ").append(properties.getProperty(record))*/.append("\n");
                 }
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
