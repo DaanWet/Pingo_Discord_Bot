@@ -120,7 +120,7 @@ public class CommandHandler {
                 if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     CommandState state = c.canBeExecuted(e.getGuild().getIdLong(), channel.getIdLong(), message.getMember());
                     if (state == CommandState.ENABLED) {
-                        c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.equalsIgnoreCase("")).toArray(String[]::new), e);
+                        c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.trim().isEmpty()).toArray(String[]::new), e);
                         break;
                     } else {
                         e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
@@ -128,7 +128,7 @@ public class CommandHandler {
                     }
                 } else {
                     e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                    channel.sendMessage("❌ You don't have permission to run this command").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                    channel.sendMessage(CommandState.USER.getError()).queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                 }
             }
         }

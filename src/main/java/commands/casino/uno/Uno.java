@@ -31,22 +31,27 @@ public class Uno extends Command {
             return;
         }
         int bet = 0;
-        if (args.length == 1) { // TODO: Check if betting is enabled
-            bet = Utils.getInt(args[0]);
-            if (bet >= 100) {
-                if (!(new DataHandler().getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) - bet >= 0)) {
-                    e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
+        DataHandler dataHandler = new DataHandler();
+        if (args.length == 1) {
+            if (!dataHandler.getBoolSetting(e.getGuild().getIdLong(), Setting.BETTING)){
+                e.getChannel().sendMessage("Betting is currently disabled in this server, starting a game without credits").queue();
+            } else {
+                bet = Utils.getInt(args[0]);
+                if (bet >= 100) {
+                    if (!(dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) - bet >= 0)) {
+                        e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
+                        return;
+                    }
+                } else {
+                    e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
                     return;
                 }
-            } else {
-                e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
-                return;
             }
         } else if (args.length > 1) {
             e.getChannel().sendMessage("You need to place a valid bet").queue();
             return;
         }
-        new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.UNO, LocalDateTime.now());
+        dataHandler.setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.UNO, LocalDateTime.now());
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
         gameHandler.setUnoGame(e.getGuild().getIdLong(), unogame);
         EmbedBuilder eb = new EmbedBuilder();

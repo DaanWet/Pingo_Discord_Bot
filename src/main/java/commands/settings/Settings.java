@@ -234,10 +234,7 @@ public class Settings extends Command {
                     dataHandler.setBoolSetting(guildId, setting, subSetting, value.matches("(?i)^(on|enable)$"), null);
                     message.addReaction(":greentick:804432208483844146").queue();
                 } else {
-                    EmbedBuilder eb = new EmbedBuilder();
-                    eb.setTitle("Invalid input");
-                    eb.setColor(Color.RED);
-                    message.getChannel().sendMessage(eb.build()).queue();
+                    sendInvalidInput(message);
                 }
                 break;
             case STRING:
@@ -245,34 +242,64 @@ public class Settings extends Command {
                 message.addReaction(":greentick:804432208483844146").queue();
                 break;
             case LONG:
-                if (message.getMentions().size() == 1) {
-                    IMentionable mention = message.getMentions().get(0);
+                List<IMentionable> mentions = message.getMentions();
+                if (mentions.size() == 1 && value.replaceFirst("!", "").equalsIgnoreCase(mentions.get(0).getAsMention())) {
+                    IMentionable mention = mentions.get(0);
                     Setting.LongType type = getLongType(mention);
                     if (type == null) {
-                        EmbedBuilder eb = new EmbedBuilder();
-                        eb.setTitle("Invalid input");
-                        eb.setColor(Color.RED);
-                        eb.setDescription(mention.getClass().toString());
-                        message.getChannel().sendMessage(eb.build()).queue();
+                        sendInvalidInput(message);
                     } else {
                         dataHandler.setLongSetting(guildId, setting, subSetting, mention.getIdLong(), type, null);
                         message.addReaction(":greentick:804432208483844146").queue();
                     }
+                } else if (!parseLong(setting, subSetting, guildId, null, message, value, dataHandler)){
+                    sendInvalidInput(message);
                 }
                 break;
             case INTEGER:
                 if (Utils.isInteger(value)) {
                     dataHandler.setIntSetting(guildId, setting, subSetting, Utils.getInt(value), null);
                 } else {
-                    EmbedBuilder eb = new EmbedBuilder();
-                    eb.setTitle("Invalid input");
-                    eb.setColor(Color.RED);
-                    message.getChannel().sendMessage(eb.build()).queue();
+                    sendInvalidInput(message);
                 }
                 break;
-            // TODO: CHANNEL_LONG AND ROLE_LONG
+            case CHANNEL_LONG:
+                List<TextChannel> mentionedChannels = message.getMentionedChannels();
+                if (mentionedChannels.size() == 1 && value.replaceFirst("!", "").equalsIgnoreCase(mentionedChannels.get(0).getAsMention())){
+                    dataHandler.setLongSetting(guildId, setting, subSetting, mentionedChannels.get(0).getIdLong(), Setting.LongType.CHANNEL, null);
+                    message.addReaction(":greentick:804432208483844146").queue();
+                } else {
+                    Long id = Utils.isLong(value);
+                    if (id != null && message.getGuild().getTextChannelById(id) != null){
+                        dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.CHANNEL, null);
+                    } else {
+                        sendInvalidInput(message);
+                    }
+                }
+                break;
+            case ROLE_LONG:
+                List<Role> mentionedRoles = message.getMentionedRoles();
+                if (mentionedRoles.size() == 1 && value.replaceFirst("!", "").equalsIgnoreCase(mentionedRoles.get(0).getAsMention())){
+                    dataHandler.setLongSetting(guildId, setting, subSetting, mentionedRoles.get(0).getIdLong(), Setting.LongType.ROLE, null);
+                    message.addReaction(":greentick:804432208483844146").queue();
+                } else {
+                    Long id = Utils.isLong(value);
+                    if (id != null && message.getGuild().getRoleById(id) != null){
+                        dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.ROLE, null);
+                    } else {
+                        sendInvalidInput(message);
+                    }
+                }
         }
     }
+
+    private void sendInvalidInput(Message message){
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle("Invalid input");
+        eb.setColor(Color.RED);
+        message.getChannel().sendMessage(eb.build()).queue();
+    }
+
 
     private void handleMultiSet(Setting setting, Setting.SubSetting subSetting, long guildId, String[] values, boolean add, DataHandler dataHandler, Message message) throws Exception {
         boolean good = true;
@@ -313,17 +340,7 @@ public class Settings extends Command {
                         }
                         i++;
                     } else if (Utils.isLong(value) != null) {
-                        Long id = Utils.isLong(value);
-                        TextChannel channel = message.getGuild().getTextChannelById(id);
-                        Role role = message.getGuild().getRoleById(id);
-                        Member member = message.getGuild().getMemberById(id);
-                        if (channel != null) {
-                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.CHANNEL, clear);
-                        } else if (role != null) {
-                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.ROLE, clear);
-                        } else if (member != null) {
-                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.USER, clear);
-                        } else {
+                        if (!parseLong(setting, subSetting, guildId, clear, message, value, dataHandler)) {
                             good = false;
                             wrongValues.append(value).append(", ");
                         }
@@ -336,7 +353,46 @@ public class Settings extends Command {
                     wrongType = "a channel, role or member";
                 }
                 break;
-            // TODO: CHANNEL_LONG AND ROLE_LONG
+            case CHANNEL_LONG:
+                List<TextChannel> mentionedChannels = message.getMentionedChannels();
+                i = 0;
+                for (String value : values){
+                    if (i < mentionedChannels.size() && value.replaceFirst("!", "").equalsIgnoreCase(mentionedChannels.get(i).getAsMention())){
+                        dataHandler.setLongSetting(guildId, setting, subSetting, mentionedChannels.get(0).getIdLong(), Setting.LongType.CHANNEL, null);
+                    } else {
+                        Long id = Utils.isLong(value);
+                        if (id != null && message.getGuild().getTextChannelById(id) != null){
+                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.CHANNEL, null);
+                        } else {
+                            good = false;
+                            wrongValues.append(value).append(", ");
+                        }
+                    }
+                }
+                if (!good) {
+                    wrongType = "a channel";
+                }
+                break;
+            case ROLE_LONG:
+                List<Role> mentionedRoles = message.getMentionedRoles();
+                i = 0;
+                for (String value : values){
+                    if (i < mentionedRoles.size() && value.replaceFirst("!", "").equalsIgnoreCase(mentionedRoles.get(i).getAsMention())){
+                        dataHandler.setLongSetting(guildId, setting, subSetting, mentionedRoles.get(0).getIdLong(), Setting.LongType.ROLE, null);
+                    } else {
+                        Long id = Utils.isLong(value);
+                        if (id != null && message.getGuild().getRoleById(id) != null){
+                            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.ROLE, null);
+                        } else {
+                            good = false;
+                            wrongValues.append(value).append(", ");
+                        }
+                    }
+                }
+                if (!good) {
+                    wrongType = "a role";
+                }
+                break;
         }
         if (good) {
             message.addReaction(":greentick:804432208483844146").queue();
@@ -380,5 +436,22 @@ public class Settings extends Command {
             type = Setting.LongType.USER;
         }
         return type;
+    }
+
+    private boolean parseLong(Setting setting, Setting.SubSetting subSetting, Long guildId, Boolean clear, Message message, String value, DataHandler dataHandler) throws Exception{
+        Long id = Utils.isLong(value);
+        TextChannel channel = message.getGuild().getTextChannelById(id);
+        Role role = message.getGuild().getRoleById(id);
+        Member member = message.getGuild().getMemberById(id);
+        if (channel != null) {
+            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.CHANNEL, clear);
+        } else if (role != null) {
+            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.ROLE, clear);
+        } else if (member != null) {
+            dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.USER, clear);
+        } else {
+            return false;
+        }
+        return true;
     }
 }
