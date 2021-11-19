@@ -22,7 +22,7 @@ public class RoleAssign extends RoleCommand{
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length == 1 || args.length == 2) {
             DataHandler dataHandler = new DataHandler();
-            ArrayList<Triple<String, String, Long>> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
+            ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
             if (roles == null) {
                 e.getChannel().sendMessage(String.format("%s is not an existing category", args[0])).queue();
                 return;
@@ -46,8 +46,8 @@ public class RoleAssign extends RoleCommand{
             EmbedBuilder eb = getRoleEmbed(roles, args[0], data.getSorting(), compact, data.getTitle());
             e.getChannel().sendMessage(eb.build()).queue(m -> {
                 dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
-                for (Triple<String, String, Long> obj : roles) {
-                    m.addReaction(obj.getLeft().replaceFirst("<", "").replaceFirst(">$", "")).queue();
+                for (RoleAssignRole obj : roles) {
+                    m.addReaction(obj.getEmoji().replaceFirst("<", "").replaceFirst(">$", "")).queue();
                 }
             });
         } else {

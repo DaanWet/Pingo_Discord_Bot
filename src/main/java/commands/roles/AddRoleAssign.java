@@ -62,7 +62,7 @@ public class AddRoleAssign extends RoleCommand {
                     if (data.getMessageId() != null) {
                         e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                             MessageEmbed me = m.getEmbeds().get(0);
-                            ArrayList<Triple<String, String, Long>> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
+                            ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
                             m.editMessage(getRoleEmbed(roles, args[0], data.getSorting(), data.getCompacting(), data.getTitle()).build()).queue();
                             m.addReaction(emote).queue();
                         });

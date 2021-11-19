@@ -32,17 +32,17 @@ public abstract class RoleCommand extends Command {
         this.category = "moderation";
     }
 
-    protected EmbedBuilder getRoleEmbed(ArrayList<Triple<String, String, Long>> roles, String category, Sorting sort, Compacting compact, String title){
+    protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, Sorting sort, Compacting compact, String title){
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(title == null ? String.format("%s Roles", category) : title);
         StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", category));
-        Stream<Triple<String, String, Long>> sorted;
+        Stream<RoleAssignRole> sorted;
         switch(sort){
             case EMOJI:
-                sorted = roles.stream().sorted(Comparator.comparing(Triple::getLeft));
+                sorted = roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji));
                 break;
             case NAME:
-                sorted = roles.stream().sorted(Comparator.comparing(Triple::getMiddle));
+                sorted = roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName));
                 break;
             default:
                 sorted = roles.stream();
@@ -52,15 +52,15 @@ public abstract class RoleCommand extends Command {
         if (compact == Compacting.COMPACT || compact == Compacting.SUPER_COMPACT){
             StringBuilder sb1 = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
-            List<Triple<String, String, Long>> sr = sorted.collect(Collectors.toList());
+            List<RoleAssignRole> sr = sorted.collect(Collectors.toList());
             for (int i = 0; i < sr.size(); i++){
                 if (i <= sr.size() / 2){
-                    sb1.append(sr.get(i).getLeft()).append("\t").append(sr.get(i).getMiddle()).append("\n");
+                    sb1.append(sr.get(i).getEmoji()).append("\t").append(sr.get(i).getName()).append("\n");
                     if (compact == Compacting.COMPACT) {
                         sb1.append("\n");
                     }
                 } else {
-                    sb2.append(sr.get(i).getLeft()).append("\t").append(sr.get(i).getMiddle()).append("\n");
+                    sb2.append(sr.get(i).getEmoji()).append("\t").append(sr.get(i).getName()).append("\n");
                     if (compact == Compacting.COMPACT) {
                         sb2.append("\n");
                     }
@@ -69,7 +69,7 @@ public abstract class RoleCommand extends Command {
             eb.addField("", sb1.toString().trim(), true);
             eb.addField("", sb2.toString().trim(), true);
         } else {
-            sorted.forEachOrdered(role -> sb.append("\n\n").append(role.getLeft()).append("\t").append(role.getMiddle()));
+            sorted.forEachOrdered(role -> sb.append("\n\n").append(role.getEmoji()).append("\t").append(role.getName()));
         }
         eb.setDescription(sb.toString());
         return eb;

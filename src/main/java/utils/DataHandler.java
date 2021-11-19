@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import commands.roles.RoleAssignData;
+import commands.roles.RoleAssignRole;
 import commands.roles.RoleCommand;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -80,16 +81,16 @@ public class DataHandler {
         return list;
     }
 
-    //TODO: Change return type
-    public ArrayList<Triple<String, String, Long>> getRoles(long guildID, String type) {
-        ArrayList<Triple<String, String, Long>> list = new ArrayList<>();
+
+    public ArrayList<RoleAssignRole> getRoles(long guildID, String type) {
+        ArrayList<RoleAssignRole> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
              PreparedStatement stmn = conn.prepareStatement("SELECT Name, Emoji, RoleId FROM Role WHERE GuildId = ? AND Type LIKE ?")) {
             stmn.setLong(1, guildID);
             stmn.setString(2, type);
             try (ResultSet set = stmn.executeQuery()) {
                 while (set.next()) {
-                    list.add(Triple.of(set.getString("Emoji"), set.getString("Name"), set.getLong("RoleId")));
+                    list.add(new RoleAssignRole(set.getString("Emoji"), set.getString("Name"), set.getLong("RoleId")));
                 }
             }
         } catch (SQLException throwables) {

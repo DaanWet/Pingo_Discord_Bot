@@ -4,6 +4,7 @@ import casino.GameHandler;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import commands.CommandHandler;
+import commands.roles.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -232,13 +233,13 @@ public class ReactionListener extends ListenerAdapter {
     }
 
     public void handleRoleReaction(String emote, Guild g, String category, Member m, boolean add) {
-        ArrayList<Triple<String, String, Long>> gameroles = new DataHandler().getRoles(g.getIdLong(), category);
-        for (Triple<String, String, Long> obj : gameroles) {
-            if (emote.equals(obj.getLeft().replaceFirst("<:", "").replaceFirst(">$", ""))) {
+        ArrayList<RoleAssignRole> gameroles = new DataHandler().getRoles(g.getIdLong(), category);
+        for (RoleAssignRole obj : gameroles) {
+            if (emote.equals(obj.getEmoji().replaceFirst("<:", "").replaceFirst(">$", ""))) {
                 if (add) {
-                    g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById(obj.getRight()))).queue();
+                    g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById(obj.getRoleId()))).queue();
                 } else {
-                    g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById(obj.getRight()))).queue();
+                    g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById(obj.getRoleId()))).queue();
                 }
             }
         }
