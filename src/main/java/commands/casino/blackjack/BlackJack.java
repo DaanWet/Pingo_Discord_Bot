@@ -3,12 +3,17 @@ package commands.casino.blackjack;
 import casino.BlackJackGame;
 import casino.GameHandler;
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 import utils.Utils;
+
+import java.time.LocalDateTime;
 
 public class BlackJack extends Command {
 
@@ -21,6 +26,13 @@ public class BlackJack extends Command {
         this.category = "Casino";
         this.arguments = "<bet>";
         this.description = "Start a blackjack game";
+    }
+
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        CommandState betting = canBeExecuted(guildId, channelId, member, Setting.BETTING);
+        CommandState blackjack = canBeExecuted(guildId, channelId, member, Setting.BLACKJACK);
+        return betting.worst(blackjack);
     }
 
     @Override
@@ -39,13 +51,13 @@ public class BlackJack extends Command {
                     BlackJackGame objg = gameHandler.getBlackJackGame(guildId, playerId);
                     if (objg == null) {
                         BlackJackGame bjg = new BlackJackGame(bet);
+                        dataHandler.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
                         EmbedBuilder eb = bjg.buildEmbed(author.getName());
                         if (!bjg.hasEnded()) {
                             gameHandler.putBlackJackGame(guildId, playerId, bjg);
                         } else {
                             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
                             eb.addField("Credits", String.format("You now have %d credits", credits), false);
-
                         }
                         e.getChannel().sendMessage(eb.build()).queue(m -> {
                             if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());

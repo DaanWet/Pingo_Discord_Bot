@@ -1,6 +1,8 @@
 package commands.casino;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
@@ -20,6 +22,11 @@ public class ShowCredits extends Command {
         this.category = "Casino";
         this.arguments = "[top]";
         this.description = "Show your current credit balance";
+    }
+
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.BETTING);
     }
 
     @Override

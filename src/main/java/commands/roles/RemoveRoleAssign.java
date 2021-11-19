@@ -1,6 +1,8 @@
 package commands.roles;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -22,6 +24,11 @@ public class RemoveRoleAssign extends Command {
         this.description = "Removes a role from the board";
     }
 
+
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.ROLEASSIGN);
+    }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{

@@ -1,6 +1,9 @@
 package commands.casino;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
 
@@ -14,6 +17,11 @@ public class Weekly extends Command {
         this.aliases = new String[]{"weeklycredits"};
         this.category = "Casino";
         this.description = "Collect your weekly credits";
+    }
+
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.BETTING);
     }
 
     @Override

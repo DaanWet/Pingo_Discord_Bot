@@ -1,6 +1,8 @@
 package commands.casino;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -29,6 +31,11 @@ public class Records extends Command {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+    }
+
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.BETTING);
     }
 
     @Override

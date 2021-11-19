@@ -1,7 +1,10 @@
 package commands.roles;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import emoji4j.EmojiUtils;
+import net.dv8tion.jda.api.entities.Member;
 import utils.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -18,6 +21,11 @@ public class AddRoleAssign extends Command {
         category = "Moderation";
         this.arguments = "<type> <emoji> <role> <name>";
         this.description = "Add a role to the role assigner";
+    }
+
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.ROLEASSIGN);
     }
 
     @Override

@@ -1,6 +1,9 @@
 package commands.casino;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
+import net.dv8tion.jda.api.entities.Member;
 import utils.DataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -15,6 +18,11 @@ public class CollectCredits extends Command {
         this.aliases = new String[]{"collect", "dailycredits"};
         this.category = "Casino";
         this.description = "Collect your daily credits";
+    }
+
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.BETTING);
     }
 
     @Override

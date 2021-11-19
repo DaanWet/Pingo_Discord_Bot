@@ -12,7 +12,11 @@ import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
 import commands.roles.RemoveRoleAssign;
 import commands.roles.RoleAssign;
+import commands.settings.CommandState;
+import commands.settings.Setting;
+import commands.settings.Settings;
 import org.kohsuke.github.GitHub;
+import utils.DataHandler;
 import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -71,6 +75,7 @@ public class CommandHandler {
                 put("eval", new Eval());
                 put("teampicker", new TeamPicker());
                 put("poll", new Poll());
+                put("settings", new Settings());
             }
 
         };
@@ -108,20 +113,22 @@ public class CommandHandler {
         Message message = e.getMessage();
         updateNickName(e.getGuild().getSelfMember().getEffectiveName());
         String[] words = split(message.getContentRaw()).toArray(new String[]{});
-        String command = words[0].substring(1);
+        String prefix = new DataHandler().getStringSetting(e.getGuild().getIdLong(), Setting.PREFIX).get(0);
+        String command = words[0].substring(prefix.length());
         for (Command c : commands.values()){
             if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){
                 if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    if (!c.getBannedChannels().contains(channel.getIdLong())){
-                        c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.equalsIgnoreCase("")).toArray(String[]::new), e);
+                    CommandState state = c.canBeExecuted(e.getGuild().getIdLong(), channel.getIdLong(), message.getMember());
+                    if (state == CommandState.ENABLED) {
+                        c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.trim().isEmpty()).toArray(String[]::new), e);
+                        break;
                     } else {
                         e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                        channel.sendMessage("❌ You can't use that command here").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                        channel.sendMessage(state.getError()).queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                     }
-
                 } else {
                     e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                    channel.sendMessage("❌ You don't have permission to run this command").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                    channel.sendMessage(CommandState.USER.getError()).queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                 }
             }
         }
