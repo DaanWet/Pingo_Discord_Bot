@@ -59,7 +59,38 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>dv8tion</id>
+      <name>m2-dv8tion</name>
+      <url>https://m2.dv8tion.net/releases</url>
+    </repository>
   </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.21</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.21</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.skebir</groupId>
+      <artifactId>prettytable</artifactId>
+      <version>v1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.dv8tion</groupId>
+      <artifactId>JDA</artifactId>
+      <version>4.3.0_310</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>

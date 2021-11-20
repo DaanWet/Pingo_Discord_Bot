@@ -1,4 +1,5 @@
 import commands.CommandHandler;
+import listeners.JoinListener;
 import listeners.MessageListener;
 import listeners.NicknameHandler;
 import listeners.ReactionListener;
@@ -32,6 +33,7 @@ public class Main {
         MessageListener ml = new MessageListener(github);
         jda.addEventListener(ml);
         jda.addEventListener(new NicknameHandler());
+        jda.addEventListener(new JoinListener());
         CommandHandler ch = ml.getCommandHandler();
         jda.addEventListener(new ReactionListener(ch, github, ch.getGameHandler()));
     }

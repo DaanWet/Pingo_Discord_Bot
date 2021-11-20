@@ -22,12 +22,12 @@ public class Split extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        long id = e.getAuthor().getIdLong();
+        long guildId = e.getGuild().getIdLong();
         if (args.length == 0) {
-            BlackJackGame bjg = gameHandler.getBlackJackGame(e.getAuthor().getIdLong());
+            BlackJackGame bjg = gameHandler.getBlackJackGame(guildId, id);
             if (bjg != null) {
                 DataHandler dataHandler = new DataHandler();
-                long id = e.getAuthor().getIdLong();
-                long guildId = e.getGuild().getIdLong();
                 if (dataHandler.getCredits(guildId, id) - 2 * bjg.getBet() > 0) {
                     bjg.split();
                     e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
@@ -36,7 +36,7 @@ public class Split extends Command {
                             int won_lose = bjg.getWonCreds();
                             int credits = dataHandler.addCredits(guildId, id, won_lose);
                             eb.addField("Credits", String.format("You now have %d credits", credits), false);
-                            gameHandler.removeBlackJackGame(e.getAuthor().getIdLong());
+                            gameHandler.removeBlackJackGame(guildId, id);
                             dataHandler.setRecord(guildId, id, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl(), false);
                             Pair<Double, String> played_games = dataHandler.getRecord(guildId, id, "bj_games_played");
                             Pair<Double, String> winrate = dataHandler.getRecord(guildId, id, "bj_win_rate");

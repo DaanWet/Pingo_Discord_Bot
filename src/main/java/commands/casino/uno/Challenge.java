@@ -39,13 +39,10 @@ public class Challenge extends Command {
                 e.getChannel().sendMessage("The game has already ended").queue();
                 return;
             }
-            System.out.printf("Current turn: %d\n", unoGame.getTurn());
             UnoHand skippedHand = hands.get(unoGame.calculateNextTurn(-1));
-            System.out.printf("Skipped: %s, turn: %d\n", skippedHand.getPlayerName(), unoGame.calculateNextTurn(-1));
             if (unoGame.getTopCard().getValue() == UnoCard.Value.PLUSFOUR && skippedHand.getPlayerId() == e.getAuthor().getIdLong()) {
                 int playedturn = unoGame.calculateNextTurn(-2);
                 UnoHand playedHand = hands.get(playedturn);
-                System.out.printf("Played: %s, turn: %d\n", playedHand.getPlayerName(), playedturn);
                 EmbedBuilder eb1 = new EmbedBuilder();
                 EmbedBuilder eb2 = new EmbedBuilder();
                 Color color = guild.getSelfMember().getColor();

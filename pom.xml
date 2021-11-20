@@ -55,14 +55,12 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.2.0_197</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>4.3.0_310</version>
         </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.116</version>
+            <version>1.128</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
         <dependency>
@@ -108,6 +106,11 @@
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>dv8tion</id>
+            <name>m2-dv8tion</name>
+            <url>https://m2.dv8tion.net/releases</url>
         </repository>
     </repositories>
 </project>

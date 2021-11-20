@@ -1,16 +1,17 @@
 package commands.roles;
 
-
-import org.apache.commons.lang3.tuple.Triple;
-import utils.DataHandler;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.DataHandler;
 
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class RoleAssign extends RoleCommand{
+public class RoleAssign extends RoleCommand {
 
     public RoleAssign() {
         name = "roleassign";
@@ -19,7 +20,12 @@ public class RoleAssign extends RoleCommand{
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+    public CommandState canBeExecuted(long guildId, long channelId, Member member) {
+        return canBeExecuted(guildId, channelId, member, Setting.ROLEASSIGN);
+    }
+
+    @Override
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         if (args.length == 1 || args.length == 2) {
             DataHandler dataHandler = new DataHandler();
             ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
@@ -30,11 +36,11 @@ public class RoleAssign extends RoleCommand{
             RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
             Compacting compact = Objects.requireNonNullElse(data.getCompacting(), Compacting.NORMAL);
             if (args.length == 2) {
-                if ( args[1].equalsIgnoreCase("compact")){
+                if (args[1].equalsIgnoreCase("compact")) {
                     compact = Compacting.COMPACT;
-                } else if (args[1].equalsIgnoreCase("supercompact")){
+                } else if (args[1].equalsIgnoreCase("supercompact")) {
                     compact = Compacting.SUPER_COMPACT;
-                } else if (!args[1].equalsIgnoreCase("normal")){
+                } else if (!args[1].equalsIgnoreCase("normal")) {
                     e.getChannel().sendMessage(String.format("%s is not an valid compacting method", args[1])).queue();
                     return;
                 }
@@ -42,7 +48,9 @@ public class RoleAssign extends RoleCommand{
             data.setCompacting(compact);
             dataHandler.setCompacting(e.getGuild().getIdLong(), args[0], compact, data.getSorting() == Sorting.CUSTOM ? data.getCustomS() : data.getSorting().toString());
             if (data.getMessageId() != null) {
-                e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {if(m != null){ m.delete().queue();}});
+                e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
+                    if (m != null) {m.delete().queue();}
+                });
             }
             EmbedBuilder eb = getRoleEmbed(roles, args[0], data);
             e.getChannel().sendMessage(eb.build()).queue(m -> {

@@ -1,7 +1,11 @@
 package commands;
 
+import commands.settings.Setting;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.DataHandler;
 import utils.Utils;
+
+import java.time.LocalDateTime;
 
 public class Poll extends Command{
 
@@ -29,7 +33,6 @@ public class Poll extends Command{
                 }
                 e.getChannel().sendMessage(sb.toString()).queue(m -> {
                     for (int i = 0; i < args.length - 1; i++){
-                        System.out.println(Utils.regionalUnicode(i));
                         m.addReaction(Utils.regionalUnicode(i)).queue();
                     }
                 });
@@ -42,5 +45,6 @@ public class Poll extends Command{
             return;
         }
         e.getMessage().delete().queue();
+        new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.POLL, LocalDateTime.now());
     }
 }

@@ -1,9 +1,11 @@
 package commands.roles;
 
+import commands.settings.CommandState;
+import commands.settings.Setting;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
 
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ public class RemoveRoleAssign extends RoleCommand {
         this.description = "Removes a role from the board";
     }
 
+    public CommandState canBeExecuted(long guildId, long channelId, Member member) {
+        return canBeExecuted(guildId, channelId, member, Setting.ROLEASSIGN);
+    }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
@@ -31,7 +36,6 @@ public class RemoveRoleAssign extends RoleCommand {
                 e.getChannel().sendMessage(String.format("%s is not a valid emoji\n%s", args[1], getUsage())).queue();
                 return;
             }
-
             long guildId = e.getGuild().getIdLong();
             String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
             boolean found = dataHandler.removeRoleAssign(guildId, args[0], args[1]);
