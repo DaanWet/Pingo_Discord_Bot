@@ -6,6 +6,7 @@ public class RoleAssignData {
     private Long messageId;
     private RoleCommand.Compacting compacting;
     private RoleCommand.Sorting sorting;
+    private String customS;
     private String title;
 
     public RoleAssignData(){};
@@ -57,5 +58,13 @@ public class RoleAssignData {
 
     public void setSorting(RoleCommand.Sorting sorting) {
         this.sorting = sorting;
+    }
+
+    public String getCustomS() {
+        return customS;
+    }
+
+    public void setCustomS(String customS) {
+        this.customS = customS;
     }
 }

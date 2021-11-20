@@ -114,12 +114,12 @@ public class DataHandler {
         return false;
     }
 
-    public boolean setCompacting(long guildId, String type, RoleCommand.Compacting compacting, RoleCommand.Sorting sorting){
+    public boolean setCompacting(long guildId, String type, RoleCommand.Compacting compacting, String sorting){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
              PreparedStatement stmnt = conn.prepareStatement("UPDATE RoleAssign SET Compacting = ?, Sorting = ? WHERE GuildId = ? AND Name LIKE ?")) {
             stmnt.setLong(3, guildId);
             stmnt.setString(1, compacting.toString());
-            stmnt.setString(2, sorting.toString());
+            stmnt.setString(2, sorting);
             stmnt.setString(4, type);
             int i = stmnt.executeUpdate();
             return i != 0;
@@ -136,7 +136,10 @@ public class DataHandler {
             stmn.setString(2, type);
             try (ResultSet set = stmn.executeQuery()) {
                 if (set.next()) {
-                    return new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), RoleCommand.Sorting.valueOf(set.getString(4)), set.getString(5));
+                    boolean custom = RoleCommand.Sorting.isSort(set.getString(4));
+                    RoleAssignData data = new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), custom ? RoleCommand.Sorting.valueOf(set.getString(4)) : RoleCommand.Sorting.CUSTOM, set.getString(5));
+                    if (custom) data.setCustomS(set.getString(4));
+                    return data;
                 }
             }
         } catch (SQLException throwables) {

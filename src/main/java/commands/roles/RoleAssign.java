@@ -39,11 +39,12 @@ public class RoleAssign extends RoleCommand{
                     return;
                 }
             }
-
+            data.setCompacting(compact);
+            dataHandler.setCompacting(e.getGuild().getIdLong(), args[0], compact, data.getSorting() == Sorting.CUSTOM ? data.getCustomS() : data.getSorting().toString());
             if (data.getMessageId() != null) {
                 e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {if(m != null){ m.delete().queue();}});
             }
-            EmbedBuilder eb = getRoleEmbed(roles, args[0], data.getSorting(), compact, data.getTitle());
+            EmbedBuilder eb = getRoleEmbed(roles, args[0], data);
             e.getChannel().sendMessage(eb.build()).queue(m -> {
                 dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
                 for (RoleAssignRole obj : roles) {

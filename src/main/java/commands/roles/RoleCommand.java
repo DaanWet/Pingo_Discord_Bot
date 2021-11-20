@@ -6,9 +6,9 @@ import emoji4j.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +19,12 @@ public abstract class RoleCommand extends Command {
     public enum Sorting {
         EMOJI,
         NAME,
-        NONE
+        CUSTOM,
+        NONE;
+
+        public static boolean isSort(String value){
+            return Arrays.stream(Sorting.values()).map(Enum::toString).anyMatch(s -> s.equalsIgnoreCase(value));
+        }
     }
 
     public enum Compacting {
@@ -32,35 +37,50 @@ public abstract class RoleCommand extends Command {
         this.category = "moderation";
     }
 
-    protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, Sorting sort, Compacting compact, String title){
+    protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, RoleAssignData data){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(title == null ? String.format("%s Roles", category) : title);
+        eb.setTitle(data.getTitle() == null ? String.format("%s Roles", category) : data.getTitle());
         StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", category));
-        Stream<RoleAssignRole> sorted;
-        switch(sort){
+        ArrayList<RoleAssignRole> sorted;
+        switch(data.getSorting()){
             case EMOJI:
-                sorted = roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji));
+                sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());
                 break;
             case NAME:
-                sorted = roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName));
+                sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName)).collect(Collectors.toList());
+                break;
+            case CUSTOM:
+                sorted = new ArrayList<>();
+                for (String s : data.getCustomS().split(" ")){
+                    RoleAssignRole r = null;
+                    int i = 0;
+                    while (r == null && i < roles.size()){
+                        if (roles.get(i).getEmoji().equalsIgnoreCase(s)){
+                            r = roles.get(i);
+                            roles.remove(i);
+                        }
+                    }
+                    sorted.add(r);
+                }
+                sorted.addAll(roles);
                 break;
             default:
-                sorted = roles.stream();
+                sorted = roles;
                 break;
 
         }
+        Compacting compact = data.getCompacting();
         if (compact == Compacting.COMPACT || compact == Compacting.SUPER_COMPACT){
             StringBuilder sb1 = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
-            List<RoleAssignRole> sr = sorted.collect(Collectors.toList());
-            for (int i = 0; i < sr.size(); i++){
-                if (i <= sr.size() / 2){
-                    sb1.append(sr.get(i).getEmoji()).append("\t").append(sr.get(i).getName()).append("\n");
+            for (int i = 0; i < sorted.size(); i++){
+                if (i <= sorted.size() / 2){
+                    sb1.append(sorted.get(i).getEmoji()).append("\t").append(sorted.get(i).getName()).append("\n");
                     if (compact == Compacting.COMPACT) {
                         sb1.append("\n");
                     }
                 } else {
-                    sb2.append(sr.get(i).getEmoji()).append("\t").append(sr.get(i).getName()).append("\n");
+                    sb2.append(sorted.get(i).getEmoji()).append("\t").append(sorted.get(i).getName()).append("\n");
                     if (compact == Compacting.COMPACT) {
                         sb2.append("\n");
                     }
@@ -69,7 +89,7 @@ public abstract class RoleCommand extends Command {
             eb.addField("", sb1.toString().trim(), true);
             eb.addField("", sb2.toString().trim(), true);
         } else {
-            sorted.forEachOrdered(role -> sb.append("\n\n").append(role.getEmoji()).append("\t").append(role.getName()));
+            sorted.forEach(role -> sb.append("\n\n").append(role.getEmoji()).append("\t").append(role.getName()));
         }
         eb.setDescription(sb.toString());
         return eb;

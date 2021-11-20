@@ -1,9 +1,11 @@
 package commands.roles;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class EditRoleAssign extends RoleCommand {
@@ -12,7 +14,7 @@ public class EditRoleAssign extends RoleCommand {
         this.name = "editRoleAssign";
         this.category = "moderation";
         this.aliases = new String[]{"editRA"};
-        this.arguments = "<category> sort {emoji|name|none} {compact|supercompact|normal}\n<category> <emoji> <name>\n<category> {title} <newtitle>";
+        this.arguments = "<category> sort {emoji|name|none|\"<custom_emoji_order>\"} {compact|supercompact|normal}\n<category> <emoji> <name>\n<category> {title} <newtitle>";
     }
 
 
@@ -31,12 +33,29 @@ public class EditRoleAssign extends RoleCommand {
                     sort = Sorting.EMOJI;
                 } else if (args[2].equalsIgnoreCase("name")) {
                     sort = Sorting.NAME;
-                } else if (!args[2].equalsIgnoreCase("none")) {
-                    e.getChannel().sendMessage(String.format("%s is not an valid sorting method", args[1])).queue();
-                    return;
+                } else if (args[2].equalsIgnoreCase("none")) {
+                    sort = Sorting.NONE;
                 } else {
-                     sort = Sorting.NONE;
+                    // Validate emoji's
+                    ArrayList<RoleAssignRole> roles = dh.getRoles(guildId, args[0]);
+                    int i = 0;
+                    String[] emojis = args[2].split(" ");
+                    boolean correct = true;
+                    while (correct && i < emojis.length){
+                        int finalI = i;
+                        if (roles.stream().noneMatch(r -> r.getEmoji().equals(emojis[finalI]))){
+                            correct = false;
+                        }
+                        i++;
+                    }
+                    if (!correct){
+                        e.getChannel().sendMessage(String.format("%s is not an valid sorting method", args[2])).queue();
+                        return;
+                    }
+                    sort = Sorting.CUSTOM;
+                    data.setCustomS(args[2]);
                 }
+                data.setSorting(sort);
                 if (args.length == 4) {
                     if (args[3].equalsIgnoreCase("compact")) {
                         compact = Compacting.COMPACT;
@@ -48,18 +67,12 @@ public class EditRoleAssign extends RoleCommand {
                     } else {
                         compact = Compacting.NORMAL;
                     }
+                    data.setCompacting(compact);
                 } else {
                     compact = Objects.requireNonNullElse(data.getCompacting(), Compacting.NORMAL);
                 }
-                dh.setCompacting(guildId, args[0], compact, sort);
-                if (data.getMessageId() != null) {
-                    e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
-                        if (m != null) {
-                            EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], sort, compact, data.getTitle());
-                            m.editMessage(eb.build()).queue();
-                        }
-                    });
-                }
+                dh.setCompacting(guildId, args[0], compact, sort == Sorting.CUSTOM ? args[2] : sort.toString());
+                editEmbed(data, e.getGuild(), args[0], dh);
             } else if (args[1].equalsIgnoreCase("title")) {
                 StringBuilder name = new StringBuilder();
                 for (int i = 2; i < args.length; i++) {
@@ -76,14 +89,7 @@ public class EditRoleAssign extends RoleCommand {
                 if (succeeded) {
                     e.getMessage().addReaction("✅").queue();
                     RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
-                    if (data.getMessageId() != null) {
-                        e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
-                            if (m != null) {
-                                EmbedBuilder eb = getRoleEmbed(dh.getRoles(guildId, args[0]), args[0], data.getSorting(), data.getCompacting(), data.getTitle());
-                                m.editMessage(eb.build()).queue();
-                            }
-                        });
-                    }
+                    editEmbed(data, e.getGuild(), args[0], dh);
                 } else {
                     e.getMessage().addReaction("❌").queue();
                     e.getChannel().sendMessage(String.format("No such emoji for category %s", args[0])).queue();
@@ -95,5 +101,19 @@ public class EditRoleAssign extends RoleCommand {
             e.getChannel().sendMessage("No valid category provided\n" + getUsage()).queue();
         }
     }
+
+    private void editEmbed(RoleAssignData data, Guild guild, String category, DataHandler dh){
+        if (data.getMessageId() != null) {
+            guild.getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
+                if (m != null) {
+                    EmbedBuilder eb = getRoleEmbed(dh.getRoles(guild.getIdLong(), category), category, data);
+                    m.editMessage(eb.build()).queue();
+                }
+            });
+        }
+    }
+
+
+
 }
 
