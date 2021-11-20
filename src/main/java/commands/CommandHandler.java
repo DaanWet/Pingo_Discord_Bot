@@ -10,6 +10,7 @@ import commands.casino.uno.Uno;
 import commands.pictures.AddPicture;
 import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
+import commands.roles.EditRoleAssign;
 import commands.roles.RemoveRoleAssign;
 import commands.roles.RoleAssign;
 import commands.settings.CommandState;
@@ -75,6 +76,7 @@ public class CommandHandler {
                 put("eval", new Eval());
                 put("teampicker", new TeamPicker());
                 put("poll", new Poll());
+                put("editRA", new EditRoleAssign());
                 put("settings", new Settings());
             }
 

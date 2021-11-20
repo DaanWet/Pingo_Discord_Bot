@@ -1,74 +1,65 @@
 package commands.roles;
 
-import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import utils.DataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.DataHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class RemoveRoleAssign extends Command {
+public class RemoveRoleAssign extends RoleCommand {
 
 
     public RemoveRoleAssign() {
         this.name = "removeRoleAssign";
         this.aliases = new String[]{"removeRole", "removeRoleA", "removeRA"};
         this.category = "Moderation";
-        this.arguments = "<emoji>";
+        this.arguments = "<category> <emoji>";
         this.description = "Removes a role from the board";
     }
 
-
-    @Override
-    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+    public CommandState canBeExecuted(long guildId, long channelId, Member member) {
         return canBeExecuted(guildId, channelId, member, Setting.ROLEASSIGN);
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        if (/*e.getMessage().getEmotes().size() == 1&& */args.length >= 2) {
-            DataHandler dataHandler = new DataHandler();
-            long[] message = dataHandler.getMessage(e.getGuild().getIdLong(), args[0]);
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+        DataHandler dataHandler = new DataHandler();
+        if (args.length == 1) {
+            e.getChannel().sendMessage("No emoji provided to delete\n" + getUsage()).queue();
+        } else if (args.length == 2 && dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0])) {
+            if (!hasEmoji(e.getMessage(), args[1])) {
+                e.getChannel().sendMessage(String.format("%s is not a valid emoji\n%s", args[1], getUsage())).queue();
+                return;
+            }
+            long guildId = e.getGuild().getIdLong();
             String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
-            if (message != null){
-                e.getGuild().getTextChannelById(message[0]).retrieveMessageById(message[1]).queue(m -> {
+            boolean found = dataHandler.removeRoleAssign(guildId, args[0], args[1]);
+            if (!found) {
+                e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
+                return;
+            }
+            RoleAssignData data = dataHandler.getRoleAssignData(guildId, args[0]);
+            if (data.getMessageId() != null) {
+                e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                     MessageEmbed me = m.getEmbeds().get(0);
-                    EmbedBuilder eb = new EmbedBuilder(me);
-                    ArrayList<String> lines = new ArrayList<>(Arrays.asList(me.getDescription().split("\n")));
-                    int i = 0;
-                    boolean found = false;
-                    while (!found && i < lines.size()) {
-                        if (lines.get(i).contains(args[1])) {
-                            found = true;
-                        } else {
-                            i++;
+                    ArrayList<RoleAssignRole> roles = dataHandler.getRoles(guildId, args[0]);
+                    m.editMessage(getRoleEmbed(roles, args[0], data).build()).queue();
+                    e.getMessage().addReaction("✅").queue();
+                    for (MessageReaction mr : e.getMessage().getReactions()) {
+                        if (mr.getReactionEmote().getAsReactionCode().equals(emote)) {
+                            mr.clearReactions().queue();
                         }
                     }
-                    if (found) {
-                        lines.remove(i);
-                        lines.remove(i - 1);
-                        eb.setDescription(String.join("\n", lines));
-                        m.editMessage(eb.build()).queue();
-                        m.removeReaction(emote).queue();
-                        e.getMessage().addReaction("✅").queue();
-                        for (Member member : e.getGuild().getMembers()) {
-                            m.removeReaction(emote, member.getUser()).queue();
-                        }
-                        e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
-                    }
+                    e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
-            boolean found = dataHandler.removeRoleAssign(e.getGuild().getIdLong(), args[0], args[1]);
-            if (!found){
-                e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
-            }
-
+        } else {
+            e.getChannel().sendMessage("No valid category provided\n" + getUsage()).queue();
         }
     }
 }

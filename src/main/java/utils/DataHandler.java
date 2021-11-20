@@ -1,6 +1,10 @@
 package utils;
 
+
 import com.mysql.cj.exceptions.WrongArgumentException;
+import commands.roles.RoleAssignData;
+import commands.roles.RoleAssignRole;
+import commands.roles.RoleCommand;
 import commands.settings.Setting;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -49,7 +53,7 @@ public class DataHandler {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (Type VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
                                                                           "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
-                                                                          "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, PRIMARY KEY(Name, GuildId));" +
+                                                                          "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, Sorting VARCHAR(20) DEFAULT 'NONE', Compacting VARCHAR(20) DEFAULT 'NORMAL', Title VARCHAR(255), PRIMARY KEY(Name, GuildId));" +
                                                                           "CREATE TABLE IF NOT EXISTS Role (RoleId BIGINT NOT NULL, Name VARCHAR(255) NOT NULL, Emoji VARCHAR(255) NOT NULL, Type VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, FOREIGN KEY (Type, GuildId) REFERENCES RoleAssign(Name, GuildId), PRIMARY KEY (Emoji, Type, GuildId));" +
                                                                           "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Type));" +
                                                                           "CREATE TABLE IF NOT EXISTS Setting (ID INT AUTO_INCREMENT PRIMARY KEY,  Name VARCHAR(50) NOT NULL, ValueType VARCHAR(10) NOT NULL, Type VARCHAR(50), Multiple BOOLEAN NOT NULL,  UNIQUE (Name, Type));" +
@@ -57,10 +61,10 @@ public class DataHandler {
                                                                           "CREATE TABLE IF NOT EXISTS Cooldown (GuildId BIGINT NOT NULL, UserId BIGINT NOT NULL, Setting INT NOT NULL, Time TIMESTAMP, PRIMARY KEY (GuildId, UserId, Setting), FOREIGN KEY (Setting) REFERENCES Setting(ID));" +
                                                                           "INSERT IGNORE INTO Record VALUES ('highest_credits', TRUE);" +
                                                                           "INSERT IGNORE INTO Record VALUES ('biggest_bj_win', TRUE);" +
-                                                                          "INSERT IGNORE INTO Record VALUES ('biggest_bj_lose', TRUE);" +
+                                                                          "INSERT IGNORE INTO Record VALUES ('biggest_bj_loss', TRUE);" +
                                                                           "INSERT IGNORE INTO Record VALUES ('bj_win_rate', FALSE);" +
-                                                                          "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);")
-        ) {
+                                                                          "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);"
+             )) {
             setuptable.executeUpdate();
             for (Setting s : Setting.values()) {
                 PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
@@ -69,7 +73,7 @@ public class DataHandler {
                 stm.setString(3, s.getType());
                 stm.setBoolean(4, s.isMultiple());
                 stm.executeUpdate();
-                if (s.isMultiple()){
+                if (s.isMultiple()) {
                     PreparedStatement stm1 = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
                     stm1.setString(1, s.name() + "_on");
                     stm1.setString(2, Setting.ValueType.BOOLEAN.getName());
@@ -84,9 +88,9 @@ public class DataHandler {
                     stmn.setString(3, s.getType());
                     stmn.setBoolean(4, subs.isMultiple());
                     stmn.executeUpdate();
-                    if (subs.isMultiple()){
+                    if (subs.isMultiple()) {
                         PreparedStatement stmn1 = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
-                        stmn1.setString(1,  String.format("%s_%s_on", s.getName(), subs));
+                        stmn1.setString(1, String.format("%s_%s_on", s.getName(), subs));
                         stmn1.setString(2, Setting.ValueType.BOOLEAN.getName());
                         stmn1.setString(3, s.getType());
                         stmn1.setBoolean(4, false);
@@ -119,16 +123,16 @@ public class DataHandler {
         return list;
     }
 
-    //TODO: Change return type
-    public ArrayList<Triple<String, String, Long>> getRoles(long guildID, String type) {
-        ArrayList<Triple<String, String, Long>> list = new ArrayList<>();
+
+    public ArrayList<RoleAssignRole> getRoles(long guildID, String type) {
+        ArrayList<RoleAssignRole> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
              PreparedStatement stmn = conn.prepareStatement("SELECT Name, Emoji, RoleId FROM Role WHERE GuildId = ? AND Type LIKE ?")) {
             stmn.setLong(1, guildID);
             stmn.setString(2, type);
             try (ResultSet set = stmn.executeQuery()) {
                 while (set.next()) {
-                    list.add(Triple.of(set.getString("Emoji"), set.getString("Name"), set.getLong("RoleId")));
+                    list.add(new RoleAssignRole(set.getString("Emoji"), set.getString("Name"), set.getLong("RoleId")));
                 }
             }
         } catch (SQLException throwables) {
@@ -152,14 +156,49 @@ public class DataHandler {
         return false;
     }
 
-    public long[] getMessage(long guildId, String type) {
+    public boolean setCompacting(long guildId, String type, RoleCommand.Compacting compacting, String sorting) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
-             PreparedStatement stmn = conn.prepareStatement("SELECT ChannelId, MessageId FROM RoleAssign WHERE GuildId = ? AND Name LIKE ? AND ChannelId IS NOT NULL AND MessageId IS NOT NULL")) {
+             PreparedStatement stmnt = conn.prepareStatement("UPDATE RoleAssign SET Compacting = ?, Sorting = ? WHERE GuildId = ? AND Name LIKE ?")) {
+            stmnt.setLong(3, guildId);
+            stmnt.setString(1, compacting.toString());
+            stmnt.setString(2, sorting);
+            stmnt.setString(4, type);
+            int i = stmnt.executeUpdate();
+            return i != 0;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
+    public RoleAssignData getRoleAssignData(long guildId, String type) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
+             PreparedStatement stmn = conn.prepareStatement("SELECT ChannelId, MessageId, Compacting, Sorting, Title FROM RoleAssign WHERE GuildId = ? AND Name LIKE ?")) {
             stmn.setLong(1, guildId);
             stmn.setString(2, type);
             try (ResultSet set = stmn.executeQuery()) {
                 if (set.next()) {
-                    return new long[]{set.getLong("ChannelId"), set.getLong("MessageId")};
+                    boolean custom = RoleCommand.Sorting.isSort(set.getString(4));
+                    RoleAssignData data = new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), custom ? RoleCommand.Sorting.valueOf(set.getString(4)) : RoleCommand.Sorting.CUSTOM, set.getString(5));
+                    if (custom) data.setCustomS(set.getString(4));
+                    return data;
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new RoleAssignData(null, null, RoleCommand.Compacting.NORMAL, RoleCommand.Sorting.NONE, null);
+    }
+
+    public String getCategory(long guildId, long channelId, long messageId) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
+             PreparedStatement stm = conn.prepareStatement("SELECT Name FROM RoleAssign WHERE GuildId = ? AND ChannelId = ? AND MessageId = ?")) {
+            stm.setLong(1, guildId);
+            stm.setLong(2, channelId);
+            stm.setLong(3, messageId);
+            try (ResultSet set = stm.executeQuery()) {
+                if (set.next()) {
+                    return set.getString(1);
                 }
             }
         } catch (SQLException throwables) {
@@ -170,22 +209,24 @@ public class DataHandler {
 
     public boolean addRoleAssign(long guildId, String type, String emoji, String name, long roleId) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO RoleAssign (Name, GuildId) VALUES (?, ?);" +
-                                                                   "INSERT IGNORE INTO Role VALUES (?, ?, ?, ?, ?)")
+             PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO RoleAssign (Name, GuildId) VALUES (?, ?);");
+             PreparedStatement stm2 = conn.prepareStatement("INSERT IGNORE INTO Role VALUES (?, ?, ?, ?, ?);")
         ) {
-            stm.setLong(2, guildId);
-            stm.setLong(3, roleId);
-            stm.setLong(7, guildId);
             stm.setString(1, type);
-            stm.setString(4, name);
-            stm.setString(5, emoji);
-            stm.setString(6, type);
+            stm.setLong(2, guildId);
+            stm2.setLong(1, roleId);
+            stm2.setString(2, name);
+            stm2.setString(3, emoji);
+            stm2.setString(4, type);
+            stm2.setLong(5, guildId);
+
             int i = stm.executeUpdate();
-            return i != 0;
-        } catch (SQLException throwables) {
+            int j = stm2.executeUpdate();
+            return i + j > 0;
+        } catch (Exception throwables) {
             throwables.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public boolean removeRoleAssign(long guildId, String type, String emoji) {
@@ -201,6 +242,36 @@ public class DataHandler {
         }
         return false;
     }
+
+    public boolean editRoleName(long guildId, String type, String emoji, String name) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("UPDATE Role SET Name = ? WHERE GuildId = ? AND Type LIKE ? AND Emoji LIKE ?")) {
+            stm.setLong(2, guildId);
+            stm.setString(1, name);
+            stm.setString(3, type);
+            stm.setString(4, emoji);
+            int a = stm.executeUpdate();
+            return a == 1;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean setTitle(long guildId, String type, String title) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("UPDATE RoleAssign SET Title = ? WHERE GuildId = ? AND Name LIKE ?")) {
+            stm.setString(1, title);
+            stm.setLong(2, guildId);
+            stm.setString(3, type);
+            int a = stm.executeUpdate();
+            return a == 1;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Credits code">
@@ -428,7 +499,7 @@ public class DataHandler {
 
     public void setRecord(long guildId, long userId, String record, double value, String link, boolean ignore) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("INSERT INTO UserRecord VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Link = IF(Value < ?, ?, Link), Value = " + (ignore ? "?" : "GREATEST(Value, ?)" ))) {
+             PreparedStatement stm = conn.prepareStatement("INSERT INTO UserRecord VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Link = IF(Value < ?, ?, Link), Value = " + (ignore ? "?" : "GREATEST(Value, ?)"))) {
             stm.setLong(1, userId);
             stm.setLong(2, guildId);
             stm.setString(3, record);
@@ -566,7 +637,7 @@ public class DataHandler {
 
     //<editor-fold desc="Settings Code">
 
-    private int extra(boolean multiple){
+    private int extra(boolean multiple) {
         return !multiple ? 3 : 0;
     }
 
@@ -631,7 +702,7 @@ public class DataHandler {
     public List<Pair<Long, Setting.LongType>> getLongSetting(long guildId, Setting setting, Setting.SubSetting subSetting) {
         List<Pair<String, String>> resultSet = getSetting(guildId, setting, subSetting);
         if (resultSet.size() != 0) {
-            return  resultSet.stream().map(pair -> Pair.of(Long.parseLong(pair.getLeft()), Setting.LongType.valueOf(pair.getRight()))).collect(Collectors.toList());
+            return resultSet.stream().map(pair -> Pair.of(Long.parseLong(pair.getLeft()), Setting.LongType.valueOf(pair.getRight()))).collect(Collectors.toList());
         }
         return null;
     }
@@ -640,8 +711,8 @@ public class DataHandler {
         return getLongSetting(guildId, setting, null);
     }
 
-    public boolean getListEnabled(long guildId, Setting setting, Setting.SubSetting subSetting) throws WrongArgumentException{
-        if (!(subSetting == null ? setting.isMultiple() : subSetting.isMultiple())){
+    public boolean getListEnabled(long guildId, Setting setting, Setting.SubSetting subSetting) throws WrongArgumentException {
+        if (!(subSetting == null ? setting.isMultiple() : subSetting.isMultiple())) {
             throw new WrongArgumentException("Setting must be multiple");
         }
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
@@ -653,10 +724,10 @@ public class DataHandler {
             stm.setString(3, setting.getType());
             stm.setLong(4, guildId);
             ResultSet rs = stm.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 return rs.getBoolean(1);
             }
-        } catch (SQLException exc){
+        } catch (SQLException exc) {
             exc.printStackTrace();
         }
         return false;
@@ -665,14 +736,14 @@ public class DataHandler {
     private PreparedStatement prepareSetSetting(Connection conn, Setting setting, Setting.SubSetting subSetting, long guildId, Setting.LongType longType) throws SQLException {
         boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
         PreparedStatement stm = conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
-                                                         (multiple ? "" : "UPDATE GuildSetting SET Value = ?, Type = ? WHERE  GuildId = ? AND ID = @id;")+
+                                                         (multiple ? "" : "UPDATE GuildSetting SET Value = ?, Type = ? WHERE  GuildId = ? AND ID = @id;") +
                                                          "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value, Type) VALUES(?, @id, ?, ?);");
 
         String longTypeName = longType == null ? null : longType.name();
         stm.setString(1, setting.getName() + (subSetting != null ? "_" + subSetting : ""));
         stm.setString(2, setting.getType());
         stm.setString(3, subSetting == null ? setting.getValueType().getName() : subSetting.getValueType().getName());
-        if (!multiple){
+        if (!multiple) {
             stm.setString(5, longTypeName);
             stm.setLong(6, guildId);
         }
@@ -695,10 +766,10 @@ public class DataHandler {
         return stm;
     }
 
-    public void setIntSetting(long guildId, Setting setting, Setting.SubSetting subSetting, int value, Boolean clear) throws Exception{
+    public void setIntSetting(long guildId, Setting setting, Setting.SubSetting subSetting, int value, Boolean clear) throws Exception {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, null)
-                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+                     : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
             boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
             if (!multiple)
                 stm.setInt(4, value);
@@ -714,10 +785,10 @@ public class DataHandler {
         setIntSetting(guildId, setting, null, value, clear);
     }
 
-    public void setBoolSetting(long guildId, Setting setting, Setting.SubSetting subSetting, boolean value, Boolean clear) throws Exception{
+    public void setBoolSetting(long guildId, Setting setting, Setting.SubSetting subSetting, boolean value, Boolean clear) throws Exception {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, null)
-                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+                     : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
             boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
             if (!multiple)
                 stm.setBoolean(4, value);
@@ -736,7 +807,7 @@ public class DataHandler {
     public void setStringSetting(long guildId, Setting setting, Setting.SubSetting subSetting, String value, Boolean clear) throws Exception {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, null)
-                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+                     : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
             boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
             if (!multiple)
                 stm.setString(4, value);
@@ -748,18 +819,18 @@ public class DataHandler {
         }
     }
 
-    public void setStringSetting(long guildId, Setting setting, String value, Boolean clear) throws Exception{
+    public void setStringSetting(long guildId, Setting setting, String value, Boolean clear) throws Exception {
         setStringSetting(guildId, setting, null, value, clear);
     }
 
-    public void setLongSetting(long guildId, Setting setting, Setting.SubSetting subSetting, long value, Setting.LongType longType, Boolean clear) throws Exception{
+    public void setLongSetting(long guildId, Setting setting, Setting.SubSetting subSetting, long value, Setting.LongType longType, Boolean clear) throws Exception {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = clear == null ? prepareSetSetting(conn, setting, subSetting, guildId, longType)
-                                                : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
+                     : prepareRemoveSetting(conn, setting, subSetting, guildId, clear)) {
             boolean multiple = subSetting == null ? setting.isMultiple() : subSetting.isMultiple();
             if (!multiple)
                 stm.setLong(4, value);
-            if(clear ==  null || !clear)
+            if (clear == null || !clear)
                 stm.setLong(5 + extra(multiple), value);
             stm.executeQuery();
         } catch (SQLException exception) {
@@ -771,11 +842,11 @@ public class DataHandler {
         setLongSetting(guildId, setting, null, value, longType, clear);
     }
 
-    public void setListEnabled(long guildId, Setting setting, Setting.SubSetting subSetting, boolean enabled){
+    public void setListEnabled(long guildId, Setting setting, Setting.SubSetting subSetting, boolean enabled) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-            PreparedStatement stm = conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
-                                                         "UPDATE GuildSetting SET Value = ? WHERE GuildId = ? AND ID = @id;"+
-                                                         "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value) VALUES(?, @id, ?);");
+             PreparedStatement stm = conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
+                                                              "UPDATE GuildSetting SET Value = ? WHERE GuildId = ? AND ID = @id;" +
+                                                              "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value) VALUES(?, @id, ?);");
         ) {
             stm.setString(1, setting.getName() + (subSetting != null ? "_" + subSetting : "") + "_on");
             stm.setString(2, setting.getType());
@@ -790,7 +861,7 @@ public class DataHandler {
         }
     }
 
-    public void setListEnabled(long guildId, Setting setting, boolean enabled){
+    public void setListEnabled(long guildId, Setting setting, boolean enabled) {
         setListEnabled(guildId, setting, null, enabled);
     }
 
@@ -812,17 +883,18 @@ public class DataHandler {
             }
         }
     }
+
     public LocalDateTime getCooldown(long guildId, long userId, Setting setting) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
                                                                    "SELECT Time FROM Cooldown WHERE Setting = @id AND GuildId = ? AND UserId = ?")) {
             stm.setString(1, setting.getName());
             stm.setString(2, setting.getType());
-            stm.setString(3,setting.getValueType().getName());
+            stm.setString(3, setting.getValueType().getName());
             stm.setLong(4, guildId);
             stm.setLong(5, userId);
             ResultSet rs = stm.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 return rs.getTimestamp(1).toLocalDateTime();
             }
         } catch (SQLException exc) {
