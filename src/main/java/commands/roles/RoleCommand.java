@@ -59,6 +59,7 @@ public abstract class RoleCommand extends Command {
                             r = roles.get(i);
                             roles.remove(i);
                         }
+                        i++;
                     }
                     sorted.add(r);
                 }

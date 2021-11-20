@@ -178,9 +178,9 @@ public class DataHandler {
             stmn.setString(2, type);
             try (ResultSet set = stmn.executeQuery()) {
                 if (set.next()) {
-                    boolean custom = RoleCommand.Sorting.isSort(set.getString(4));
-                    RoleAssignData data = new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), custom ? RoleCommand.Sorting.valueOf(set.getString(4)) : RoleCommand.Sorting.CUSTOM, set.getString(5));
-                    if (custom) data.setCustomS(set.getString(4));
+                    boolean valid = RoleCommand.Sorting.isSort(set.getString(4));
+                    RoleAssignData data = new RoleAssignData(set.getLong(1), set.getLong(2), RoleCommand.Compacting.valueOf(set.getString(3)), valid ? RoleCommand.Sorting.valueOf(set.getString(4)) : RoleCommand.Sorting.CUSTOM, set.getString(5));
+                    if (!valid) data.setCustomS(set.getString(4));
                     return data;
                 }
             }
