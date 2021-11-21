@@ -47,7 +47,7 @@ public class BlackJack extends Command {
                 bet = dataHandler.getCredits(guildId, playerId);
             }
             if (bet >= 10) {
-                if (dataHandler.getCredits(guildId, playerId) - bet >= 0) {
+                if (dataHandler.getCredits(guildId, playerId) >= bet) {
                     BlackJackGame objg = gameHandler.getBlackJackGame(guildId, playerId);
                     if (objg == null) {
                         BlackJackGame bjg = new BlackJackGame(bet);

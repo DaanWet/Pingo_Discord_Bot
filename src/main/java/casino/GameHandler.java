@@ -27,7 +27,7 @@ public class GameHandler {
 
     public void removeBlackJackGame(long guildId, long user){
         if (blackJackGames.containsKey(guildId)){
-            blackJackGames.remove(user);
+            blackJackGames.get(guildId).remove(user);
         }
     }
 
