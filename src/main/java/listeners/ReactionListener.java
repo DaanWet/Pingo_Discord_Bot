@@ -77,15 +77,20 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e) {
-        String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
-        if (roleCat != null) {
-            try {
-                handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), false);
-            } catch (HierarchyException exc) {
-                if (e.getGuild().getDefaultChannel() != null)
-                    e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+        e.retrieveMember().queue(u -> {
+            if (!u.getUser().isBot()){
+                String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
+                if (roleCat != null) {
+                    try {
+                        handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), false);
+                    } catch (HierarchyException exc) {
+                        if (e.getGuild().getDefaultChannel() != null)
+                            e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+                    }
+                }
             }
-        }
+        });
+
     }
 
     public void handleBotSuggestion(GuildMessageReactionAddEvent e) {

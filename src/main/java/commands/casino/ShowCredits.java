@@ -36,7 +36,7 @@ public class ShowCredits extends Command {
         if (args.length == 0) {
             e.getChannel().sendMessage(String.format("Your current balance is **%d**", dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()))).queue();
         } else if (args.length == 1 && args[0].equalsIgnoreCase("top")) {
-            Map<Long, Integer> map = Map.of(223837254118801408L, 50,738507567814279228L, 100, 484396841572499456L, 500); //dataHandler.getAllCredits(e.getGuild().getIdLong());
+            HashMap<Long, Integer> map = dataHandler.getAllCredits(e.getGuild().getIdLong());
             Stream<Map.Entry<Long, Integer>> stream = map.entrySet().stream().sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue());
             List<Map.Entry<Long, Integer>> sorted = stream.collect(Collectors.toList());
             EmbedBuilder eb = new EmbedBuilder();

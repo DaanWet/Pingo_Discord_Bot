@@ -877,7 +877,7 @@ public class DataHandler {
                 stm.setLong(5, userId);
                 stm.setTimestamp(6, Timestamp.valueOf(time));
                 stm.setTimestamp(7, Timestamp.valueOf(time));
-                stm.executeUpdate();
+                stm.executeQuery();
             } catch (SQLException exc) {
                 exc.printStackTrace();
             }
