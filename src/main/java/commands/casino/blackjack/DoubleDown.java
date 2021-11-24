@@ -2,7 +2,6 @@ package commands.casino.blackjack;
 
 import casino.BlackJackGame;
 import casino.GameHandler;
-import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;

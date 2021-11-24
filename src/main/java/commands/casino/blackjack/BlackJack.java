@@ -2,11 +2,16 @@ package commands.casino.blackjack;
 
 import casino.BlackJackGame;
 import casino.GameHandler;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
 import utils.Utils;
+import java.time.LocalDateTime;
+
 
 public class BlackJack extends BCommand {
 
@@ -21,9 +26,17 @@ public class BlackJack extends BCommand {
     }
 
     @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        CommandState betting = canBeExecuted(guildId, channelId, member, Setting.BETTING);
+        CommandState blackjack = canBeExecuted(guildId, channelId, member, Setting.BLACKJACK);
+        return betting.worst(blackjack);
+    }
+
+    @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         User author = e.getAuthor();
         long guildId = e.getGuild().getIdLong();
+
         if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong())) {
             e.getChannel().sendMessage("You can't start a game in a uno channel").queue();
             return;
@@ -38,7 +51,7 @@ public class BlackJack extends BCommand {
             e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
             return;
         }
-        if (dataHandler.getCredits(guildId, playerId) - bet < 0) {
+        if (dataHandler.getCredits(guildId, playerId) < bet ) {
             e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
             return;
         }
@@ -48,6 +61,7 @@ public class BlackJack extends BCommand {
             return;
         }
         BlackJackGame bjg = new BlackJackGame(bet);
+        dataHandler.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
         EmbedBuilder eb = bjg.buildEmbed(author.getName());
         if (!bjg.hasEnded()) {
             gameHandler.putBlackJackGame(guildId, playerId, bjg);
@@ -60,7 +74,5 @@ public class BlackJack extends BCommand {
             else
                 updateRecords(guildId, playerId, dataHandler, bjg.getWonCreds(), m.getJumpUrl());
         });
-
-
     }
 }
