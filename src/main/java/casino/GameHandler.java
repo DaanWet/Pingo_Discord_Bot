@@ -4,6 +4,7 @@ package casino;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,11 +15,12 @@ public class GameHandler {
 
     private final HashMap<Long, HashMap<Long, BlackJackGame>> blackJackGames;
     private final HashMap<Long, UnoGame> unoGames;
-
+    private final HashMap<Long, ArrayList<Long>> recordBrowser;
 
     public GameHandler(){
         blackJackGames = new HashMap<>();
         unoGames = new HashMap<>();
+        recordBrowser = new HashMap<>();
     }
 
     public BlackJackGame getBlackJackGame(long guildId, long user){
@@ -53,5 +55,18 @@ public class GameHandler {
             return unoGames.get(guildId).getHands().stream().map(UnoHand::getChannelId).anyMatch(id -> id == channelId);
         }
         return false;
+    }
+
+    public ArrayList<Long> getRecordBrowser(long guildId) {
+        return recordBrowser.getOrDefault(guildId, new ArrayList<>());
+    }
+
+    public void addRecordBrowser(long guildId, long messageId){
+        ArrayList<Long> l = getRecordBrowser(guildId);
+        if (l.size() == 4){
+            l.remove(0);
+        }
+        l.add(messageId);
+        recordBrowser.put(guildId, l);
     }
 }
