@@ -3,11 +3,10 @@ package casino;
 
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
+import utils.EmbedPaginator;
+import utils.QueueMap;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class GameHandler {
 
@@ -15,12 +14,12 @@ public class GameHandler {
 
     private final HashMap<Long, HashMap<Long, BlackJackGame>> blackJackGames;
     private final HashMap<Long, UnoGame> unoGames;
-    private final HashMap<Long, ArrayList<Long>> recordBrowser;
+    private final HashMap<Long, QueueMap<Long, EmbedPaginator>> embedPaginatorMap;
 
     public GameHandler(){
         blackJackGames = new HashMap<>();
         unoGames = new HashMap<>();
-        recordBrowser = new HashMap<>();
+        embedPaginatorMap = new HashMap<>();
     }
 
     public BlackJackGame getBlackJackGame(long guildId, long user){
@@ -57,16 +56,13 @@ public class GameHandler {
         return false;
     }
 
-    public ArrayList<Long> getRecordBrowser(long guildId) {
-        return recordBrowser.getOrDefault(guildId, new ArrayList<>());
+    public QueueMap<Long, EmbedPaginator> getEmbedPaginatorMap(long guildId) {
+        return embedPaginatorMap.getOrDefault(guildId, new QueueMap<>());
     }
 
-    public void addRecordBrowser(long guildId, long messageId){
-        ArrayList<Long> l = getRecordBrowser(guildId);
-        if (l.size() == 4){
-            l.remove(0);
-        }
-        l.add(messageId);
-        recordBrowser.put(guildId, l);
+    public void addEmbedPaginator(long guildId, long messageId, EmbedPaginator embedPaginator){
+        QueueMap<Long, EmbedPaginator> l = getEmbedPaginatorMap(guildId);
+        l.put(messageId, embedPaginator);
+        embedPaginatorMap.put(guildId, l);
     }
 }
