@@ -19,13 +19,14 @@ public abstract class BCommand extends Command {
     }
 
     protected void updateMessage(TextChannel channel, BlackJackGame bjg, DataHandler dataHandler, long guildId, long id, String author){
+        if (bjg.hasEnded())
+            gameHandler.removeBlackJackGame(guildId, id);
         channel.retrieveMessageById(bjg.getMessageId()).queue(m -> {
             EmbedBuilder eb = bjg.buildEmbed(author);
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);
                 eb.addField("Credits", String.format("You now have %d credits", credits), false);
-                gameHandler.removeBlackJackGame(guildId, id);
                 updateRecords(guildId, id, dataHandler, won_lose, m.getJumpUrl());
             }
             m.editMessage(eb.build()).queue();

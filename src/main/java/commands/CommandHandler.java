@@ -67,7 +67,7 @@ public class CommandHandler {
                 put("editI", new EditSuggestion());
                 put("adminAbuse", new AdminAbuse());
                 put("clean", new Clean());
-                put("records", new Records());
+                put("records", new Records(gameHandler));
                 put("uno", new Uno(gameHandler));
                 put("play", new Play(gameHandler));
                 put("draw", new Draw(gameHandler));
