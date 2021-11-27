@@ -27,7 +27,7 @@ public class Records extends Command {
         this.name = "records";
         this.category = "Casino";
         this.description = "Show all records, records for one member or one record. List all possible records using the `list` argument";
-        this.arguments = "[<member>|<record>|list]";
+        this.arguments = "[<member>|<record>|me|list|global]\n<record> global";
         properties = new Properties();
         try {
             properties.load(Records.class.getClassLoader().getResourceAsStream("config.properties"));
