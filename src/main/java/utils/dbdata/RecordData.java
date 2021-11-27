@@ -11,6 +11,7 @@ public class RecordData {
 
     public RecordData(long userId, String record, double value, String link){
         this.userId = userId;
+        this.record = record;
         this.value = value;
         this.link = link;
     }

@@ -46,36 +46,13 @@ public class Records extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         DataHandler dataHandler = new DataHandler();
         Guild guild = e.getGuild();
+        ArrayList<String> recordTypes = dataHandler.getRecordTypes();
         if (args.length == 0) {
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle("Casino Records");
-            ArrayList<RecordData> records = dataHandler.getRecords(e.getGuild().getIdLong());
-            StringBuilder sb = new StringBuilder();
-            for (RecordData record : records) {
-                sb.append(":small_blue_diamond: ").append(properties.getProperty(record.getRecord()))
-                        .append(": **");
-                boolean isInt = dataHandler.isInt(record.getRecord());
-                // Formats the blackjack winrate into something more human readable
-                sb.append(isInt ? (int)record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
-
-                sb.append("** by <@!")
-                        .append(record.getUserId()).append(">");
-                if (record.getLink() != null) {
-                    sb.append(" [jump](").append(record.getLink()).append(")");
-                }
-                sb.append("\n");
-            }
-            eb.setDescription(sb.toString());
-            e.getChannel().sendMessage(eb.build()).queue();
-            if (records.size() == 0) {
-                eb.setDescription("There are no records yet, claim credits and play a game to start the records");
-                e.getChannel().sendMessage(eb.build()).queue();
-            }
+            e.getChannel().sendMessage(getRecords(dataHandler, guild.getIdLong()).build()).queue();
         } else if (args.length == 1) {
             Long l = Utils.isLong(args[0]);
             Member target = null;
             EmbedBuilder eb = new EmbedBuilder();
-            ArrayList<String> recordTypes = dataHandler.getRecordTypes();
             if (e.getMessage().getMentionedMembers().size() == 1) {
                 target = e.getMessage().getMentionedMembers().get(0);
             } else if (args[0].equalsIgnoreCase("me")) {
@@ -88,7 +65,11 @@ public class Records extends Command {
                 }
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
-            } else if (l != null) {
+                return;
+            } else if (args[0].equalsIgnoreCase("global")) {
+                e.getChannel().sendMessage(getRecords(dataHandler, null).build()).queue();
+                return;
+            }else if (l != null) {
                 target = e.getGuild().getMemberById(l);
             } else if (e.getGuild().getMembersByNickname(args[0], true).size() > 0) {
                 target = e.getGuild().getMembersByNickname(args[0], true).get(0);
@@ -127,8 +108,36 @@ public class Records extends Command {
             } else {
                 e.getChannel().sendMessage(String.format("%s is not a valid member name or record name", args[0])).queue();
             }
+        } else if (args.length == 2 && recordTypes.contains(args[0].toLowerCase()) && args[1].equalsIgnoreCase("global")) {
+            RecordPaginator recordPaginator = new RecordPaginator(args[0], null, properties);
+            recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
         } else {
-            e.getChannel().sendMessage(String.format("This commands takes only 1 optional argument. \n%s\n If the name of the member consists of multiple words, put it between quotes for it to be recognised as a name.", getUsage())).queue();
+            e.getChannel().sendMessage(String.format("This commands takes max 2 optional arguments. \n%s\n If the name of the member consists of multiple words, put it between quotes for it to be recognised as a name.", getUsage())).queue();
         }
+    }
+
+    private EmbedBuilder getRecords(DataHandler dataHandler, Long guildId){
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle(guildId == null ? "Global Casino Records" : "Casino Records");
+        ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords() : dataHandler.getRecords(guildId);
+        StringBuilder sb = new StringBuilder();
+        for (RecordData record : records) {
+            sb.append(":small_blue_diamond: ").append(properties.getProperty(record.getRecord()))
+                    .append(": **");
+            boolean isInt = dataHandler.isInt(record.getRecord());
+            // Formats the blackjack winrate into something more human readable
+            sb.append(isInt ? (int)record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
+
+            sb.append("** by <@!")
+                    .append(record.getUserId()).append(">");
+            if (record.getLink() != null) {
+                sb.append(" [jump](").append(record.getLink()).append(")");
+            }
+            sb.append("\n");
+        }
+        eb.setDescription(sb.toString());
+        if (records.size() == 0)
+            eb.setDescription("There are no records yet, claim credits and play a game to start the records");
+        return eb;
     }
 }

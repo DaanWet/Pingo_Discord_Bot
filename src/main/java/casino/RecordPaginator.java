@@ -11,10 +11,10 @@ import java.util.*;
 public class RecordPaginator extends EmbedPaginator {
 
     private final String record;
-    private final long guildId;
+    private final Long guildId;
     private final Properties properties;
 
-    public RecordPaginator(String record, long guildId, Properties properties) {
+    public RecordPaginator(String record, Long guildId, Properties properties) {
         this.record = record;
         this.guildId = guildId;
         this.properties = properties;
@@ -26,8 +26,8 @@ public class RecordPaginator extends EmbedPaginator {
         DataHandler dataHandler = new DataHandler();
         EmbedBuilder eb = new EmbedBuilder();
         boolean isInt = dataHandler.isInt(record);
-        ArrayList<RecordData> records = dataHandler.getRecords(guildId, record);
-        eb.setTitle(String.format("%s leaderboard", properties.getProperty(record.toLowerCase())));
+        ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords(record) : dataHandler.getRecords(guildId, record);
+        eb.setTitle(String.format("%s%s leaderboard", guildId == null ? "Global " : "", properties.getProperty(record.toLowerCase())));
         StringBuilder sb = new StringBuilder();
         int size = records.size();
         int maxpage = ((size - 1) / 10) + 1;

@@ -555,7 +555,7 @@ public class DataHandler {
     public ArrayList<RecordData> getRecords(long guildId, long userId) {
         ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Name, Value, Link FROM UserRecord WHERE GuildId = ? AND UserId = ?")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT Name, Value, Link FROM UserRecord WHERE GuildId = ? AND UserId = ? ORDER BY Name DESC")) {
             stm.setLong(1, guildId);
             stm.setLong(2, userId);
             try (ResultSet set = stm.executeQuery()) {
@@ -573,8 +573,23 @@ public class DataHandler {
     public ArrayList<RecordData> getRecords(long guildId) {
         ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max, GuildId FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max and a.GuildId = m.GuildId")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max, GuildId FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max and a.GuildId = m.GuildId ORDER BY a.Name DESC")) {
             stm.setLong(1, guildId);
+            try (ResultSet set = stm.executeQuery()) {
+                while (set.next()) {
+                    list.add(new RecordData(set.getLong(1), set.getString(2), set.getDouble(3), set.getString(4)));
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<RecordData> getRecords(){
+        ArrayList<RecordData> list = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max FROM UserRecord GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max ORDER BY a.Name DESC")) {
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
                     list.add(new RecordData(set.getLong(1), set.getString(2), set.getDouble(3), set.getString(4)));
@@ -595,6 +610,24 @@ public class DataHandler {
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
                     list.add(new RecordData(set.getLong("UserId"), type, set.getDouble("Value"), set.getString("Link")));
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<RecordData> getRecords(String type) {
+        ArrayList<RecordData> list = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE Name LIKE ? ORDER BY Value DESC")) {
+            stm.setString(1, type);
+            try (ResultSet set = stm.executeQuery()) {
+                while (set.next()) {
+                    long userId = set.getLong(1);
+                    if (list.stream().noneMatch(r -> r.getUserId() == userId))
+                        list.add(new RecordData(set.getLong("UserId"), type, set.getDouble("Value"), set.getString("Link")));
                 }
             }
         } catch (SQLException throwables) {
@@ -656,6 +689,7 @@ public class DataHandler {
                                                                    "INSERT INTO UserRecord(UserId, GuildId, Name, Value, Link) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);"
              )) {
             stm.setInt(1, value);
+            stm.setLong(2, guildId);
             stm.setLong(3, userId);
             stm.setLong(4, userId);
             stm.setLong(5, guildId);
