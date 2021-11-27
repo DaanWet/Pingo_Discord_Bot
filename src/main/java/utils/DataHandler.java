@@ -685,7 +685,7 @@ public class DataHandler {
     public void setStreak(long guildId, long userId, int value, String link) { //Addstreak would be more useful
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("UPDATE Member SET CurrentStreak = ? WHERE GuildId = ? AND UserId = ?;" +
-                                                                   "INSERT INTO UserRecord(UserId, GuildId, Name, Value, Link) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);"
+                                                                   "INSERT INTO UserRecord(UserId, GuildId, Name, Value, Link) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Link = IF(Value < ?, ?, Link), Value = GREATEST(Value, ?);"
              )) {
             stm.setInt(1, value);
             stm.setLong(2, guildId);
