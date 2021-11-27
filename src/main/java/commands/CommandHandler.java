@@ -56,7 +56,7 @@ public class CommandHandler {
                 put("removeRA", new RemoveRoleAssign());
                 put("daily", new CollectCredits());
                 put("weekly", new Weekly());
-                put("balance", new ShowCredits());
+                put("balance", new ShowCredits(gameHandler));
                 put("blackjack", new BlackJack(gameHandler));
                 put("stand", new Stand(gameHandler));
                 put("hit", new Hit(gameHandler));

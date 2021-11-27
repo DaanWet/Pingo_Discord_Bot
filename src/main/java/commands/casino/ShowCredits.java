@@ -1,5 +1,7 @@
 package commands.casino;
 
+import casino.BalancePaginator;
+import casino.GameHandler;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
@@ -16,13 +18,15 @@ import java.util.stream.Stream;
 
 public class ShowCredits extends Command {
 
+    private GameHandler handler;
 
-    public ShowCredits() {
+    public ShowCredits(GameHandler handler) {
         this.name = "Balance";
         this.aliases = new String[]{"bal", "credits", "ShowCredits"};
         this.category = "Casino";
         this.arguments = "[top|global]";
         this.description = "Show your current credit balance";
+        this.handler = handler;
     }
 
     @Override
@@ -35,26 +39,10 @@ public class ShowCredits extends Command {
         DataHandler dataHandler = new DataHandler();
         if (args.length == 0) {
             e.getChannel().sendMessage(String.format("Your current balance is **%d**", dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()))).queue();
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("top")) {
-            HashMap<Long, Integer> map = dataHandler.getAllCredits(e.getGuild().getIdLong());
-            Stream<Map.Entry<Long, Integer>> stream = map.entrySet().stream().sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue());
-            List<Map.Entry<Long, Integer>> sorted = stream.collect(Collectors.toList());
-            EmbedBuilder eb = new EmbedBuilder();
-            StringBuilder sb = new StringBuilder();
-            eb.setTitle("Leaderboard");
-            for (int i = 0; i < sorted.size() && i < 10; i++) {
-                sb.append("`").append(i + 1).append(i == 9 ? ".`" : ". `  ")
-                        .append("<@!")
-                        .append(sorted.get(i).getKey())
-                        .append(">  **: ").append(sorted.get(i).getValue()).append(" **\n");
-
-            }
-            eb.setDescription(sb.toString());
-            e.getChannel().sendMessage(eb.build()).queue();
-            if (sorted.size() == 0) {
-                eb.setDescription("No leaderboard yet, nobody has claimed credits yet.");
-                e.getChannel().sendMessage(eb.build()).queue();
-            }
+        } else if (args.length == 1 && args[0].matches("(?i)^(top|global)$") ) {
+            boolean global = args[0].equalsIgnoreCase("global");
+            BalancePaginator paginator = new BalancePaginator(global, e.getGuild().getIdLong());
+            paginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), paginator));
         } else {
             e.getChannel().sendMessage(this.getUsage()).queue();
         }

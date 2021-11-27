@@ -1,16 +1,12 @@
 package casino;
 
-import commands.casino.Records;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 import utils.EmbedPaginator;
 import utils.dbdata.RecordData;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RecordPaginator extends EmbedPaginator {
 
@@ -39,11 +35,9 @@ public class RecordPaginator extends EmbedPaginator {
             page = maxpage;
         else
             page = Math.min(maxpage, page);
-
-
         for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++) {
             RecordData v = records.get(i);
-            sb.append("`").append(i + 1).append(i == 9 ? ".`" : ". `  ")
+            sb.append("`").append(i + 1).append(i >= 9 ? ".`  " : ". `  ")
                     .append("<@!")
                     .append(records.get(i).getUserId())
                     .append(">  **: ")

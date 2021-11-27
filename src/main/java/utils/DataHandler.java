@@ -2,15 +2,13 @@ package utils;
 
 
 import com.mysql.cj.exceptions.WrongArgumentException;
-import commands.casino.Records;
-import utils.dbdata.RecordData;
-import utils.dbdata.RoleAssignData;
-import utils.dbdata.RoleAssignRole;
 import commands.roles.RoleCommand;
 import commands.settings.Setting;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.sk.PrettyTable;
+import utils.dbdata.RecordData;
+import utils.dbdata.RoleAssignData;
+import utils.dbdata.RoleAssignRole;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -66,8 +64,8 @@ public class DataHandler {
                                                                           "INSERT IGNORE INTO Record VALUES ('biggest_bj_loss', TRUE);" +
                                                                           "INSERT IGNORE INTO Record VALUES ('bj_win_rate', FALSE);" +
                                                                           "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);" +
-                                                                                  "INSERT IGNORE INTO Record VALUES ('bj_win_streak', TRUE);" +
-                                                                                  "INSERT IGNORE INTO Record VALUES ('bj_loss_streak', TRUE);"
+                                                                          "INSERT IGNORE INTO Record VALUES ('bj_win_streak', TRUE);" +
+                                                                          "INSERT IGNORE INTO Record VALUES ('bj_loss_streak', TRUE);"
              )) {
             setuptable.executeUpdate();
             for (Setting s : Setting.values()) {
@@ -300,7 +298,7 @@ public class DataHandler {
 
     public HashMap<Long, Integer> getAllCredits(long guildId) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Credits, UserId FROM Member WHERE GuildId = ?")
+             PreparedStatement stm = conn.prepareStatement("SELECT Credits, UserId FROM Member WHERE GuildId = ? ORDER BY Credits DESC")
         ) {
             HashMap<Long, Integer> map = new HashMap<>();
             stm.setLong(1, guildId);
@@ -315,6 +313,25 @@ public class DataHandler {
             return null;
         }
     }
+
+    public HashMap<Long, Integer> getAllCredits() {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT Credits, UserId FROM Member ORDER BY Credits DESC")
+        ) {
+            HashMap<Long, Integer> map = new HashMap<>();
+            try (ResultSet set = stm.executeQuery()) {
+                while (set.next()) {
+                    if (!map.containsKey(set.getLong("UserId")))
+                        map.put(set.getLong("UserId"), set.getInt("Credits"));
+                }
+            }
+            return map;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
 
     public void setCredits(long guildId, long userId, int credits) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
@@ -572,7 +589,7 @@ public class DataHandler {
     public ArrayList<RecordData> getRecords(long guildId, String type) {
         ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-            PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ? ORDER BY Value")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ? ORDER BY Value DESC")) {
             stm.setLong(1, guildId);
             stm.setString(2, type);
             try (ResultSet set = stm.executeQuery()) {
@@ -617,27 +634,27 @@ public class DataHandler {
         return false;
     }
 
-    public int getStreak(long guildId, long userId){
+    public int getStreak(long guildId, long userId) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT CurrentStreak FROM Member WHERE GuildId LIKE ? AND UserId LIKE ?")){
+             PreparedStatement stm = conn.prepareStatement("SELECT CurrentStreak FROM Member WHERE GuildId LIKE ? AND UserId LIKE ?")) {
             stm.setLong(1, guildId);
             stm.setLong(2, userId);
-            try(ResultSet set = stm.executeQuery()){
-                if(set.next()){
+            try (ResultSet set = stm.executeQuery()) {
+                if (set.next()) {
                     return set.getInt(1);
                 }
             }
-        } catch (SQLException throwables){
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return 0;
     }
 
-    public void setStreak(long guildId, long userId, int value, String link){ //Addstreak would be more useful
+    public void setStreak(long guildId, long userId, int value, String link) { //Addstreak would be more useful
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("UPDATE Member SET CurrentStreak = ? WHERE GuildId = ? AND UserId = ?;" +
                                                                    "INSERT INTO UserRecord(UserId, GuildId, Name, Value, Link) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);"
-             )){
+             )) {
             stm.setInt(1, value);
             stm.setLong(3, userId);
             stm.setLong(4, userId);
@@ -647,7 +664,7 @@ public class DataHandler {
             stm.setString(8, link);
             stm.setInt(9, Math.abs(value));
             stm.executeUpdate();
-        } catch (SQLException throwables){
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
