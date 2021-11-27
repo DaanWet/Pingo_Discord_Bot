@@ -26,6 +26,7 @@ public class Main {
     public static void main(String[] args) throws Exception{
         DataHandler.setUserId(args[2]);
         DataHandler.setPASSWD(args[3]);
+        new DataHandler().createDatabase();
         JDA jda = JDABuilder.createDefault(args[0]).enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).build();
         GitHub github = new GitHubBuilder().withOAuthToken(args[1]).build();
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("!help"));

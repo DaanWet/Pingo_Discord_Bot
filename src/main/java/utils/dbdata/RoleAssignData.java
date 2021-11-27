@@ -1,4 +1,6 @@
-package commands.roles;
+package utils.dbdata;
+
+import commands.roles.RoleCommand;
 
 public class RoleAssignData {
 

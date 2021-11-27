@@ -6,13 +6,13 @@ import emoji4j.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import utils.dbdata.RoleAssignData;
+import utils.dbdata.RoleAssignRole;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class RoleCommand extends Command {
 

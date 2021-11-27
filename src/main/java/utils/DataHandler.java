@@ -2,13 +2,13 @@ package utils;
 
 
 import com.mysql.cj.exceptions.WrongArgumentException;
-import commands.roles.RoleAssignData;
-import commands.roles.RoleAssignRole;
 import commands.roles.RoleCommand;
 import commands.settings.Setting;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.sk.PrettyTable;
+import utils.dbdata.RecordData;
+import utils.dbdata.RoleAssignData;
+import utils.dbdata.RoleAssignRole;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -38,7 +38,6 @@ public class DataHandler {
         properties.setProperty("useUnicode", "true");
         nomultiproperties = new Properties(properties);
         nomultiproperties.setProperty("allowMultiQueries", "false");
-        createDatabase();
     }
 
     public static void setUserId(String userId) {
@@ -49,21 +48,23 @@ public class DataHandler {
         DataHandler.PASSWD = PASSWD;
     }
 
-    private void createDatabase() {
+    public void createDatabase() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (Type VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
-                                                                          "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
+             PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (ID INT, Name VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
+                                                                          "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, CurrentStreak  INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
                                                                           "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, Sorting VARCHAR(20) DEFAULT 'NONE', Compacting VARCHAR(20) DEFAULT 'NORMAL', Title VARCHAR(255), PRIMARY KEY(Name, GuildId));" +
                                                                           "CREATE TABLE IF NOT EXISTS Role (RoleId BIGINT NOT NULL, Name VARCHAR(255) NOT NULL, Emoji VARCHAR(255) NOT NULL, Type VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, FOREIGN KEY (Type, GuildId) REFERENCES RoleAssign(Name, GuildId), PRIMARY KEY (Emoji, Type, GuildId));" +
                                                                           "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Type));" +
                                                                           "CREATE TABLE IF NOT EXISTS Setting (ID INT AUTO_INCREMENT PRIMARY KEY,  Name VARCHAR(50) NOT NULL, ValueType VARCHAR(10) NOT NULL, Type VARCHAR(50), Multiple BOOLEAN NOT NULL,  UNIQUE (Name, Type));" +
                                                                           "CREATE TABLE IF NOT EXISTS GuildSetting (GuildId BIGINT NOT NULL, ID INT NOT NULL, Value VARCHAR(255) NOT NULL, Type VARCHAR(50), FOREIGN KEY(ID) REFERENCES Setting(ID), PRIMARY KEY(GuildId, ID, Value));" +
                                                                           "CREATE TABLE IF NOT EXISTS Cooldown (GuildId BIGINT NOT NULL, UserId BIGINT NOT NULL, Setting INT NOT NULL, Time TIMESTAMP, PRIMARY KEY (GuildId, UserId, Setting), FOREIGN KEY (Setting) REFERENCES Setting(ID));" +
-                                                                          "INSERT IGNORE INTO Record VALUES ('highest_credits', TRUE);" +
-                                                                          "INSERT IGNORE INTO Record VALUES ('biggest_bj_win', TRUE);" +
-                                                                          "INSERT IGNORE INTO Record VALUES ('biggest_bj_loss', TRUE);" +
-                                                                          "INSERT IGNORE INTO Record VALUES ('bj_win_rate', FALSE);" +
-                                                                          "INSERT IGNORE INTO Record VALUES ('bj_games_played', TRUE);"
+                                                                          "INSERT IGNORE INTO Record VALUES (1, 'highest_credits', TRUE) ON DUPLICATE KEY UPDATE ID = 1;" +
+                                                                          "INSERT IGNORE INTO Record VALUES (4, 'biggest_bj_win', TRUE) ON DUPLICATE KEY UPDATE ID = 4;" +
+                                                                          "INSERT IGNORE INTO Record VALUES (5, 'biggest_bj_loss', TRUE) ON DUPLICATE KEY UPDATE ID = 5;" +
+                                                                          "INSERT IGNORE INTO Record VALUES (3, 'bj_win_rate', FALSE) ON DUPLICATE KEY UPDATE ID = 2;" +
+                                                                          "INSERT IGNORE INTO Record VALUES (2, 'bj_games_played', TRUE) ON DUPLICATE KEY UPDATE ID = 3;" +
+                                                                          "INSERT IGNORE INTO Record VALUES (6, 'bj_win_streak', TRUE) ON DUPLICATE KEY UPDATE ID = 6;" +
+                                                                          "INSERT IGNORE INTO Record VALUES (7, 'bj_loss_streak', TRUE) ON DUPLICATE KEY UPDATE ID = 7;"
              )) {
             setuptable.executeUpdate();
             for (Setting s : Setting.values()) {
@@ -296,7 +297,7 @@ public class DataHandler {
 
     public HashMap<Long, Integer> getAllCredits(long guildId) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Credits, UserId FROM Member WHERE GuildId = ?")
+             PreparedStatement stm = conn.prepareStatement("SELECT Credits, UserId FROM Member WHERE GuildId = ? ORDER BY Credits DESC")
         ) {
             HashMap<Long, Integer> map = new HashMap<>();
             stm.setLong(1, guildId);
@@ -311,6 +312,25 @@ public class DataHandler {
             return null;
         }
     }
+
+    public HashMap<Long, Integer> getAllCredits() {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT Credits, UserId FROM Member ORDER BY Credits DESC")
+        ) {
+            HashMap<Long, Integer> map = new HashMap<>();
+            try (ResultSet set = stm.executeQuery()) {
+                while (set.next()) {
+                    if (!map.containsKey(set.getLong("UserId")))
+                        map.put(set.getLong("UserId"), set.getInt("Credits"));
+                }
+            }
+            return map;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
 
     public void setCredits(long guildId, long userId, int credits) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
@@ -514,7 +534,7 @@ public class DataHandler {
         }
     }
 
-    public Pair<Double, String> getRecord(long guildId, long userId, String record) {
+    public RecordData getRecord(long guildId, long userId, String record) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT Value, Link FROM UserRecord WHERE GuildId = ? AND UserId = ? AND Name LIKE ?")) {
             stm.setLong(1, guildId);
@@ -522,7 +542,7 @@ public class DataHandler {
             stm.setString(3, record);
             try (ResultSet set = stm.executeQuery()) {
                 if (set.next()) {
-                    return Pair.of(set.getDouble("Value"), set.getString("Link"));
+                    return new RecordData(userId, record, set.getDouble("Value"), set.getString("Link"));
                 }
             }
         } catch (SQLException throwables) {
@@ -531,80 +551,94 @@ public class DataHandler {
         return null;
     }
 
-    public HashMap<String, Pair<Double, String>> getRecords(long guildId, long userId) {
-        HashMap<String, Pair<Double, String>> map = new HashMap<>();
+    public ArrayList<RecordData> getRecords(long guildId, long userId) {
+        ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Name, Value, Link FROM UserRecord WHERE GuildId = ? AND UserId = ?")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT Name, Value, Link FROM UserRecord INNER JOIN Record USING(Name) WHERE GuildId = ? AND UserId = ? ORDER BY ID")) {
             stm.setLong(1, guildId);
             stm.setLong(2, userId);
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
-                    map.put(set.getString("Name"), Pair.of(set.getDouble("Value"), set.getString("Link")));
+                    list.add(new RecordData(userId, set.getString("Name"), set.getDouble("Value"), set.getString("Link")));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return map;
+        return list;
     }
 
-    //TODO: Rework return type
-    //current type: record, <uuid, value, link>
-    public HashMap<String, Triple<Long, Double, String>> getRecords(long guildId) {
-        HashMap<String, Triple<Long, Double, String>> map = new HashMap<>();
+
+    public ArrayList<RecordData> getRecords(long guildId) {
+        ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max, GuildId FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max and a.GuildId = m.GuildId")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM (UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max, GuildId FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max and a.GuildId = m.GuildId) INNER JOIN Record r ON r.Name = a.Name ORDER BY ID")) {
             stm.setLong(1, guildId);
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
-                    map.put(set.getString(2), Triple.of(set.getLong(1), set.getDouble(3), set.getString(4)));
+                    list.add(new RecordData(set.getLong(1), set.getString(2), set.getDouble(3), set.getString(4)));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return map;
+        return list;
     }
 
-    public HashMap<Long, Pair<Double, String>> getRecords(long guildId, String type) {
-        HashMap<Long, Pair<Double, String>> map = null;
+    public ArrayList<RecordData> getRecords(){
+        ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ?")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM (UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max FROM UserRecord GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max) INNER JOIN Record r ON r.Name = a.Name ORDER BY ID")) {
+            try (ResultSet set = stm.executeQuery()) {
+                while (set.next()) {
+                    list.add(new RecordData(set.getLong(1), set.getString(2), set.getDouble(3), set.getString(4)));
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<RecordData> getRecords(long guildId, String type) {
+        ArrayList<RecordData> list = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ? ORDER BY Value DESC")) {
             stm.setLong(1, guildId);
             stm.setString(2, type);
             try (ResultSet set = stm.executeQuery()) {
-                map = new HashMap<>();
                 while (set.next()) {
-                    map.put(set.getLong("UserId"), Pair.of(set.getDouble("Value"), set.getString("Link")));
+                    list.add(new RecordData(set.getLong("UserId"), type, set.getDouble("Value"), set.getString("Link")));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return map;
+        return list;
     }
 
-    public HashMap<Long, Pair<Double, String>> getRecord(long guildId, String record) {
-        HashMap<Long, Pair<Double, String>> map = new HashMap<>();
+    public ArrayList<RecordData> getRecords(String type) {
+        ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Name, Value, Link, UserId FROM UserRecord WHERE GuildId = ? AND Name = ?")) {
-            stm.setLong(1, guildId);
-            stm.setString(2, record);
+             PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE Name LIKE ? ORDER BY Value DESC")) {
+            stm.setString(1, type);
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
-                    map.put(set.getLong("UserId"), Pair.of(set.getDouble("Value"), set.getString("Link")));
+                    long userId = set.getLong(1);
+                    if (list.stream().noneMatch(r -> r.getUserId() == userId))
+                        list.add(new RecordData(set.getLong("UserId"), type, set.getDouble("Value"), set.getString("Link")));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return map;
+        return list;
     }
 
     public ArrayList<String> getRecordTypes() {
         ArrayList<String> types = null;
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Type FROM Record");
+             PreparedStatement stm = conn.prepareStatement("SELECT Name FROM Record");
              ResultSet set = stm.executeQuery()) {
             types = new ArrayList<>();
             while (set.next()) {
@@ -618,7 +652,7 @@ public class DataHandler {
 
     public boolean isInt(String record) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT IsInt FROM Record WHERE Type LIKE ?")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT IsInt FROM Record WHERE Name LIKE ?")) {
             stm.setString(1, record);
             try (ResultSet set = stm.executeQuery()) {
                 if (set.next()) {
@@ -630,6 +664,44 @@ public class DataHandler {
             throwables.printStackTrace();
         }
         return false;
+    }
+
+    public int getStreak(long guildId, long userId) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT CurrentStreak FROM Member WHERE GuildId LIKE ? AND UserId LIKE ?")) {
+            stm.setLong(1, guildId);
+            stm.setLong(2, userId);
+            try (ResultSet set = stm.executeQuery()) {
+                if (set.next()) {
+                    return set.getInt(1);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void setStreak(long guildId, long userId, int value, String link) { //Addstreak would be more useful
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("UPDATE Member SET CurrentStreak = ? WHERE GuildId = ? AND UserId = ?;" +
+                                                                   "INSERT INTO UserRecord(UserId, GuildId, Name, Value, Link) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Link = IF(Value < ?, ?, Link), Value = GREATEST(Value, ?);"
+             )) {
+            stm.setInt(1, value);
+            stm.setLong(2, guildId);
+            stm.setLong(3, userId);
+            stm.setLong(4, userId);
+            stm.setLong(5, guildId);
+            stm.setString(6, value > 0 ? "bj_win_streak" : "bj_loss_streak");
+            stm.setInt(7, Math.abs(value));
+            stm.setString(8, link);
+            stm.setInt(9, Math.abs(value));
+            stm.setString(10, link);
+            stm.setInt(11, Math.abs(value));
+            stm.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     //</editor-fold>

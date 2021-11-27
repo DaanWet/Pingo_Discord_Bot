@@ -4,7 +4,7 @@ import casino.GameHandler;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import commands.CommandHandler;
-import commands.roles.RoleAssignRole;
+import utils.dbdata.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -12,11 +12,11 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.commons.lang3.tuple.Triple;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import utils.DataHandler;
+import utils.EmbedPaginator;
 import utils.ImageHandler;
 
 import java.io.File;
@@ -57,6 +57,8 @@ public class ReactionListener extends ListenerAdapter {
                         if (e.getGuild().getDefaultChannel() != null)
                             e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
                     }
+                } else if (gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).contains(e.getMessageIdLong())){
+                    handlePaginatorReaction(e);
                 } else {
                     e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
                         if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()) {
@@ -86,12 +88,38 @@ public class ReactionListener extends ListenerAdapter {
                     } catch (HierarchyException exc) {
                         if (e.getGuild().getDefaultChannel() != null)
                             e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+
                     }
                 }
             }
         });
 
     }
+
+    public void handlePaginatorReaction(GuildMessageReactionAddEvent e){
+        EmbedPaginator paginator = gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).get(e.getMessageIdLong());
+        switch (e.getReactionEmote().getEmoji()){
+            case "⏮️":
+                paginator.firstPage();
+                break;
+            case "◀️":
+                paginator.previousPage();
+                break;
+            case "▶️":
+                paginator.nextPage();
+                break;
+            case "⏭️":
+                paginator.lastPage();
+                break;
+            default:
+                return;
+        }
+        e.retrieveMessage().queue(m -> {
+            m.editMessage(paginator.createEmbed()).queue();
+            m.removeReaction(e.getReactionEmote().getEmoji(), e.getUser()).queue();
+        });
+    }
+
 
     public void handleBotSuggestion(GuildMessageReactionAddEvent e) {
         if (e.getMember().getIdLong() == 223837254118801408L) {

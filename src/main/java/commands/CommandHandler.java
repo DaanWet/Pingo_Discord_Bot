@@ -56,7 +56,7 @@ public class CommandHandler {
                 put("removeRA", new RemoveRoleAssign());
                 put("daily", new CollectCredits());
                 put("weekly", new Weekly());
-                put("balance", new ShowCredits());
+                put("balance", new ShowCredits(gameHandler));
                 put("blackjack", new BlackJack(gameHandler));
                 put("stand", new Stand(gameHandler));
                 put("hit", new Hit(gameHandler));
@@ -67,7 +67,7 @@ public class CommandHandler {
                 put("editI", new EditSuggestion());
                 put("adminAbuse", new AdminAbuse());
                 put("clean", new Clean());
-                put("records", new Records());
+                put("records", new Records(gameHandler));
                 put("uno", new Uno(gameHandler));
                 put("play", new Play(gameHandler));
                 put("draw", new Draw(gameHandler));
