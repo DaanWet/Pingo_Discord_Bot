@@ -4,7 +4,7 @@ import casino.GameHandler;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import commands.CommandHandler;
-import commands.roles.RoleAssignRole;
+import utils.dbdata.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -99,22 +99,25 @@ public class ReactionListener extends ListenerAdapter {
     public void handlePaginatorReaction(GuildMessageReactionAddEvent e){
         EmbedPaginator paginator = gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).get(e.getMessageIdLong());
         switch (e.getReactionEmote().getEmoji()){
-            case ":track_previous:":
+            case "⏮️":
                 paginator.firstPage();
                 break;
-            case ":arrow_backward:":
+            case "◀️":
                 paginator.previousPage();
                 break;
-            case ":arrow_forward:":
+            case "▶️":
                 paginator.nextPage();
                 break;
-            case ":track_next:":
+            case "⏭️":
                 paginator.lastPage();
                 break;
             default:
                 return;
         }
-        e.retrieveMessage().queue(m -> m.editMessage(paginator.createEmbed()).queue());
+        e.retrieveMessage().queue(m -> {
+            m.editMessage(paginator.createEmbed()).queue();
+            m.removeReaction(e.getReactionEmote().getEmoji(), e.getUser()).queue();
+        });
     }
 
 

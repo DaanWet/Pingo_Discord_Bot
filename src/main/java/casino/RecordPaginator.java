@@ -17,15 +17,10 @@ public class RecordPaginator extends EmbedPaginator {
     private final long guildId;
     private final Properties properties;
 
-    public RecordPaginator(String record, long guildId) {
+    public RecordPaginator(String record, long guildId, Properties properties) {
         this.record = record;
         this.guildId = guildId;
-        properties = new Properties();
-        try {
-            properties.load(Records.class.getClassLoader().getResourceAsStream("config.properties"));
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
+        this.properties = properties;
     }
 
 

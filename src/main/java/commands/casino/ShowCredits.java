@@ -18,10 +18,10 @@ public class ShowCredits extends Command {
 
 
     public ShowCredits() {
-        this.name = "ShowCredits";
-        this.aliases = new String[]{"bal", "credits", "balance"};
+        this.name = "Balance";
+        this.aliases = new String[]{"bal", "credits", "ShowCredits"};
         this.category = "Casino";
-        this.arguments = "[top]";
+        this.arguments = "[top|global]";
         this.description = "Show your current credit balance";
     }
 
@@ -42,8 +42,6 @@ public class ShowCredits extends Command {
             EmbedBuilder eb = new EmbedBuilder();
             StringBuilder sb = new StringBuilder();
             eb.setTitle("Leaderboard");
-            // e.getGuild().retrieveMembersByIds(sorted.stream().map(Map.Entry::getKey).collect(Collectors.toList())).onSuccess(list -> {
-            //    Map<Long, Member> m = list.stream().collect(Collectors.toMap(Member::getIdLong, member -> member));
             for (int i = 0; i < sorted.size() && i < 10; i++) {
                 sb.append("`").append(i + 1).append(i == 9 ? ".`" : ". `  ")
                         .append("<@!")

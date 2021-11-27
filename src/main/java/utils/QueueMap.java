@@ -9,7 +9,7 @@ public class QueueMap<K, V> extends HashMap<K, V> {
     private int maxSize;
 
     public QueueMap(){
-        new QueueMap<K, V>(4);
+        this(4);
     }
 
     public QueueMap(int maxSize){

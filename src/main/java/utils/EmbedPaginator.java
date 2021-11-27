@@ -32,10 +32,10 @@ public abstract class EmbedPaginator {
                        {
                            if (consumer != null)
                                consumer.accept(m);
-                           m.addReaction(":track_previous:").queue();
-                           m.addReaction(":arrow_backward:").queue();
-                           m.addReaction(":arrow_forward:").queue();
-                           m.addReaction(":track_next:").queue();
+                           m.addReaction("⏮️").queue();
+                           m.addReaction("◀️").queue();
+                           m.addReaction("▶️").queue();
+                           m.addReaction("⏭️").queue();
                        });
     }
 
