@@ -38,7 +38,6 @@ public class DataHandler {
         properties.setProperty("useUnicode", "true");
         nomultiproperties = new Properties(properties);
         nomultiproperties.setProperty("allowMultiQueries", "false");
-        createDatabase();
     }
 
     public static void setUserId(String userId) {
@@ -49,7 +48,7 @@ public class DataHandler {
         DataHandler.PASSWD = PASSWD;
     }
 
-    private void createDatabase() {
+    public void createDatabase() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (Type VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
                                                                           "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, CurrentStreak  INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
