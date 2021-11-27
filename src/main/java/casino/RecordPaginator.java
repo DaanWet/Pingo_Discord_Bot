@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 import utils.EmbedPaginator;
+import utils.dbdata.RecordData;
 
 import java.io.IOException;
 import java.util.*;
@@ -29,11 +30,10 @@ public class RecordPaginator extends EmbedPaginator {
         DataHandler dataHandler = new DataHandler();
         EmbedBuilder eb = new EmbedBuilder();
         boolean isInt = dataHandler.isInt(record);
-        HashMap<Long, Pair<Double, String>> records = dataHandler.getRecords(guildId, record);
-        List<Map.Entry<Long, Pair<Double, String>>> sorted = records.entrySet().stream().sorted(Comparator.comparingDouble(x -> -x.getValue().getLeft())).collect(Collectors.toList());
+        ArrayList<RecordData> records = dataHandler.getRecords(guildId, record);
         eb.setTitle(String.format("%s leaderboard", properties.getProperty(record.toLowerCase())));
         StringBuilder sb = new StringBuilder();
-        int size = sorted.size();
+        int size = records.size();
         int maxpage = ((size - 1) / 10) + 1;
         if (page == -1)
             page = maxpage;
@@ -42,15 +42,15 @@ public class RecordPaginator extends EmbedPaginator {
 
 
         for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++) {
-            Pair<Double, String> v = sorted.get(i).getValue();
+            RecordData v = records.get(i);
             sb.append("`").append(i + 1).append(i == 9 ? ".`" : ". `  ")
                     .append("<@!")
-                    .append(sorted.get(i).getKey())
+                    .append(records.get(i).getUserId())
                     .append(">  **: ")
-                    .append(isInt ? v.getLeft().intValue() : String.format("%.2f%s", v.getLeft() * 100, "%"))
+                    .append(isInt ? (int) v.getValue() : String.format("%.2f%s", v.getValue() * 100, "%"))
                     .append("** ");
-            if (v.getRight() != null) {
-                sb.append(" [jump](").append(v.getRight()).append(")");
+            if (v.getLink() != null) {
+                sb.append(" [jump](").append(v.getLink()).append(")");
             }
             sb.append("\n");
         }

@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
+import utils.dbdata.RoleAssignData;
+import utils.dbdata.RoleAssignRole;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;

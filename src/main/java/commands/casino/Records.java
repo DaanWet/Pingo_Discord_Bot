@@ -13,6 +13,7 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
 import utils.Utils;
+import utils.dbdata.RecordData;
 
 import java.io.IOException;
 import java.util.*;
@@ -48,20 +49,19 @@ public class Records extends Command {
         if (args.length == 0) {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle("Casino Records");
-            HashMap<String, Triple<Long, Double, String>> records = dataHandler.getRecords(e.getGuild().getIdLong());
+            ArrayList<RecordData> records = dataHandler.getRecords(e.getGuild().getIdLong());
             StringBuilder sb = new StringBuilder();
-            for (String record : records.keySet()) {
-                Triple<Long, Double, String> v = records.get(record);
-                sb.append(":small_blue_diamond: ").append(properties.getProperty(record))
+            for (RecordData record : records) {
+                sb.append(":small_blue_diamond: ").append(properties.getProperty(record.getRecord()))
                         .append(": **");
-                boolean isInt = dataHandler.isInt(record);
+                boolean isInt = dataHandler.isInt(record.getRecord());
                 // Formats the blackjack winrate into something more human readable
-                sb.append(isInt ? v.getMiddle().intValue() : String.format("%.2f%s", v.getMiddle() * 100, "%"));
+                sb.append(isInt ? (int)record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
 
                 sb.append("** by <@!")
-                        .append(v.getLeft()).append(">");
-                if (v.getRight() != null) {
-                    sb.append(" [jump](").append(v.getRight()).append(")");
+                        .append(record.getUserId()).append(">");
+                if (record.getLink() != null) {
+                    sb.append(" [jump](").append(record.getLink()).append(")");
                 }
                 sb.append("\n");
             }
@@ -97,26 +97,25 @@ public class Records extends Command {
             }
 
             if (recordTypes.contains(args[0].toLowerCase())) {
-                RecordPaginator recordPaginator = new RecordPaginator(args[0], e.getGuild().getIdLong());
+                RecordPaginator recordPaginator = new RecordPaginator(args[0], e.getGuild().getIdLong(), properties);
                 recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
             } else if (target != null) {
-                HashMap<String, Pair<Double, String>> records = dataHandler.getRecords(e.getGuild().getIdLong(), target.getIdLong());
+                ArrayList<RecordData> records = dataHandler.getRecords(e.getGuild().getIdLong(), target.getIdLong());
                 eb.setTitle(String.format("%s's Records", target.getUser().getName()));
                 StringBuilder sb = new StringBuilder();
-                for (String record : records.keySet()) {
-                    Pair<Double, String> v = records.get(record);
+                for (RecordData record : records) {
 
-                    sb.append(":small_blue_diamond: ").append(properties.getProperty(record))
+                    sb.append(":small_blue_diamond: ").append(properties.getProperty(record.getRecord()))
                             .append(": **");
 
-                    boolean isInt = dataHandler.isInt(record);
+                    boolean isInt = dataHandler.isInt(record.getRecord());
                     // Formats the blackjack winrate into something more human readable
-                    sb.append(isInt ? v.getLeft().intValue() : String.format("%.2f%s", v.getLeft() * 100, "%"));
+                    sb.append(isInt ? (int)record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
 
 
                     sb.append("** ");
-                    if (v.getRight() != null) {
-                        sb.append(" [jump](").append(v.getRight()).append(")");
+                    if (record.getLink() != null) {
+                        sb.append(" [jump](").append(record.getLink()).append(")");
                     }
                     sb.append("\n");
                 }

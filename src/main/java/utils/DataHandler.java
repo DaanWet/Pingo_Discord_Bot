@@ -2,8 +2,10 @@ package utils;
 
 
 import com.mysql.cj.exceptions.WrongArgumentException;
-import commands.roles.RoleAssignData;
-import commands.roles.RoleAssignRole;
+import commands.casino.Records;
+import utils.dbdata.RecordData;
+import utils.dbdata.RoleAssignData;
+import utils.dbdata.RoleAssignRole;
 import commands.roles.RoleCommand;
 import commands.settings.Setting;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
@@ -516,7 +518,7 @@ public class DataHandler {
         }
     }
 
-    public Pair<Double, String> getRecord(long guildId, long userId, String record) {
+    public RecordData getRecord(long guildId, long userId, String record) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT Value, Link FROM UserRecord WHERE GuildId = ? AND UserId = ? AND Name LIKE ?")) {
             stm.setLong(1, guildId);
@@ -524,7 +526,7 @@ public class DataHandler {
             stm.setString(3, record);
             try (ResultSet set = stm.executeQuery()) {
                 if (set.next()) {
-                    return Pair.of(set.getDouble("Value"), set.getString("Link"));
+                    return new RecordData(userId, record, set.getDouble("Value"), set.getString("Link"));
                 }
             }
         } catch (SQLException throwables) {
@@ -533,74 +535,55 @@ public class DataHandler {
         return null;
     }
 
-    public HashMap<String, Pair<Double, String>> getRecords(long guildId, long userId) {
-        HashMap<String, Pair<Double, String>> map = new HashMap<>();
+    public ArrayList<RecordData> getRecords(long guildId, long userId) {
+        ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT Name, Value, Link FROM UserRecord WHERE GuildId = ? AND UserId = ?")) {
             stm.setLong(1, guildId);
             stm.setLong(2, userId);
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
-                    map.put(set.getString("Name"), Pair.of(set.getDouble("Value"), set.getString("Link")));
+                    list.add(new RecordData(userId, set.getString("Name"), set.getDouble("Value"), set.getString("Link")));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return map;
+        return list;
     }
 
-    //TODO: Rework return type
-    //current type: record, <uuid, value, link>
-    public HashMap<String, Triple<Long, Double, String>> getRecords(long guildId) {
-        HashMap<String, Triple<Long, Double, String>> map = new HashMap<>();
+
+    public ArrayList<RecordData> getRecords(long guildId) {
+        ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max, GuildId FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max and a.GuildId = m.GuildId")) {
             stm.setLong(1, guildId);
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
-                    map.put(set.getString(2), Triple.of(set.getLong(1), set.getDouble(3), set.getString(4)));
+                    list.add(new RecordData(set.getLong(1), set.getString(2), set.getDouble(3), set.getString(4)));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return map;
+        return list;
     }
 
-    public HashMap<Long, Pair<Double, String>> getRecords(long guildId, String type) {
-        HashMap<Long, Pair<Double, String>> map = null;
+    public ArrayList<RecordData> getRecords(long guildId, String type) {
+        ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ?")) {
+            PreparedStatement stm = conn.prepareStatement("SELECT UserId, Value, Link FROM UserRecord WHERE GuildId = ? AND Name LIKE ? ORDER BY Value")) {
             stm.setLong(1, guildId);
             stm.setString(2, type);
             try (ResultSet set = stm.executeQuery()) {
-                map = new HashMap<>();
                 while (set.next()) {
-                    map.put(set.getLong("UserId"), Pair.of(set.getDouble("Value"), set.getString("Link")));
+                    list.add(new RecordData(set.getLong("UserId"), type, set.getDouble("Value"), set.getString("Link")));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return map;
-    }
-
-    public HashMap<Long, Pair<Double, String>> getRecord(long guildId, String record) {
-        HashMap<Long, Pair<Double, String>> map = new HashMap<>();
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Name, Value, Link, UserId FROM UserRecord WHERE GuildId = ? AND Name = ?")) {
-            stm.setLong(1, guildId);
-            stm.setString(2, record);
-            try (ResultSet set = stm.executeQuery()) {
-                while (set.next()) {
-                    map.put(set.getLong("UserId"), Pair.of(set.getDouble("Value"), set.getString("Link")));
-                }
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return map;
+        return list;
     }
 
     public ArrayList<String> getRecordTypes() {
