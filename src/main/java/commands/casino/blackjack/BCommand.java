@@ -35,7 +35,7 @@ public abstract class BCommand extends Command {
     }
 
     protected void updateRecords(long guildId, long playerId, DataHandler dataHandler, int won_lose, String jumpurl){
-        dataHandler.setRecord(guildId, playerId, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, jumpurl, false);
+        dataHandler.setRecord(guildId, playerId, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_loss", won_lose > 0 ? won_lose : won_lose * -1, jumpurl, false);
         RecordData played_games = dataHandler.getRecord(guildId, playerId, "bj_games_played");
         RecordData winrate = dataHandler.getRecord(guildId, playerId, "bj_win_rate");
         int temp = played_games == null ? 0 : (int)played_games.getValue();
