@@ -572,7 +572,11 @@ public class DataHandler {
     public ArrayList<RecordData> getRecords(long guildId) {
         ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM (UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max, GuildId FROM UserRecord WHERE GuildId = ? GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max and a.GuildId = m.GuildId) INNER JOIN Record r ON r.Name = a.Name ORDER BY ID")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT UID, M.Name, Max, Link  FROM (SELECT Name, " +
+                                                                   "max(Value) as Max, " +
+                                                                   "CAST(SUBSTRING(MAX(CONCAT(LPAD(Value, 11, '0'), UserId)), 12) AS UNSIGNED INTEGER) AS UID," +
+                                                                   "SUBSTRING(MAX(CONCAT(LPAD(Value, 11, '0'), Link)), 12) AS Link " +
+                                                                   "FROM UserRecord  WHERE GuildId = ? GROUP BY Name) as M INNER JOIN Record USING(Name) ORDER BY ID")) {
             stm.setLong(1, guildId);
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
@@ -588,7 +592,11 @@ public class DataHandler {
     public ArrayList<RecordData> getRecords(){
         ArrayList<RecordData> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT a.UserId, a.Name, a.Value, a.Link FROM (UserRecord a INNER JOIN (SELECT Name, MAX(Value) AS Max FROM UserRecord GROUP BY Name)  AS m ON a.Name = m.Name and a.Value = m.max) INNER JOIN Record r ON r.Name = a.Name ORDER BY ID")) {
+             PreparedStatement stm = conn.prepareStatement("SELECT UID, M.Name, Max, Link  FROM (SELECT Name, " +
+                                                                   "max(Value) as Max, " +
+                                                                   "CAST(SUBSTRING(MAX(CONCAT(LPAD(Value, 11, '0'), UserId)), 12) AS UNSIGNED INTEGER) AS UID," +
+                                                                   "SUBSTRING(MAX(CONCAT(LPAD(Value, 11, '0'), Link)), 12) AS Link " +
+                                                                   "FROM UserRecord GROUP BY Name) as M INNER JOIN Record USING(Name) ORDER BY ID")) {
             try (ResultSet set = stm.executeQuery()) {
                 while (set.next()) {
                     list.add(new RecordData(set.getLong(1), set.getString(2), set.getDouble(3), set.getString(4)));
