@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.Utils;
 import utils.dbdata.RecordData;
 
@@ -106,13 +107,13 @@ public class Records extends Command {
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
             } else {
-                e.getChannel().sendMessage(String.format("%s is not a valid member name or record name", args[0])).queue();
+                throw new MessageException(String.format("%s is not a valid member name or record name", args[0]));
             }
         } else if (args.length == 2 && recordTypes.contains(args[0].toLowerCase()) && args[1].equalsIgnoreCase("global")) {
             RecordPaginator recordPaginator = new RecordPaginator(args[0], null, properties);
             recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
         } else {
-            e.getChannel().sendMessage(String.format("This commands takes max 2 optional arguments. \n%s\n If the name of the member consists of multiple words, put it between quotes for it to be recognised as a name.", getUsage())).queue();
+            throw new MessageException(String.format("This commands takes max 2 optional arguments. \n%s\n If the name of the member consists of multiple words, put it between quotes for it to be recognised as a name.", getUsage()));
         }
     }
 

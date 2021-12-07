@@ -47,7 +47,7 @@ public class Weekly extends Command {
             dataHandler.setLatestWeekCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
             e.getChannel().sendMessage(String.format("You collected your weekly **15000 credits** \nYour new balance is now **%d credits**", creds)).queue();
         } else {
-            e.getChannel().sendMessage(this.getUsage()).queue();
+            throw new MessageException(this.getUsage());
         }
     }
 }

@@ -3,6 +3,7 @@ package commands;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 import utils.Utils;
 
 public class EditSuggestion extends Command {
@@ -49,10 +50,10 @@ public class EditSuggestion extends Command {
                     m.editMessage(eb.build()).queue();
                 });
             } else {
-                e.getChannel().sendMessage(getUsage()).queue();
+                throw new MessageException(getUsage());
             }
         } else {
-            e.getChannel().sendMessage(getUsage()).queue();
+            throw new MessageException(getUsage());
         }
     }
 }

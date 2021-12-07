@@ -34,17 +34,15 @@ public class AddRoleAssign extends RoleCommand {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         DataHandler dataHandler = new DataHandler();
         long guildId = e.getGuild().getIdLong();
-        if (args.length == 1) {
-            e.getChannel().sendMessage("No emoji, role and name given\n" + getUsage()).queue();
-        } else if (args.length == 2) {
-            e.getChannel().sendMessage("No role and name given\n" + getUsage()).queue();
-        } else if (args.length == 3) {
-            e.getChannel().sendMessage("No name given\n" + getUsage()).queue();
-        } else if (args.length >= 4 && dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0])) {
-            if (!hasEmoji(e.getMessage(), args[1])) {
-                e.getChannel().sendMessage(String.format("%s is not a valid emoji\n%s", args[1], getUsage())).queue();
-                return;
-            }
+        if (args.length == 1)
+            throw new MessageException("No emoji, role and name given\n" + getUsage());
+        if (args.length == 2)
+            throw new MessageException("No role and name given\n" + getUsage());
+        if (args.length == 3)
+            throw new MessageException("No name given\n" + getUsage());
+        if (args.length >= 4 && dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0])) {
+            if (!hasEmoji(e.getMessage(), args[1]))
+                throw new MessageException(String.format("%s is not a valid emoji\n%s", args[1], getUsage()));
             Role role = null;
             try {
                 role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);
@@ -53,9 +51,8 @@ public class AddRoleAssign extends RoleCommand {
             }
             int pos = role.getPosition();
             if (e.getGuild().getSelfMember().getRoles().stream().noneMatch(r -> r.getPosition() > pos) || !e.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-                e.getChannel().sendMessage("I have insufficient permissions to assign that role to somebody. Make sure that I have a role that's higher than the role you're trying to assign and that I have the _manage roles_ permission").queue();
                 e.getMessage().addReaction("❌").queue();
-                return;
+                throw new MessageException("I have insufficient permissions to assign that role to somebody. Make sure that I have a role that's higher than the role you're trying to assign and that I have the _manage roles_ permission");
             }
             StringBuilder name = new StringBuilder();
             for (int i = 3; i < args.length; i++) {
@@ -78,11 +75,11 @@ public class AddRoleAssign extends RoleCommand {
                 }
             } else {
                 e.getMessage().addReaction("❌").queue();
-                e.getChannel().sendMessage("Unable to add to database, that emoji is already used in the role picker").queue();
+                throw new MessageException("Unable to add to database, that emoji is already used in the role picker");
             }
 
         } else {
-            e.getChannel().sendMessage("No valid category given\n" + getUsage()).queue();
+            throw new MessageException("No valid category given\n" + getUsage());
         }
     }
 }

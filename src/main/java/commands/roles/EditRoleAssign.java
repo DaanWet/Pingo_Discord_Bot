@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.dbdata.RoleAssignData;
 import utils.dbdata.RoleAssignRole;
 
@@ -24,9 +25,9 @@ public class EditRoleAssign extends RoleCommand {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         DataHandler dh = new DataHandler();
         long guildId = e.getGuild().getIdLong();
-        if (args.length == 1){
-            e.getChannel().sendMessage("Please supply what you want to edit: sort, title or an emoji which name you want to edit\n" + getUsage()).queue();
-        } else if (args.length >= 3 && dh.getRoleCategories(guildId).contains(args[0])) {
+        if (args.length == 1)
+            throw new MessageException("Please supply what you want to edit: sort, title or an emoji which name you want to edit\n" + getUsage());
+        if (args.length >= 3 && dh.getRoleCategories(guildId).contains(args[0])) {
             if (args[1].equalsIgnoreCase("sort")) {
                 RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
                 final Compacting compact;
@@ -50,10 +51,8 @@ public class EditRoleAssign extends RoleCommand {
                         }
                         i++;
                     }
-                    if (!correct){
-                        e.getChannel().sendMessage(String.format("%s is not an valid sorting method", args[2])).queue();
-                        return;
-                    }
+                    if (!correct)
+                        throw new MessageException(String.format("%s is not an valid sorting method", args[2]));
                     sort = Sorting.CUSTOM;
                     data.setCustomS(args[2]);
                 }
@@ -64,8 +63,7 @@ public class EditRoleAssign extends RoleCommand {
                     } else if (args[3].equalsIgnoreCase("supercompact")) {
                         compact = Compacting.SUPER_COMPACT;
                     } else if (!args[3].equalsIgnoreCase("normal")) {
-                        e.getChannel().sendMessage(String.format("%s is not an valid compacting method", args[1])).queue();
-                        return;
+                        throw new MessageException(String.format("%s is not an valid compacting method", args[1]));
                     } else {
                         compact = Compacting.NORMAL;
                     }
@@ -94,13 +92,13 @@ public class EditRoleAssign extends RoleCommand {
                     editEmbed(data, e.getGuild(), args[0], dh);
                 } else {
                     e.getMessage().addReaction("❌").queue();
-                    e.getChannel().sendMessage(String.format("No such emoji for category %s", args[0])).queue();
+                    throw new MessageException(String.format("No such emoji for category %s", args[0]));
                 }
             } else {
-                e.getChannel().sendMessage(String.format("%s is not a valid emoji.\n%s", args[1], getUsage())).queue();
+                throw new MessageException(String.format("%s is not a valid emoji.\n%s", args[1], getUsage()));
             }
         } else {
-            e.getChannel().sendMessage("No valid category provided\n" + getUsage()).queue();
+            throw new MessageException("No valid category provided\n" + getUsage());
         }
     }
 

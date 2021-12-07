@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
+import utils.MessageException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ShowCredits extends Command {
             BalancePaginator paginator = new BalancePaginator(global, e.getGuild().getIdLong());
             paginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), paginator));
         } else {
-            e.getChannel().sendMessage(this.getUsage()).queue();
+            throw new MessageException(this.getUsage());
         }
     }
 }

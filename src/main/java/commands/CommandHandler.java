@@ -18,6 +18,7 @@ import commands.settings.Setting;
 import commands.settings.Settings;
 import org.kohsuke.github.GitHub;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -126,11 +127,11 @@ public class CommandHandler {
                         break;
                     } else {
                         e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                        channel.sendMessage(state.getError()).queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                        throw new MessageException(state.getError(), 5);
                     }
                 } else {
                     e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                    channel.sendMessage(CommandState.USER.getError()).queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                    throw new MessageException(CommandState.USER.getError(), 5);
                 }
             }
         }

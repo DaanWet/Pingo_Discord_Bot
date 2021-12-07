@@ -60,7 +60,7 @@ public class Suggest extends Command {
                 e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             }
         } else {
-            e.getChannel().sendMessage(getUsage()).queue();
+            throw new MessageException(getUsage());
         }
     }
 }
