@@ -1,8 +1,12 @@
 package commands;
 
+import commands.settings.Setting;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.DataHandler;
 import utils.Utils;
+
+import java.time.LocalDateTime;
 
 public class Poll extends Command{
 
@@ -40,5 +44,6 @@ public class Poll extends Command{
             throw new MessageException("You have to give a question and/or at least 2 options");
         }
         e.getMessage().delete().queue();
+        new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.POLL, LocalDateTime.now());
     }
 }

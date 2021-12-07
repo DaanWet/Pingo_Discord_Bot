@@ -1,21 +1,22 @@
 package listeners;
 
 import casino.GameHandler;
-import commands.CommandHandler;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.exceptions.HierarchyException;
-import org.apache.commons.lang3.tuple.Triple;
-import org.kohsuke.github.GHIssueBuilder;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
-import utils.DataHandler;
+import commands.CommandHandler;
+import utils.dbdata.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.kohsuke.github.GHIssueBuilder;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import utils.DataHandler;
+import utils.EmbedPaginator;
 import utils.ImageHandler;
 
 import java.io.File;
@@ -23,7 +24,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static commands.CommandHandler.pathname;
@@ -49,48 +49,77 @@ public class ReactionListener extends ListenerAdapter {
             } else if (e.getChannel().getIdLong() == 747228850353733739L) {
                 handleBotSuggestion(e);
             } else {
-                e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
-                    if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()) {
-                        MessageEmbed me = m.getEmbeds().get(0);
-                        if (me.getTitle() != null) {
-                            if (me.getTitle().contains("Delete pictures from ")) {
-                                handleDeleteExplorerReaction(e, m, me);
-                            } else if (me.getTitle().equals("A game of uno is going to start!")) {
-                                handleUnoReaction(e.getMember(), m, e.getReactionEmote());
-                            } else if (me.getTitle().contains("Roles")){
-                                try {
-                                    handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, e.getMember(), true);
-                                } catch (HierarchyException exc){
-                                    if (e.getGuild().getDefaultChannel() != null) e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+                String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
+                if (roleCat != null) {
+                    try {
+                        handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), true);
+                    } catch (HierarchyException exc) {
+                        if (e.getGuild().getDefaultChannel() != null)
+                            e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+                    }
+                } else if (gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).contains(e.getMessageIdLong())){
+                    handlePaginatorReaction(e);
+                } else {
+                    e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
+                        if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()) {
+                            MessageEmbed me = m.getEmbeds().get(0);
+                            if (me.getTitle() != null) {
+                                if (me.getTitle().contains("Delete pictures from ")) {
+                                    handleDeleteExplorerReaction(e, m, me);
+                                } else if (me.getTitle().equals("A game of uno is going to start!")) {
+                                    handleUnoReaction(e.getMember(), m, e.getReactionEmote());
                                 }
-
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }
 
     @Override
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e) {
-        e.retrieveMember().queue(user -> {
-            if (user != null && !user.getUser().isBot()) {
-                e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
-                    if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()) {
-                        MessageEmbed me = m.getEmbeds().get(0);
-                        if (me.getTitle() != null && me.getTitle().contains("Roles")) {
-                            try {
-                                handleRoleReaction(e.getReactionEmote().getAsReactionCode(), m, e.getMember(), false);
-                            } catch (HierarchyException exc){
-                                if (e.getGuild().getDefaultChannel() != null) e.getGuild().getDefaultChannel().sendMessage("Unable to remove role due to lack of permissions, place my role above the roles you want me to remove").queue();
-                            }
-                        }
+        e.retrieveMember().queue(u -> {
+            if (!u.getUser().isBot()){
+                String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
+                if (roleCat != null) {
+                    try {
+                        handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), false);
+                    } catch (HierarchyException exc) {
+                        if (e.getGuild().getDefaultChannel() != null)
+                            e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+
                     }
-                });
+                }
             }
         });
+
     }
+
+    public void handlePaginatorReaction(GuildMessageReactionAddEvent e){
+        EmbedPaginator paginator = gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).get(e.getMessageIdLong());
+        switch (e.getReactionEmote().getEmoji()){
+            case "⏮️":
+                paginator.firstPage();
+                break;
+            case "◀️":
+                paginator.previousPage();
+                break;
+            case "▶️":
+                paginator.nextPage();
+                break;
+            case "⏭️":
+                paginator.lastPage();
+                break;
+            default:
+                return;
+        }
+        e.retrieveMessage().queue(m -> {
+            m.editMessage(paginator.createEmbed()).queue();
+            m.removeReaction(e.getReactionEmote().getEmoji(), e.getUser()).queue();
+        });
+    }
+
 
     public void handleBotSuggestion(GuildMessageReactionAddEvent e) {
         if (e.getMember().getIdLong() == 223837254118801408L) {
@@ -236,22 +265,14 @@ public class ReactionListener extends ListenerAdapter {
         }
     }
 
-    public void handleRoleReaction(String emote, Message message, Member m, boolean add) {
-        DataHandler dh = new DataHandler();
-        Guild g = message.getGuild();
-        for (String type : dh.getRoleCategories(g.getIdLong())){
-            long[] longs = dh.getMessage(g.getIdLong(), type);
-            if (longs != null && longs[0] == message.getChannel().getIdLong() && longs[1] == message.getIdLong()){
-                ArrayList<Triple<String, String, Long>> gameroles = dh.getRoles(g.getIdLong(), type);
-                for (Triple<String, String, Long> obj : gameroles) {
-                    if (emote.equals(obj.getLeft().replaceFirst("<:", "").replaceFirst(">$", ""))) {
-                        if (add) {
-                            g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById(obj.getRight()))).queue();
-                        } else {
-                            g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById(obj.getRight()))).queue();
-                        }
-
-                    }
+    public void handleRoleReaction(String emote, Guild g, String category, Member m, boolean add) {
+        ArrayList<RoleAssignRole> gameroles = new DataHandler().getRoles(g.getIdLong(), category);
+        for (RoleAssignRole obj : gameroles) {
+            if (emote.equals(obj.getEmoji().replaceFirst("<:", "").replaceFirst(">$", ""))) {
+                if (add) {
+                    g.addRoleToMember(m, Objects.requireNonNull(g.getRoleById(obj.getRoleId()))).queue();
+                } else {
+                    g.removeRoleFromMember(m, Objects.requireNonNull(g.getRoleById(obj.getRoleId()))).queue();
                 }
             }
         }
@@ -270,20 +291,20 @@ public class ReactionListener extends ListenerAdapter {
                             guild.createCategory("Uno")
                                     .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                     .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(category -> {
-                                unoGame.setCategory(category.getIdLong());
-                                guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(Math.min(guild.getCategories().size() - 1, 2)).queue();
-                                for (UnoHand hand : hands) {
-                                    category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
-                                            .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                            .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                            .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic("Run !help to show which commands you can use").queue(channel -> {
-                                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId()).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
-                                            hand.setChannelId(channel.getIdLong());
-                                            hand.setMessageId(mes.getIdLong());
-                                        });
+                                        unoGame.setCategory(category.getIdLong());
+                                        guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(Math.min(guild.getCategories().size() - 1, 2)).queue();
+                                        for (UnoHand hand : hands) {
+                                            category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
+                                                    .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
+                                                    .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
+                                                    .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic("Run !help to show which commands you can use").queue(channel -> {
+                                                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId()).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
+                                                            hand.setChannelId(channel.getIdLong());
+                                                            hand.setMessageId(mes.getIdLong());
+                                                        });
+                                                    });
+                                        }
                                     });
-                                }
-                            });
                         } else {
                             message.removeReaction((Emote) emoji, member.getUser()).queue();
                         }

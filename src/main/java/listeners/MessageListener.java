@@ -1,6 +1,7 @@
 package listeners;
 
 import commands.CommandHandler;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -8,6 +9,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.kohsuke.github.GitHub;
 import utils.MessageException;
+import utils.DataHandler;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +66,7 @@ public class MessageListener extends ListenerAdapter {
                 message.delete().queue();
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
             } // Check for commands
-            else if (contentRaw.length() > 0 && contentRaw.charAt(0) == '!') {
+            else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))) {
                 try  {
                     commandListener.onCommandReceived(e);
                 } catch (MessageException exc){

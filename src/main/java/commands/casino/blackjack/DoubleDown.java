@@ -2,28 +2,21 @@ package commands.casino.blackjack;
 
 import casino.BlackJackGame;
 import casino.GameHandler;
-import commands.Command;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 import utils.MessageException;
 
-public class DoubleDown extends Command {
+public class DoubleDown extends BCommand {
 
-    private GameHandler gameHandler;
 
-    public DoubleDown(GameHandler gameHandler){
-        this.gameHandler = gameHandler;
+    public DoubleDown(GameHandler gameHandler) {
+        super(gameHandler);
         this.name = "double";
-        this.category = "Blackjack";
-        this.hidden = true;
-
     }
 
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         long id = e.getAuthor().getIdLong();
         long guildId = e.getGuild().getIdLong();
         if (args.length == 0) {
@@ -33,27 +26,13 @@ public class DoubleDown extends Command {
                     throw new MessageException("You can't do that");
                 }
                 DataHandler dataHandler = new DataHandler();
-                if (new DataHandler().getCredits(guildId, id) - 2*bjg.getBet() < 0) {
+                if (new DataHandler().getCredits(guildId, id) < 2*bjg.getBet()) {
                     throw new MessageException("You have not enough credits");
                 }
+                
                 bjg.doubleDown();
-                e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
-                    EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName());
-                    if (bjg.hasEnded()) {
-                        int won_lose = bjg.getWonCreds();
-                        int credits = dataHandler.addCredits(guildId, id, won_lose);
-                        eb.addField("Credits", String.format("You now have %d credits", credits), false);
-                        gameHandler.removeBlackJackGame(guildId, id);
-                        dataHandler.setRecord(guildId, id, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_lose", won_lose > 0 ? won_lose : won_lose * -1, m.getJumpUrl(), false);
-                        Pair<Double, String> played_games = dataHandler.getRecord(guildId, id, "bj_games_played");
-                        Pair<Double, String> winrate = dataHandler.getRecord(guildId, id, "bj_win_rate");
-                        int temp = played_games == null ? 0 : played_games.getLeft().intValue();
-                        double tempw = winrate == null ? 0.0 : winrate.getLeft();
-                        dataHandler.setRecord(guildId, id, "bj_games_played", temp + 1, false);
-                        dataHandler.setRecord(guildId, id, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw)/(temp + 1.0)), true);
-                    }
-                    m.editMessage(eb.build()).queue();
-                });
+                updateMessage(e.getChannel(), bjg, dataHandler, guildId, id, e.getAuthor().getName());
+
             }
         }
     }
