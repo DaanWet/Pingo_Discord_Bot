@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,8 +31,7 @@ public class AmongUs extends Command{
             //    e.getChannel().sendMessage("Wrong voicechannel noob").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
             //}
         } else {
-            //This can't be a throw, the message needs to be deleted after 10 seconds
-            e.getChannel().sendMessage("You're not connected to a voice channel").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
+            throw new MessageException("You're not connected to a voice channel", 10);
         }
         e.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
     }

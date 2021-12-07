@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +61,7 @@ public class RemoveRoleAssign extends Command {
             boolean found = dataHandler.removeRoleAssign(e.getGuild().getIdLong(), args[0], args[1]);
             if (!found){
                 //Cannot be a throw MessageException, needs to be deleted after
-                e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
+                throw new MessageException("No matching role found", 15);
             }
 
         }

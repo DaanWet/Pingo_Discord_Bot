@@ -68,7 +68,10 @@ public class MessageListener extends ListenerAdapter {
                 try  {
                     commandListener.onCommandReceived(e);
                 } catch (MessageException exc){
-                    e.getChannel().sendMessage(exc.getMessage()).queue();
+                    e.getChannel().sendMessage(exc.getMessage()).queue(m -> {
+                        if (exc.getDelete() != 0)
+                            m.delete().queueAfter(exc.getDelete(), TimeUnit.SECONDS);
+                    });
                 } catch (Exception exc){
                     e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
                     exc.printStackTrace();
