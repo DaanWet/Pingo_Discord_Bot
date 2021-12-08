@@ -10,6 +10,7 @@ import utils.dbdata.RecordData;
 import utils.dbdata.RoleAssignData;
 import utils.dbdata.RoleAssignRole;
 
+import java.io.UncheckedIOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class DataHandler {
     }
 
     //<editor-fold desc="RoleAssign Code">
-    public ArrayList<String> getRoleCategories(long guildId) {
+    public ArrayList<String> getRoleCategories(long guildId) throws SQLException{
         ArrayList<String> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
              PreparedStatement stmn = conn.prepareStatement("SELECT Name FROM RoleAssign WHERE GuildId = ?");
@@ -118,14 +119,12 @@ public class DataHandler {
                     list.add(set.getString("Name"));
                 }
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
         return list;
     }
 
 
-    public ArrayList<RoleAssignRole> getRoles(long guildID, String type) {
+    public ArrayList<RoleAssignRole> getRoles(long guildID, String type){
         ArrayList<RoleAssignRole> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
              PreparedStatement stmn = conn.prepareStatement("SELECT Name, Emoji, RoleId FROM Role WHERE GuildId = ? AND Type LIKE ?")) {
@@ -136,8 +135,8 @@ public class DataHandler {
                     list.add(new RoleAssignRole(set.getString("Emoji"), set.getString("Name"), set.getLong("RoleId")));
                 }
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException exc){
+            throw new RuntimeException(exc);
         }
         return list;
     }
@@ -736,7 +735,7 @@ public class DataHandler {
                 list.add(Pair.of(rs.getString(1), rs.getString(2)));
             }
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new RuntimeException(exception);
         }
         return list;
     }
