@@ -1,7 +1,7 @@
 # Pingo_Discord_Bot
 
 Pingo is a fun/moderation bot including blackjack, uno, role picker and some more.
-[Invite me](https://discord.com/oauth2/authorize?client_id=589027434611867668&permissions=478280816&scope=bot) to your server!
+[Invite me](https://discord.com/api/oauth2/authorize?client_id=589027434611867668&permissions=413873335536&scope=bot) to your server!
 
 ## Fun Commands
 
