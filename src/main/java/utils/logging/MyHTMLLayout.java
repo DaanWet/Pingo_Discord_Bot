@@ -71,11 +71,35 @@ public class MyHTMLLayout extends HTMLLayout {
         sb.append("-->").append(LINE_SEP);
         sb.append("</style>").append(LINE_SEP);
         sb.append("</head>").append(LINE_SEP);
+        sb.append("<script>\n" +
+                          "function myFunction() {\n" +
+                          "  // Declare variables\n" +
+                          "  var input, filter, table, tr, td, i, txtValue;\n" +
+                          "  input = document.getElementById(\"myInput\");\n" +
+                          "  filter = input.value.toUpperCase();\n" +
+                          "  table = document.getElementById(\"myTable\");\n" +
+                          "  tr = table.getElementsByTagName(\"tr\");\n" +
+                          "\n" +
+                          "  // Loop through all table rows, and hide those who don't match the search query\n" +
+                          "  for (i = 0; i < tr.length; i++) {\n" +
+                          "    td = tr[i].getElementsByTagName(\"td\")[1];\n" +
+                          "    if (td) {\n" +
+                          "      txtValue = td.textContent || td.innerText;\n" +
+                          "      if (txtValue.toUpperCase().indexOf(filter) > -1) {\n" +
+                          "        tr[i].style.display = \"\";\n" +
+                          "      } else {\n" +
+                          "        tr[i].style.display = \"none\";\n" +
+                          "      }\n" +
+                          "    }\n" +
+                          "  }\n" +
+                          "}\n" +
+                          "</script>");
         sb.append("<body bgcolor=\"#FFFFFF\" topmargin=\"6\" leftmargin=\"6\">").append(LINE_SEP);
         sb.append("<hr size=\"1\" noshade>").append(LINE_SEP);
         sb.append("Log session start time ").append(new Date()).append("<br>").append(LINE_SEP);
         sb.append("<br>").append(LINE_SEP);
-        sb.append("<table cellspacing=\"0\" cellpadding=\"4\" border=\"1\" bordercolor=\"#224466\" width=\"100%\">").append(LINE_SEP);
+        sb.append("<input type=\"text\" id=\"myInput\" onkeyup=\"myFunction()\" placeholder=\"Search for Level..\">");
+        sb.append("<table id=\"myTable\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" bordercolor=\"#224466\" width=\"100%\">").append(LINE_SEP);
         sb.append("<tr>").append(LINE_SEP);
         sb.append("<th>Time</th>").append(LINE_SEP);
         sb.append("<th>Level</th>").append(LINE_SEP);

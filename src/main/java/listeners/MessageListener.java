@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.kohsuke.github.GitHub;
@@ -76,6 +77,8 @@ public class MessageListener extends ListenerAdapter {
                         if (exc.getDelete() != 0)
                             m.delete().queueAfter(exc.getDelete(), TimeUnit.SECONDS);
                     });
+                    logger.info(String.format("Content: %s, error: %s", contentRaw, exc.getMessage()));
+
                 } catch (Exception exc){
                     MDC.put("Guild", e.getGuild().getId());
                     MDC.put("User", e.getAuthor().getId());
