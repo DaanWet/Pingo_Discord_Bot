@@ -130,8 +130,6 @@ public class CommandHandler {
                 } else {
                     throw new MessageException(CommandState.USER.getError(), 5);
                 }
-                
-                e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             }
         }
         Set<String> pcommands = getPcommands();

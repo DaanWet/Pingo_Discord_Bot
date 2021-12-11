@@ -49,7 +49,7 @@ public class DataHandler {
         DataHandler.PASSWD = PASSWD;
     }
 
-    public void createDatabase() {
+    public void createDatabase() throws SQLException{
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (ID INT, Name VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
                                                                           "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, CurrentStreak  INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
@@ -100,10 +100,6 @@ public class DataHandler {
                     }
                 }
             }
-
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
     }
 
