@@ -1,9 +1,9 @@
 package utils.logging;
 
-import org.apache.log4j.Layout;
+import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
-public class ErrorLayout extends Layout {
+public class ErrorLayout extends SimpleLayout {
     @Override
     public String format(LoggingEvent loggingEvent) {
         StringBuilder sb = new StringBuilder();
@@ -52,8 +52,4 @@ public class ErrorLayout extends Layout {
         return false;
     }
 
-    @Override
-    public void activateOptions() {
-
-    }
 }
