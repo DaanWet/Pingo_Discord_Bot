@@ -54,8 +54,8 @@ public class Main {
     }
 
     private static void start(String[] args) throws Exception{
-        DataHandler.setUserId(args[1]);
-        DataHandler.setPASSWD(args[2]);
+        DataHandler.setUserId(args[2]);
+        DataHandler.setPASSWD(args[3]);
         new DataHandler().createDatabase();
         JDA jda = JDABuilder.createDefault(args[0]).enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).build();
         GitHub github = new GitHubBuilder().withOAuthToken(args[1]).build();

@@ -1,7 +1,6 @@
 package utils.logging;
 
 import org.apache.log4j.HTMLLayout;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.helpers.Transform;
 import org.apache.log4j.spi.LocationInfo;
@@ -19,7 +18,7 @@ public class MyHTMLLayout extends HTMLLayout {
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM - HH:mm:ss");
     private final String TD = "<td>";
     private final String CTD = "</td>";
-    private static String url = "https://pingo.wettinck.be/logs/";
+    private static String url = "https://pingo.wettinck.be/logging/";
 
     @Override
     public String format(@NotNull LoggingEvent event) {
@@ -52,13 +51,13 @@ public class MyHTMLLayout extends HTMLLayout {
         sb.append(TD);
         String link = event.getProperty("link");
         if (link != null)
-            sb.append("<a href=\"").append(url).append(link).append("\">").append(link).append("</a>");
+            sb.append("<a href=\"").append(url).append("log_").append(link).append("\">").append(link).append("</a>");
         sb.append(CTD);
         return sb.toString();
     }
 
     @Override
-    public String getHeader(){
+    public String getHeader() {
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">");
         sb.append(LINE_SEP).append("<html>").append(LINE_SEP);

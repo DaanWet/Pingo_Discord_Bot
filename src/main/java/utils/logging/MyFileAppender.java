@@ -1,8 +1,8 @@
 package utils.logging;
 
-import org.apache.log4j.*;
-import org.apache.log4j.spi.ErrorHandler;
-import org.apache.log4j.spi.Filter;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.HTMLLayout;
+import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 import java.io.File;
@@ -13,7 +13,7 @@ public class MyFileAppender extends FileAppender {
     public static final String folder = "./logging";
     private final FileAppender fileAppender;
 
-    public MyFileAppender(){
+    public MyFileAppender() {
         fileAppender = new FileAppender();
         HTMLLayout layout = new MyHTMLLayout();
         layout.setTitle("All logs");
@@ -32,14 +32,14 @@ public class MyFileAppender extends FileAppender {
 
     @Override
     public void doAppend(LoggingEvent loggingEvent) {
-        if (loggingEvent.getLevel().isGreaterOrEqual(Level.WARN)){
+        if (loggingEvent.getLevel().isGreaterOrEqual(Level.WARN)) {
             try {
                 int i = new File(folder).listFiles().length;
                 FileWriter myWriter = new FileWriter(String.format("%s/log_%d", folder, i));
                 myWriter.write(this.layout.format(loggingEvent));
                 myWriter.close();
                 loggingEvent.setProperty("link", Integer.toString(i));
-            } catch (IOException exc){
+            } catch (IOException exc) {
                 exc.printStackTrace();
             }
         }
