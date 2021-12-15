@@ -19,6 +19,8 @@ public class MyHTMLLayout extends HTMLLayout {
     private final String TD = "<td>";
     private final String CTD = "</td>";
     private static String url = "https://pingo.wettinck.be/logging/";
+    private boolean link = true;
+
 
     @Override
     public String format(@NotNull LoggingEvent event) {
@@ -50,7 +52,7 @@ public class MyHTMLLayout extends HTMLLayout {
         sb.append(TD).append(message).append(CTD);
         sb.append(TD);
         String link = event.getProperty("link");
-        if (link != null)
+        if (this.link && link != null)
             sb.append("<a href=\"").append(url).append("log_").append(link).append("\">").append(link).append("</a>");
         sb.append(CTD);
         return sb.toString();
@@ -104,8 +106,13 @@ public class MyHTMLLayout extends HTMLLayout {
         sb.append("<th>Level</th>").append(LINE_SEP);
         sb.append("<th>Location</th>").append(LINE_SEP);
         sb.append("<th>Message</th>").append(LINE_SEP);
-        sb.append("<th>Link</th>").append(LINE_SEP);
+        if (this.link)
+            sb.append("<th>Link</th>").append(LINE_SEP);
         sb.append("</tr>").append(LINE_SEP);
         return sb.toString();
+    }
+
+    public void setLink(boolean link) {
+        this.link = link;
     }
 }

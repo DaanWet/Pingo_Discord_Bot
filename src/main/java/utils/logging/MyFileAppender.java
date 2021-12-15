@@ -12,15 +12,22 @@ import java.io.IOException;
 public class MyFileAppender extends FileAppender {
     public static final String folder = "./logging";
     private final FileAppender fileAppender;
+    private final FileAppender rateLimitAppender;
 
     public MyFileAppender() {
         fileAppender = new FileAppender();
-        HTMLLayout layout = new MyHTMLLayout();
+        MyHTMLLayout layout = new MyHTMLLayout();
         layout.setTitle("All logs");
         fileAppender.setThreshold(Level.ALL);
-        fileAppender.setFile(String.format("%s/log.html", MyFileAppender.folder));
+        fileAppender.setFile(String.format("%s/log.html", folder));
         fileAppender.setLayout(layout);
-        fileAppender.activateOptions();
+        rateLimitAppender = new FileAppender();
+        MyHTMLLayout rateLayout = new MyHTMLLayout();
+        rateLayout.setTitle("RateLimit logs");
+        rateLayout.setLink(false);
+        rateLimitAppender.setThreshold(Level.ALL);
+        rateLimitAppender.setFile(String.format("%s/rate_log.html", folder));
+        rateLimitAppender.setLayout(layout);
     }
 
 
@@ -32,18 +39,22 @@ public class MyFileAppender extends FileAppender {
 
     @Override
     public void doAppend(LoggingEvent loggingEvent) {
-        if (loggingEvent.getLevel().isGreaterOrEqual(Level.WARN)) {
-            try {
-                int i = new File(folder).listFiles().length;
-                FileWriter myWriter = new FileWriter(String.format("%s/log_%d", folder, i));
-                myWriter.write(this.layout.format(loggingEvent));
-                myWriter.close();
-                loggingEvent.setProperty("link", Integer.toString(i));
-            } catch (IOException exc) {
-                exc.printStackTrace();
+        if (!loggingEvent.getThreadName().contains("RateLimit")){
+            if (loggingEvent.getLevel().isGreaterOrEqual(Level.WARN)) {
+                try {
+                    int i = new File(folder).listFiles().length;
+                    FileWriter myWriter = new FileWriter(String.format("%s/log_%d.html", folder, i));
+                    myWriter.write(this.layout.format(loggingEvent));
+                    myWriter.close();
+                    loggingEvent.setProperty("link", Integer.toString(i));
+                } catch (IOException exc) {
+                    exc.printStackTrace();
+                }
             }
+            fileAppender.doAppend(loggingEvent);
+        } else {
+            rateLimitAppender.append(loggingEvent);
         }
-        fileAppender.doAppend(loggingEvent);
     }
 
 
