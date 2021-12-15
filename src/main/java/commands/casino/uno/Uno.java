@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import casino.uno.UnoGame;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.Utils;
 
 import java.time.LocalDateTime;
@@ -27,29 +28,22 @@ public class Uno extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         if (gameHandler.getUnoGame(e.getGuild().getIdLong()) != null) {
-            e.getChannel().sendMessage("A game has already started").queue();
-            return;
+            throw new MessageException("A game has already started");
         }
         int bet = 0;
+        if (args.length > 1)
+            throw new MessageException("You need to place a valid bet");
         DataHandler dataHandler = new DataHandler();
         if (args.length == 1) {
             if (!dataHandler.getBoolSetting(e.getGuild().getIdLong(), Setting.BETTING)){
-                e.getChannel().sendMessage("Betting is currently disabled in this server, starting a game without credits").queue();
-            } else {
-                bet = Utils.getInt(args[0]);
-                if (bet >= 100) {
-                    if (!(dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) - bet >= 0)) {
-                        e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
-                        return;
-                    }
-                } else {
-                    e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
-                    return;
-                }
+                 throw new MessageException("Betting is currently disabled in this server, starting a game without credits");
             }
-        } else if (args.length > 1) {
-            e.getChannel().sendMessage("You need to place a valid bet").queue();
-            return;
+
+            bet = Utils.getInt(args[0]);
+            if (bet < 10)
+                throw new MessageException("You need to place a bet for at least 10 credits");
+            if (dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) < bet)
+                throw new MessageException(String.format("You don't have enough credits to make a %d credits bet", bet));
         }
         dataHandler.setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.UNO, LocalDateTime.now());
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());

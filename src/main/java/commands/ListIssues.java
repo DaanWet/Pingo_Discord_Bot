@@ -3,6 +3,7 @@ package commands;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.*;
+import utils.MessageException;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +52,7 @@ public class ListIssues extends Command {
                     eb.setDescription(sb.toString());
                     e.getChannel().sendMessage(eb.build()).queue();
                 } else {
-                    e.getChannel().sendMessage(getUsage()).queue();
+                    throw new MessageException(getUsage());
                 }
             } catch (IOException | NullPointerException ioException) {
                 e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", ioException.getMessage())).queue();

@@ -10,6 +10,7 @@ import casino.uno.UnoCard;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import utils.ImageHandler;
+import utils.MessageException;
 import utils.Utils;
 
 
@@ -39,8 +40,7 @@ public class Draw extends Command {
             int turn = unoGame.getTurn();
             ArrayList<UnoHand> hands = unoGame.getHands();
             if (unoGame.isFinished()) {
-                e.getChannel().sendMessage("The game has already ended").queue();
-                return;
+                throw new MessageException("The game has already ended");
             }
             if (turn != -1 && hands.get(turn).getPlayerId() == e.getMember().getIdLong()) {
                 UnoCard newCard = unoGame.drawCard();
@@ -103,7 +103,7 @@ public class Draw extends Command {
 
 
             } else {
-                e.getChannel().sendMessage("It's not your turn yet").queue();
+                throw new MessageException("It's not your turn yet");
             }
         }
     }

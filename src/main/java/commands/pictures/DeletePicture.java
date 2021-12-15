@@ -2,11 +2,12 @@ package commands.pictures;
 
 import commands.Command;
 import commands.CommandHandler;
-import utils.OpenExplorerData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
+import utils.MessageException;
+import utils.OpenExplorerData;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -47,27 +48,27 @@ public class DeletePicture extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         if (e.getGuild().getIdLong() != 203572340280262657L) return;
         if (args.length == 1 && commandHandler.getPcommands().contains(args[0].toLowerCase())) {
-            if (openExplorers.containsKey(args[0])) {
-                e.getChannel().sendMessage("An explorer is already open").queue();
-            } else {
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[0], 0, random.nextInt(), random.nextInt()));
-                eb.setTitle("Delete pictures from " + args[0]);
-                eb.setDescription("0.jpg");
-                e.getChannel().sendMessage(eb.build()).queue(m -> {
-                    openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(), e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));
-                    m.addReaction("U+25C0").queue();
-                    m.addReaction("U+1F5D1").queue();
-                    m.addReaction("U+25B6").queue();
-                    m.addReaction("U+274C").queue();
-                    autoClosers.put(args[0], deleteMessage(args[0], m).queueAfter(10, TimeUnit.MINUTES));
-                });
-            }
+            if (openExplorers.containsKey(args[0]))
+                throw new MessageException("An explorer is already open");
+
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[0], 0, random.nextInt(), random.nextInt()));
+            eb.setTitle("Delete pictures from " + args[0]);
+            eb.setDescription("0.jpg");
+            e.getChannel().sendMessage(eb.build()).queue(m -> {
+                openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(), e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));
+                m.addReaction("U+25C0").queue();
+                m.addReaction("U+1F5D1").queue();
+                m.addReaction("U+25B6").queue();
+                m.addReaction("U+274C").queue();
+                autoClosers.put(args[0], deleteMessage(args[0], m).queueAfter(10, TimeUnit.MINUTES));
+            });
+
         } else {
-            e.getChannel().sendMessage("Usage: !delete <command>").queue();
+            throw new MessageException(getUsage());
         }
     }
 }

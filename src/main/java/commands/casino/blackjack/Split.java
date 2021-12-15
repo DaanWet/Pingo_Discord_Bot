@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
+import utils.MessageException;
 
 public class Split extends BCommand {
 
@@ -23,13 +24,11 @@ public class Split extends BCommand {
             BlackJackGame bjg = gameHandler.getBlackJackGame(guildId, id);
             if (bjg != null) {
                 DataHandler dataHandler = new DataHandler();
-                if (dataHandler.getCredits(guildId, id) - 2 * bjg.getBet() > 0) {
-                    bjg.split();
-                    updateMessage(e.getChannel(), bjg, dataHandler, guildId, id, e.getAuthor().getName());
-                } else {
-                    e.getChannel().sendMessage("You have not enough credits").queue();
-                }
-
+                if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet()) 
+                    throw new MessageException("You have not enough credits");
+                
+                bjg.split();
+                updateMessage(e.getChannel(), bjg, dataHandler, guildId, id, e.getAuthor().getName());
             }
         }
     }

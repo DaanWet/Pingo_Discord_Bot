@@ -7,7 +7,11 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.kohsuke.github.GitHub;
+import utils.MessageException;
 import utils.DataHandler;
 
 import java.util.List;
@@ -17,7 +21,7 @@ public class MessageListener extends ListenerAdapter {
 
     private final CommandHandler commandListener;
     private GitHub github;
-
+    static final Logger logger = Logger.getLogger(MessageListener.class.getName());
 
     public MessageListener(GitHub github){
         this.github = github;
@@ -68,10 +72,23 @@ public class MessageListener extends ListenerAdapter {
             else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))) {
                 try  {
                     commandListener.onCommandReceived(e);
+                } catch (MessageException exc){
+                    e.getChannel().sendMessage(exc.getMessage()).queue(m -> {
+                        if (exc.getDelete() != 0)
+                            m.delete().queueAfter(exc.getDelete(), TimeUnit.SECONDS);
+                    });
+                    logger.info(String.format("Content: %s, error: %s", contentRaw, exc.getMessage()));
+
                 } catch (Exception exc){
+                    MDC.put("Guild", e.getGuild().getId());
+                    MDC.put("User", e.getAuthor().getId());
+                    MDC.put("Channel", e.getChannel().getId());
+                    MDC.put("Message", e.getMessageId());
+                    MDC.put("Content", contentRaw);
+                    logger.error(exc.getLocalizedMessage(), exc);
                     e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
-                    exc.printStackTrace();
                 }
+                MDC.clear();
             } else if (e.getGuild().getIdLong() == 712013079629660171L) {
                 message.delete().queue();
                 e.getJDA().getGuildById(203572340280262657L).getTextChannelById(203572340280262657L).sendMessage(message.getContentRaw()).queue();

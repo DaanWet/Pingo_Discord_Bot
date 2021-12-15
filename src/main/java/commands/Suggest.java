@@ -2,6 +2,7 @@ package commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +45,7 @@ public class Suggest extends Command {
             }
             // If no description is given send error
             if (t) {
-                e.getChannel().sendMessage(String.format("You need to add a description. %s", getUsage())).queue();
+                throw new MessageException(String.format("You need to add a description. %s", getUsage()));
             } else {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
@@ -59,7 +60,7 @@ public class Suggest extends Command {
                 e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             }
         } else {
-            e.getChannel().sendMessage(getUsage()).queue();
+            throw new MessageException(getUsage());
         }
     }
 }

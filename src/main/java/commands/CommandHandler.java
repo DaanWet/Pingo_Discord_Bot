@@ -18,6 +18,7 @@ import commands.settings.Setting;
 import commands.settings.Settings;
 import org.kohsuke.github.GitHub;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.OpenExplorerData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -110,7 +111,6 @@ public class CommandHandler {
 
 
     public void onCommandReceived(GuildMessageReceivedEvent e) throws Exception{
-        User author = e.getAuthor();
         TextChannel channel = e.getChannel();
         Message message = e.getMessage();
         updateNickName(e.getGuild().getSelfMember().getEffectiveName());
@@ -125,12 +125,10 @@ public class CommandHandler {
                         c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.trim().isEmpty()).toArray(String[]::new), e);
                         break;
                     } else {
-                        e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                        channel.sendMessage(state.getError()).queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                        throw new MessageException(state.getError(), 5);
                     }
                 } else {
-                    e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                    channel.sendMessage(CommandState.USER.getError()).queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                    throw new MessageException(CommandState.USER.getError(), 5);
                 }
             }
         }
@@ -138,8 +136,8 @@ public class CommandHandler {
         if (pcommands.contains(command.toLowerCase()) && e.getGuild().getIdLong() == 203572340280262657L) {
             try {
                 File dir = new File(String.format("%s/%s", pathname, command));
-                File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, random.nextInt(dir.listFiles().length)));
-                channel.sendFile(foto.getAbsoluteFile()).queue();
+                File photo = new File(String.format("%s/%s/%d.jpg", pathname, command, random.nextInt(dir.listFiles().length)));
+                channel.sendFile(photo.getAbsoluteFile()).queue();
             } catch (Exception exc) {
                 exc.printStackTrace();
             }

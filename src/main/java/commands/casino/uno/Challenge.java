@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.ImageHandler;
+import utils.MessageException;
 import utils.Utils;
 
 import java.awt.*;
@@ -36,8 +37,7 @@ public class Challenge extends Command {
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())) {
             ArrayList<UnoHand> hands = unoGame.getHands();
             if (unoGame.isFinished()) {
-                e.getChannel().sendMessage("The game has already ended").queue();
-                return;
+                throw new MessageException("The game has already ended");
             }
             UnoHand skippedHand = hands.get(unoGame.calculateNextTurn(-1));
             if (unoGame.getTopCard().getValue() == UnoCard.Value.PLUSFOUR && skippedHand.getPlayerId() == e.getAuthor().getIdLong()) {
@@ -76,10 +76,8 @@ public class Challenge extends Command {
                 eb = unoGame.createEmbed(playedHand.getPlayerId());
                 playedChannel.sendFile(ImageHandler.getCardsImage(playedHand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> playedHand.setMessageId(newmessage.getIdLong()));
             } else {
-                e.getChannel().sendMessage("You can only challenge draw four cards when you need to draw").queue();
+                throw new MessageException("You can only challenge draw four cards when you need to draw");
             }
         }
-
-
     }
 }

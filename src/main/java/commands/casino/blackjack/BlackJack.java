@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.Utils;
 import java.time.LocalDateTime;
 
@@ -36,30 +37,24 @@ public class BlackJack extends BCommand {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         User author = e.getAuthor();
         long guildId = e.getGuild().getIdLong();
-
-        if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong())) {
-            e.getChannel().sendMessage("You can't start a game in a uno channel").queue();
-            return;
-        }
+        if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong()))
+            throw new MessageException("You can't start a game in a uno channel");
+      
         long playerId = author.getIdLong();
         int bet = args.length == 0 ? 0 : Utils.getInt(args[0]);
         DataHandler dataHandler = new DataHandler();
         if (args.length != 0 && args[0].matches("(?i)all(-?in)?")) {
             bet = dataHandler.getCredits(guildId, playerId);
         }
-        if (bet < 10) {
-            e.getChannel().sendMessage("You need to place a bet for at least 10 credits").queue();
-            return;
-        }
-        if (dataHandler.getCredits(guildId, playerId) < bet ) {
-            e.getChannel().sendMessage(String.format("You don't have enough credits to make a %d credits bet", bet)).queue();
-            return;
-        }
+
+        if (bet < 10)
+            throw new MessageException("You need to place a bet for at least 10 credits");
+        if (dataHandler.getCredits(guildId, playerId) < bet)
+            throw new MessageException(String.format("You don't have enough credits to make a %d credits bet", bet));
         BlackJackGame objg = gameHandler.getBlackJackGame(guildId, playerId);
-        if (objg != null) {
-            e.getChannel().sendMessage("You're already playing a game").queue();
-            return;
-        }
+        if (objg != null)
+            throw new MessageException("You're already playing a game");
+      
         BlackJackGame bjg = new BlackJackGame(bet);
         dataHandler.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
         EmbedBuilder eb = bjg.buildEmbed(author.getName());

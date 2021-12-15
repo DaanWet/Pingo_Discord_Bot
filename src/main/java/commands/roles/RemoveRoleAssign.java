@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
 import utils.DataHandler;
 import utils.dbdata.RoleAssignData;
 import utils.dbdata.RoleAssignRole;
@@ -31,19 +32,16 @@ public class RemoveRoleAssign extends RoleCommand {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
         DataHandler dataHandler = new DataHandler();
-        if (args.length == 1) {
-            e.getChannel().sendMessage("No emoji provided to delete\n" + getUsage()).queue();
-        } else if (args.length == 2 && dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0])) {
-            if (!hasEmoji(e.getMessage(), args[1])) {
-                e.getChannel().sendMessage(String.format("%s is not a valid emoji\n%s", args[1], getUsage())).queue();
-                return;
-            }
+        if (args.length == 1)
+            throw new MessageException("No emoji provided to delete\n" + getUsage());
+        if (args.length == 2 && dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0])) {
+            if (!hasEmoji(e.getMessage(), args[1]))
+                throw new MessageException(String.format("%s is not a valid emoji\n%s", args[1], getUsage()));
             long guildId = e.getGuild().getIdLong();
             String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
             boolean found = dataHandler.removeRoleAssign(guildId, args[0], args[1]);
             if (!found) {
-                e.getChannel().sendMessage("No matching role found").queue(mes -> mes.delete().queueAfter(15, TimeUnit.SECONDS));
-                return;
+                throw new MessageException("No matching role found", 15);
             }
             RoleAssignData data = dataHandler.getRoleAssignData(guildId, args[0]);
             if (data.getMessageId() != null) {
@@ -61,7 +59,7 @@ public class RemoveRoleAssign extends RoleCommand {
                 });
             }
         } else {
-            e.getChannel().sendMessage("No valid category provided\n" + getUsage()).queue();
+            throw new MessageException("No valid category provided\n" + getUsage());
         }
     }
 }

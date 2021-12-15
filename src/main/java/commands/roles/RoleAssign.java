@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
+import utils.MessageException;
 import utils.dbdata.RoleAssignData;
 import utils.dbdata.RoleAssignRole;
 
@@ -31,10 +32,8 @@ public class RoleAssign extends RoleCommand {
         if (args.length == 1 || args.length == 2) {
             DataHandler dataHandler = new DataHandler();
             ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
-            if (roles == null) {
-                e.getChannel().sendMessage(String.format("%s is not an existing category", args[0])).queue();
-                return;
-            }
+            if (roles == null)
+                throw new MessageException(String.format("%s is not an existing category", args[0]));
             RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
             Compacting compact = Objects.requireNonNullElse(data.getCompacting(), Compacting.NORMAL);
             if (args.length == 2) {
@@ -43,8 +42,7 @@ public class RoleAssign extends RoleCommand {
                 } else if (args[1].equalsIgnoreCase("supercompact")) {
                     compact = Compacting.SUPER_COMPACT;
                 } else if (!args[1].equalsIgnoreCase("normal")) {
-                    e.getChannel().sendMessage(String.format("%s is not an valid compacting method", args[1])).queue();
-                    return;
+                    throw new MessageException(String.format("%s is not an valid compacting method", args[1]));
                 }
             }
             data.setCompacting(compact);
@@ -62,7 +60,7 @@ public class RoleAssign extends RoleCommand {
                 }
             });
         } else {
-            e.getChannel().sendMessage(getUsage()).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
+            throw new MessageException(getUsage(), 10);
         }
         e.getMessage().delete().queue();
     }
