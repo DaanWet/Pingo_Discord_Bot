@@ -21,6 +21,7 @@ public class MyFileAppender extends FileAppender {
         fileAppender.setThreshold(Level.ALL);
         fileAppender.setFile(String.format("%s/log.html", folder));
         fileAppender.setLayout(layout);
+        fileAppender.activateOptions();
         rateLimitAppender = new FileAppender();
         MyHTMLLayout rateLayout = new MyHTMLLayout();
         rateLayout.setTitle("RateLimit logs");
@@ -28,6 +29,7 @@ public class MyFileAppender extends FileAppender {
         rateLimitAppender.setThreshold(Level.ALL);
         rateLimitAppender.setFile(String.format("%s/rate_log.html", folder));
         rateLimitAppender.setLayout(layout);
+        rateLimitAppender.activateOptions();
     }
 
 
@@ -35,6 +37,7 @@ public class MyFileAppender extends FileAppender {
     public void close() {
         super.close();
         fileAppender.close();
+        rateLimitAppender.close();
     }
 
     @Override
