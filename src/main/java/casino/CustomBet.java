@@ -1,32 +1,42 @@
 package casino;
 
+import net.dv8tion.jda.internal.utils.tuple.Pair;
+
 import java.util.HashMap;
 
 public class CustomBet {
 
     private Long messageId;
     private Long channelId;
-    private int ID;
-    private HashMap<Long, Integer> bets;
+    private final int ID;
+    private final HashMap<Long, Pair<Integer, String>> bets;
+    private final long userId;
+    private boolean ended;
 
-    public CustomBet(int ID){
+    public CustomBet(int ID, long userId){
         this.ID = ID;
+        this.userId = userId;
+        bets = new HashMap<>();
+        ended = false;
     }
 
 
 
-    public HashMap<Long, Integer> getBets(){
+    public HashMap<Long, Pair<Integer, String>> getBets(){
         return bets;
     }
 
     public Integer getBet(long userId){
-        return bets.get(userId);
+        return bets.get(userId).getLeft();
     }
 
-    public void addBet(long userId, int bet){
-        bets.put(userId, bet);
+    public void addBet(long userId, int bet, String answer){
+        bets.put(userId, Pair.of(bet, answer));
     }
 
+    public String getAnswer(long userId){
+        return bets.get(userId).getRight();
+    }
 
     public int getID() {
         return ID;
@@ -49,4 +59,16 @@ public class CustomBet {
         return bets.containsKey(userId);
     }
 
+    public long getUserId() {
+        return userId;
+    }
+
+
+    public boolean isEnded() {
+        return ended;
+    }
+
+    public void end() {
+        this.ended = true;
+    }
 }

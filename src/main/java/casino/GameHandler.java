@@ -73,9 +73,9 @@ public class GameHandler {
         return customBetMap.getOrDefault(guildId, new ArrayList<>());
     }
 
-    public CustomBet addCustomBet(long guildId){
+    public CustomBet addCustomBet(long guildId, long userId){
         ArrayList<CustomBet> b = getCustomBet(guildId);
-        CustomBet c = new CustomBet(b.size() + 1);
+        CustomBet c = new CustomBet(b.size() + 1, userId);
         b.add(c);
         customBetMap.put(guildId, b);
         return c;

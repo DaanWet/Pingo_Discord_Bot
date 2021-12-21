@@ -2,6 +2,9 @@ package commands;
 
 import casino.GameHandler;
 import commands.casino.*;
+import commands.casino.bet.Bet;
+import commands.casino.bet.EndBet;
+import commands.casino.bet.StartBet;
 import commands.casino.blackjack.*;
 import commands.casino.uno.Challenge;
 import commands.casino.uno.Draw;
@@ -79,6 +82,9 @@ public class CommandHandler {
                 put("poll", new Poll());
                 put("editRA", new EditRoleAssign());
                 put("settings", new Settings());
+                put("startbet", new StartBet(gameHandler));
+                put("bet", new Bet(gameHandler));
+                put("endbet", new EndBet(gameHandler));
             }
 
         };

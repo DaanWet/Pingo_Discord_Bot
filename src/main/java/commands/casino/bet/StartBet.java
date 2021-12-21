@@ -4,6 +4,7 @@ import casino.CustomBet;
 import casino.GameHandler;
 import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.Utils;
@@ -30,11 +31,12 @@ public class StartBet extends Command {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
         eb.setTitle(Utils.concat(args, 0));
-        CustomBet bet = gameHandler.addCustomBet(e.getGuild().getIdLong());
+        CustomBet bet = gameHandler.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
         eb.setFooter(String.format("Id: %d", bet.getID()));
         e.getChannel().sendMessage(eb.build()).queue(m -> {
             bet.setIds(m.getChannel().getIdLong(), m.getIdLong());
         });
+        e.getMessage().delete().queue();
 
     }
 }
