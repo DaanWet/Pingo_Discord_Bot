@@ -76,4 +76,20 @@ public class Utils {
         return "U+1f1" + s;
     }
 
+    public static String concat(String[] strings, int index){
+        return concat(strings, index, " ");
+    }
+
+    public static String concat(String[] strings, int index, String concat) {
+        assert(index < strings.length);
+        StringBuilder string = new StringBuilder();
+        string.append(strings[index]);
+        for (int i = index + 1; i < strings.length; i++) {
+            string.append(concat).append(strings[i]);
+        }
+        return string.toString();
+    }
+
+
+
 }

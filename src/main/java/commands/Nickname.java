@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import utils.MessageException;
 import utils.DataHandler;
+import utils.Utils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,12 +34,9 @@ public class Nickname extends Command {
         }
         if (args.length >= 2 && (target != null)) {
             try {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 1; i < args.length; i++) {
-                    sb.append(args[i]).append(" ");
-                }
-                if (sb.toString().trim().length() <= 32) {
-                    target.modifyNickname(sb.toString().trim()).queue();
+                String nick = Utils.concat(args, 1).trim();
+                if (nick.length() <= 32) {
+                    target.modifyNickname(nick).queue();
                     new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.NICKNAME, LocalDateTime.now());
                 } else {
                     throw new MessageException("Nickname too long");

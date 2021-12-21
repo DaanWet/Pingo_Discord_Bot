@@ -1,0 +1,40 @@
+package commands.casino.bet;
+
+import casino.CustomBet;
+import casino.GameHandler;
+import commands.Command;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MessageException;
+import utils.Utils;
+
+public class StartBet extends Command {
+
+    private GameHandler gameHandler;
+
+    public StartBet(GameHandler gameHandler) {
+        this.gameHandler = gameHandler;
+        this.name = "startbet";
+        this.aliases = new String[]{"sbet"};
+        this.category = "Casino";
+        this.arguments = "<question>";
+        this.description = "Starts a custom bet";
+    }
+
+    @Override
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+        if (args.length == 0) {
+            throw new MessageException("You need to provide a question to bet on");
+        }
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
+        eb.setTitle(Utils.concat(args, 0));
+        CustomBet bet = gameHandler.addCustomBet(e.getGuild().getIdLong());
+        eb.setFooter(String.format("Id: %d", bet.getID()));
+        e.getChannel().sendMessage(eb.build()).queue(m -> {
+            bet.setIds(m.getChannel().getIdLong(), m.getIdLong());
+        });
+
+    }
+}
