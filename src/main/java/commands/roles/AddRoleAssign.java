@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.DataHandler;
+import utils.Utils;
 import utils.dbdata.RoleAssignData;
 import utils.dbdata.RoleAssignRole;
 
@@ -54,12 +55,9 @@ public class AddRoleAssign extends RoleCommand {
                 e.getMessage().addReaction("❌").queue();
                 throw new MessageException("I have insufficient permissions to assign that role to somebody. Make sure that I have a role that's higher than the role you're trying to assign and that I have the _manage roles_ permission");
             }
-            StringBuilder name = new StringBuilder();
-            for (int i = 3; i < args.length; i++) {
-                name.append(args[i]).append(" ");
-            }
+            String name = Utils.concat(args, 3);
 
-            boolean succeeded = dataHandler.addRoleAssign(e.getGuild().getIdLong(), args[0], args[1], name.toString().trim(), role.getIdLong());
+            boolean succeeded = dataHandler.addRoleAssign(e.getGuild().getIdLong(), args[0], args[1], name.trim(), role.getIdLong());
             if (succeeded) {
                 e.getMessage().addReaction("✅").queue();
                 e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
