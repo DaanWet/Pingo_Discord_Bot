@@ -3,7 +3,10 @@ package commands.casino.bet;
 import casino.CustomBet;
 import casino.GameHandler;
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.DataHandler;
@@ -11,6 +14,7 @@ import utils.MessageException;
 import utils.Utils;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class Bet extends Command {
 
@@ -24,6 +28,12 @@ public class Bet extends Command {
         this.category = "Casino";
     }
 
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        CommandState betting = canBeExecuted(guildId, channelId, member, Setting.BETTING);
+        CommandState custom = canBeExecuted(guildId, channelId, member, Setting.CUSTOMBET);
+        return betting.worst(custom);
+    }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
