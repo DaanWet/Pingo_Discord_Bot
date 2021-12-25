@@ -28,7 +28,7 @@ public class Poll extends Command{
         } else if (args.length >= 3){
             if (args.length <= 21){
                 StringBuilder sb = new StringBuilder();
-                sb.append("**").append(Utils.upperCaseFirst(args[0])).append("**");
+                sb.append("**").append(e.getAuthor().getName()).append("#").append(e.getAuthor().getDiscriminator()).append(": ").append(Utils.upperCaseFirst(args[0])).append("**");
                 for (int i = 1; i < args.length; i++){
                     sb.append("\n").append(Utils.regionalEmoji(i - 1)).append(" ").append(Utils.upperCaseFirst(args[i]));
                 }
