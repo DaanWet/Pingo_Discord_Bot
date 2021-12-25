@@ -16,9 +16,9 @@ public class Card {
         KING("king", "K", 10),
         ACE("ace", "A", 11);
 
-        private String displayName;
-        private String emoticon;
-        private int value;
+        private final String displayName;
+        private final String emoticon;
+        private final int value;
 
 
         Value(String displayName, String emoticon, int value){
@@ -27,15 +27,15 @@ public class Card {
             this.value = value;
         }
 
-        public String getDisplayName() {
+        public String getDisplayName(){
             return displayName;
         }
 
-        public String getEmoticon() {
+        public String getEmoticon(){
             return emoticon;
         }
 
-        public int getValue() {
+        public int getValue(){
             return value;
         }
     }
@@ -49,23 +49,23 @@ public class Card {
         private final String displayName;
         private final String emoticon;
 
-        Face(String displayName, String emoticon) {
+        Face(String displayName, String emoticon){
             this.displayName = displayName;
             this.emoticon = emoticon;
         }
 
-        public String getDisplayName() {
+        public String getDisplayName(){
             return displayName;
         }
 
-        public String getEmoticon() {
+        public String getEmoticon(){
             return emoticon;
         }
 
     }
 
-    private Face face;
-    private Value value;
+    private final Face face;
+    private final Value value;
 
 
     public Card(Face face, Value value){
@@ -73,7 +73,7 @@ public class Card {
         this.value = value;
     }
 
-    public Face getFace() {
+    public Face getFace(){
         return this.face;
     }
 

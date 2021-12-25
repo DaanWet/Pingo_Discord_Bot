@@ -6,7 +6,8 @@ import utils.DataHandler;
 import utils.EmbedPaginator;
 import utils.dbdata.RecordData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Properties;
 
 public class RecordPaginator extends EmbedPaginator {
 
@@ -14,7 +15,7 @@ public class RecordPaginator extends EmbedPaginator {
     private final Long guildId;
     private final Properties properties;
 
-    public RecordPaginator(String record, Long guildId, Properties properties) {
+    public RecordPaginator(String record, Long guildId, Properties properties){
         this.record = record;
         this.guildId = guildId;
         this.properties = properties;
@@ -22,7 +23,7 @@ public class RecordPaginator extends EmbedPaginator {
 
 
     @Override
-    public MessageEmbed createEmbed() {
+    public MessageEmbed createEmbed(){
         DataHandler dataHandler = new DataHandler();
         EmbedBuilder eb = new EmbedBuilder();
         boolean isInt = dataHandler.isInt(record);
@@ -35,7 +36,7 @@ public class RecordPaginator extends EmbedPaginator {
             page = maxpage;
         else
             page = Math.min(maxpage, page);
-        for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++) {
+        for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++){
             RecordData v = records.get(i);
             sb.append("`").append(i + 1).append(i >= 9 ? ".`  " : ". `  ")
                     .append("<@!")
@@ -43,7 +44,7 @@ public class RecordPaginator extends EmbedPaginator {
                     .append(">  **: ")
                     .append(isInt ? (int) v.getValue() : String.format("%.2f%s", v.getValue() * 100, "%"))
                     .append("** ");
-            if (v.getLink() != null) {
+            if (v.getLink() != null){
                 sb.append(" [jump](").append(v.getLink()).append(")");
             }
             sb.append("\n");

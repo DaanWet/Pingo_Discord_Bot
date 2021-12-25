@@ -8,16 +8,16 @@ public class UnoCard {
         GREEN("Green", "g"),
         YELLOW("Yellow", "y");
 
-        public String getName() {
+        public String getName(){
             return name;
         }
 
-        public String getToken() {
+        public String getToken(){
             return token;
         }
 
-        private String name;
-        private String token;
+        private final String name;
+        private final String token;
 
         Color(String name, String token){
             this.name = name;
@@ -25,7 +25,7 @@ public class UnoCard {
         }
     }
 
-    public enum Value{
+    public enum Value {
         ZERO("zero", "0", 0),
         ONE("one", "1", 1),
         TWO("two", "2", 2),
@@ -43,19 +43,19 @@ public class UnoCard {
         PLUSFOUR("PlusFour", "f", 50),
         WILD("Wild", "w", 50);
 
-        private String name;
-        private String token;
-        private int value;
+        private final String name;
+        private final String token;
+        private final int value;
 
-        public String getName() {
+        public String getName(){
             return name;
         }
 
-        public String getToken() {
+        public String getToken(){
             return token;
         }
 
-        public int getValue() {
+        public int getValue(){
             return value;
         }
 
@@ -66,7 +66,7 @@ public class UnoCard {
         }
     }
 
-    private Color color;
+    private final Color color;
     private final Value value;
 
     public UnoCard(Color color, Value value){
@@ -79,46 +79,42 @@ public class UnoCard {
         Value value = null;
         card = card.toLowerCase();
         for (Color c : Color.values()){
-            if (card.contains(c.getName().toLowerCase())){{
-                if (color == null){
-                    card = card.replaceFirst(c.getName().toLowerCase(), "");
-                    color = c;
-                } else {
+            if (card.contains(c.getName().toLowerCase())){
+                if (color != null){
                     return null;
                 }
-            }}
+                card = card.replaceFirst(c.getName().toLowerCase(), "");
+                color = c;
+            }
         }
         for (Value v : Value.values()){
             if (card.contains(v.getName().toLowerCase())){
                 if (!((v == Value.FOUR || v == Value.TWO) && (card.contains(Value.PLUSTWO.getName().toLowerCase()) || card.contains(Value.PLUSFOUR.getName().toLowerCase())))){
-                    if (value == null){
-                        card = card.replaceFirst(v.getName().toLowerCase(), "");
-                        value = v;
-                    } else {
+                    if (value != null){
                         return null;
                     }
+                    card = card.replaceFirst(v.getName().toLowerCase(), "");
+                    value = v;
                 }
 
             }
         }
         for (Color c : Color.values()){
-            if (card.contains(c.getToken())){{
-                if (color == null){
-                    card = card.replaceFirst(c.getToken(), "");
-                    color = c;
-                } else {
+            if (card.contains(c.getToken())){
+                if (color != null){
                     return null;
                 }
-            }}
+                card = card.replaceFirst(c.getToken(), "");
+                color = c;
+            }
         }
         for (Value v : Value.values()){
             if (card.contains(v.getToken())){
-                if (value == null){
-                    card = card.replaceFirst(v.getToken(), "");
-                    value = v;
-                } else {
+                if (value != null){
                     return null;
                 }
+                card = card.replaceFirst(v.getToken(), "");
+                value = v;
             }
         }
         if (color == null || value == null || !card.equalsIgnoreCase("")) return null;
@@ -137,16 +133,11 @@ public class UnoCard {
     }
 
 
-
-    public Color getColor() {
+    public Color getColor(){
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public Value getValue() {
+    public Value getValue(){
         return value;
     }
 

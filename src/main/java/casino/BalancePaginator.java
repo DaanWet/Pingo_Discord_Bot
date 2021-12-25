@@ -23,9 +23,9 @@ public class BalancePaginator extends EmbedPaginator {
 
 
     @Override
-    public MessageEmbed createEmbed() {
+    public MessageEmbed createEmbed(){
         DataHandler dataHandler = new DataHandler();
-        HashMap<Long, Integer> map = global ?  dataHandler.getAllCredits() : dataHandler.getAllCredits(guildId);
+        HashMap<Long, Integer> map = global ? dataHandler.getAllCredits() : dataHandler.getAllCredits(guildId);
         Stream<Map.Entry<Long, Integer>> stream = map.entrySet().stream().sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue());
         List<Map.Entry<Long, Integer>> sorted = stream.collect(Collectors.toList());
         EmbedBuilder eb = new EmbedBuilder();
@@ -36,8 +36,9 @@ public class BalancePaginator extends EmbedPaginator {
             page = maxpage;
         else
             page = Math.min(maxpage, page);
-        eb.setTitle(global ?  "Global leaderboard" : "Leaderboard");
-        for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++) {
+
+        eb.setTitle(global ? "Global leaderboard" : "Leaderboard");
+        for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++){
             sb.append("`").append(i + 1).append(i >= 9 ? ".`  " : ". `  ")
                     .append("<@!")
                     .append(sorted.get(i).getKey())

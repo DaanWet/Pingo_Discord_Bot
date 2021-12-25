@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class BlackJackHand {
 
-    private ArrayList<Card> cards;
+    private final ArrayList<Card> cards;
 
     public BlackJackHand(){
         cards = new ArrayList<>();
@@ -16,7 +16,7 @@ public class BlackJackHand {
         for (Card card : cards){
             Card.Value value = card.getValue();
             if (value == Card.Value.ACE){
-                aces ++;
+                aces++;
             }
             v += value.getValue();
         }
@@ -35,7 +35,7 @@ public class BlackJackHand {
         return cards.remove(index);
     }
 
-    public ArrayList<Card> getCards() {
+    public ArrayList<Card> getCards(){
         return cards;
     }
 
