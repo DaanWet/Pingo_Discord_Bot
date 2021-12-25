@@ -12,7 +12,6 @@ import java.util.HashMap;
 public class GameHandler {
 
 
-
     private final HashMap<Long, HashMap<Long, BlackJackGame>> blackJackGames;
     private final HashMap<Long, UnoGame> unoGames;
     private final HashMap<Long, QueueMap<Long, EmbedPaginator>> embedPaginatorMap;
@@ -41,7 +40,7 @@ public class GameHandler {
     }
 
     public UnoGame getUnoGame(long guildId){
-       return unoGames.getOrDefault(guildId, null);
+        return unoGames.getOrDefault(guildId, null);
     }
 
     public void removeUnoGame(long guildId){
@@ -53,13 +52,13 @@ public class GameHandler {
     }
 
     public boolean isUnoChannel(long guildId, long channelId){
-        if (unoGames.containsKey(guildId)) {
+        if (unoGames.containsKey(guildId)){
             return unoGames.get(guildId).getHands().stream().map(UnoHand::getChannelId).anyMatch(id -> id == channelId);
         }
         return false;
     }
 
-    public QueueMap<Long, EmbedPaginator> getEmbedPaginatorMap(long guildId) {
+    public QueueMap<Long, EmbedPaginator> getEmbedPaginatorMap(long guildId){
         return embedPaginatorMap.getOrDefault(guildId, new QueueMap<>());
     }
 

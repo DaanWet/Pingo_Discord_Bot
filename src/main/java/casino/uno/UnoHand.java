@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class UnoHand {
 
-    private ArrayList<UnoCard> cards;
+    private final ArrayList<UnoCard> cards;
     private long channelId;
     private long messageId;
-    private long playerId;
-    private String playerName;
+    private final long playerId;
+    private final String playerName;
     private boolean drawn;
 
 
@@ -38,31 +38,31 @@ public class UnoHand {
         drawn = false;
     }
 
-    public ArrayList<UnoCard> getCards() {
+    public ArrayList<UnoCard> getCards(){
         return cards;
     }
 
-    public long getChannelId() {
+    public long getChannelId(){
         return channelId;
     }
 
-    public long getMessageId() {
+    public long getMessageId(){
         return messageId;
     }
 
-    public long getPlayerId() {
+    public long getPlayerId(){
         return playerId;
     }
 
-    public String getPlayerName() {
+    public String getPlayerName(){
         return playerName;
     }
 
-    public void setChannelId(long channelId) {
+    public void setChannelId(long channelId){
         this.channelId = channelId;
     }
 
-    public void setMessageId(long messageId) {
+    public void setMessageId(long messageId){
         this.messageId = messageId;
     }
 }

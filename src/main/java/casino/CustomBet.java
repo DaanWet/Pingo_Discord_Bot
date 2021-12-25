@@ -21,7 +21,6 @@ public class CustomBet {
     }
 
 
-
     public HashMap<Long, Pair<Integer, String>> getBets(){
         return bets;
     }
@@ -38,20 +37,20 @@ public class CustomBet {
         return bets.get(userId).getRight();
     }
 
-    public int getID() {
+    public int getID(){
         return ID;
     }
 
-    public Long getChannelId() {
+    public Long getChannelId(){
         return channelId;
     }
 
-    public void setIds(long channelId, long messageId) {
+    public void setIds(long channelId, long messageId){
         this.channelId = channelId;
         this.messageId = messageId;
     }
 
-    public Long getMessageId() {
+    public Long getMessageId(){
         return messageId;
     }
 
@@ -59,16 +58,16 @@ public class CustomBet {
         return bets.containsKey(userId);
     }
 
-    public long getUserId() {
+    public long getUserId(){
         return userId;
     }
 
 
-    public boolean isEnded() {
+    public boolean isEnded(){
         return ended;
     }
 
-    public void end() {
+    public void end(){
         this.ended = true;
     }
 }
