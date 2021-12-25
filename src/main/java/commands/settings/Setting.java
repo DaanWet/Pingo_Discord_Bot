@@ -89,7 +89,7 @@ public enum Setting {
     }
 
     public enum Type {
-        COMMANDS("Commands", (list, eb, prefix) -> {
+        COMMANDS("Commands", new String[]{"Command"}, (list, eb, prefix) -> {
             eb.addField("Enable/Disable Command", String.format("Turn a specific command (or module) on or off.\n `%ssettings commands <command> [on|off]`", prefix), false);
             eb.addField("Set cooldown", String.format("Set a cooldown for a specific command.\n`%ssettings commands <command> cooldown <value>`", prefix), false);
             eb.addField("Whitelist or Blacklist", String.format("Enable whitelist or blacklist mode and whitelist or blacklist certain roles, users or channels from using a specific command (or module).\n" +
@@ -108,10 +108,18 @@ public enum Setting {
 
         private final String name;
         private final TypeDescription typeDescription;
+        private final String[] aliases;
 
-        Type(String name, TypeDescription typeDescription) {
+        Type(String name, String[] aliases, TypeDescription typeDescription) {
             this.name = name;
             this.typeDescription = typeDescription;
+            this.aliases = aliases;
+        }
+
+        Type(String name, TypeDescription typeDescription){
+            this.name = name;
+            this.typeDescription = typeDescription;
+            this.aliases = new String[]{};
         }
 
         public String getName() {
@@ -119,7 +127,7 @@ public enum Setting {
         }
 
         public static Type fromString(String name) {
-            Optional<Type> optional = Arrays.stream(Type.values()).filter(s -> s.name.equalsIgnoreCase(name)).findFirst();
+            Optional<Type> optional = Arrays.stream(Type.values()).filter(s -> s.name.equalsIgnoreCase(name) || Arrays.stream(s.aliases).anyMatch(al -> al.equalsIgnoreCase(name))).findFirst();
             return optional.orElse(null);
         }
 
