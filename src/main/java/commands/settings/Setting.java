@@ -12,6 +12,7 @@ public enum Setting {
     FUCKPINGO("fuckPingo", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     NICKNAME("nickname", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     POLL("poll", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
+    CUSTOMBET("custombet", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
 
 
 
