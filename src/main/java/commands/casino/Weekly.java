@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 
 public class Weekly extends Command {
 
-    public Weekly() {
+    public Weekly(){
         this.name = "weekly";
         this.aliases = new String[]{"weeklycredits"};
         this.category = "Casino";
@@ -27,27 +27,27 @@ public class Weekly extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        if (args.length == 0) {
-            DataHandler dataHandler = new DataHandler();
-            Long id = e.getAuthor().getIdLong();
-            LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
-            if (latestcollect != null && !LocalDateTime.now().minusDays(7).isAfter(latestcollect)) {
-                LocalDateTime till = latestcollect.plusDays(7);
-                LocalDateTime temp = LocalDateTime.now();
-                long days = temp.until(till, ChronoUnit.DAYS);
-                long hours = temp.plusDays(days).until(till, ChronoUnit.HOURS);
-                long minutes = temp.plusDays(days).plusHours(hours).until(till, ChronoUnit.MINUTES);
-                throw new MessageException(
-                        String.format(
-                                "You need to wait %d day%s, %d hour%s and %d minute%s before you can collect your next credits",
-                                days, days == 1 ? "" : "s", hours, hours == 1 ? "" : "s", minutes, minutes == 1 ? "" : "s")
-                );
-            }
-            int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, 15000);
-            dataHandler.setLatestWeekCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
-            e.getChannel().sendMessage(String.format("You collected your weekly **15000 credits** \nYour new balance is now **%d credits**", creds)).queue();
-        } else {
+        if (args.length != 0)
             throw new MessageException(this.getUsage());
+
+        DataHandler dataHandler = new DataHandler();
+        Long id = e.getAuthor().getIdLong();
+        LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
+        if (latestcollect != null && !LocalDateTime.now().minusDays(7).isAfter(latestcollect)){
+            LocalDateTime till = latestcollect.plusDays(7);
+            LocalDateTime temp = LocalDateTime.now();
+            long days = temp.until(till, ChronoUnit.DAYS);
+            long hours = temp.plusDays(days).until(till, ChronoUnit.HOURS);
+            long minutes = temp.plusDays(days).plusHours(hours).until(till, ChronoUnit.MINUTES);
+            throw new MessageException(
+                    String.format(
+                            "You need to wait %d day%s, %d hour%s and %d minute%s before you can collect your next credits",
+                            days, days == 1 ? "" : "s", hours, hours == 1 ? "" : "s", minutes, minutes == 1 ? "" : "s")
+            );
         }
+        int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, 15000);
+        dataHandler.setLatestWeekCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
+        e.getChannel().sendMessage(String.format("You collected your weekly **15000 credits** \nYour new balance is now **%d credits**", creds)).queue();
+
     }
 }

@@ -7,7 +7,6 @@ import commands.settings.CommandState;
 import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.Utils;
@@ -16,7 +15,7 @@ public class StartBet extends Command {
 
     private GameHandler gameHandler;
 
-    public StartBet(GameHandler gameHandler) {
+    public StartBet(GameHandler gameHandler){
         this.gameHandler = gameHandler;
         this.name = "startbet";
         this.aliases = new String[]{"sbet"};
@@ -34,10 +33,9 @@ public class StartBet extends Command {
 
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        if (args.length == 0) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        if (args.length == 0)
             throw new MessageException("You need to provide a question to bet on");
-        }
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());

@@ -36,14 +36,14 @@ public class Uno extends Command {
         DataHandler dataHandler = new DataHandler();
         if (args.length == 1) {
             if (!dataHandler.getBoolSetting(e.getGuild().getIdLong(), Setting.BETTING)){
-                 throw new MessageException("Betting is currently disabled in this server, starting a game without credits");
+                e.getChannel().sendMessage("Betting is currently disabled in this server, starting a game without credits").queue();
+            } else {
+                bet = Utils.getInt(args[0]);
+                if (bet < 10)
+                    throw new MessageException("You need to place a bet for at least 10 credits");
+                if (dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) < bet)
+                    throw new MessageException(String.format("You don't have enough credits to make a %d credits bet", bet));
             }
-
-            bet = Utils.getInt(args[0]);
-            if (bet < 10)
-                throw new MessageException("You need to place a bet for at least 10 credits");
-            if (dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()) < bet)
-                throw new MessageException(String.format("You don't have enough credits to make a %d credits bet", bet));
         }
         dataHandler.setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.UNO, LocalDateTime.now());
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());

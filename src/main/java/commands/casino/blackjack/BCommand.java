@@ -5,7 +5,6 @@ import casino.GameHandler;
 import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.DataHandler;
 import utils.dbdata.RecordData;
 
@@ -38,7 +37,7 @@ public abstract class BCommand extends Command {
         dataHandler.setRecord(guildId, playerId, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_loss", won_lose > 0 ? won_lose : won_lose * -1, jumpurl, false);
         RecordData played_games = dataHandler.getRecord(guildId, playerId, "bj_games_played");
         RecordData winrate = dataHandler.getRecord(guildId, playerId, "bj_win_rate");
-        int temp = played_games == null ? 0 : (int)played_games.getValue();
+        int temp = played_games == null ? 0 : (int) played_games.getValue();
         double tempw = winrate == null ? 0.0 : winrate.getValue();
         dataHandler.setRecord(guildId, playerId, "bj_games_played", temp + 1, false);
         dataHandler.setRecord(guildId, playerId, "bj_win_rate", tempw + (((won_lose > 0 ? 1.0 : won_lose == 0 ? 0.5 : 0.0) - tempw) / (temp + 1.0)), true);
@@ -51,8 +50,6 @@ public abstract class BCommand extends Command {
         }
         dataHandler.setStreak(guildId, playerId, newstreak, jumpurl);
     }
-
-
 
 
 }

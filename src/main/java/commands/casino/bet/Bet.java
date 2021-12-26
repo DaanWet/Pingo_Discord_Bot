@@ -14,13 +14,12 @@ import utils.MessageException;
 import utils.Utils;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 public class Bet extends Command {
 
     private GameHandler gameHandler;
 
-    public Bet(GameHandler gameHandler) {
+    public Bet(GameHandler gameHandler){
         this.gameHandler = gameHandler;
         this.name = "bet";
         this.arguments = "<bet id> <credits> <answer>";
@@ -36,7 +35,7 @@ public class Bet extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
 
         int id = args.length == 0 ? -1 : Utils.getInt(args[0]);
         ArrayList<CustomBet> customBet = gameHandler.getCustomBet(e.getGuild().getIdLong());
@@ -63,7 +62,7 @@ public class Bet extends Command {
             throw new MessageException("You need to provide an answer to the question");
 
 
-        String answer =  Utils.concat(args, 2);
+        String answer = Utils.concat(args, 2);
         cbet.addBet(userId, bet, answer);
         e.getMessage().addReaction("✅").queue();
         e.getGuild().getTextChannelById(cbet.getChannelId()).retrieveMessageById(cbet.getMessageId()).queue(m -> {

@@ -42,14 +42,10 @@ public abstract class RoleCommand extends Command {
         eb.setTitle(data.getTitle() == null ? String.format("%s Roles", category) : data.getTitle());
         StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", category));
         ArrayList<RoleAssignRole> sorted;
-        switch(data.getSorting()){
-            case EMOJI:
-                sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());
-                break;
-            case NAME:
-                sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName)).collect(Collectors.toList());
-                break;
-            case CUSTOM:
+        switch (data.getSorting()){
+            case EMOJI -> sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());
+            case NAME -> sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName)).collect(Collectors.toList());
+            case CUSTOM -> {
                 sorted = new ArrayList<>();
                 for (String s : data.getCustomS().split(" ")){
                     RoleAssignRole r = null;
@@ -64,11 +60,8 @@ public abstract class RoleCommand extends Command {
                     sorted.add(r);
                 }
                 sorted.addAll(roles);
-                break;
-            default:
-                sorted = roles;
-                break;
-
+            }
+            default -> sorted = roles;
         }
         Compacting compact = data.getCompacting();
         if (compact == Compacting.COMPACT || compact == Compacting.SUPER_COMPACT){
@@ -77,12 +70,12 @@ public abstract class RoleCommand extends Command {
             for (int i = 0; i < sorted.size(); i++){
                 if (i <= sorted.size() / 2){
                     sb1.append(sorted.get(i).getEmoji()).append("\t").append(sorted.get(i).getName()).append("\n");
-                    if (compact == Compacting.COMPACT) {
+                    if (compact == Compacting.COMPACT){
                         sb1.append("\n");
                     }
                 } else {
                     sb2.append(sorted.get(i).getEmoji()).append("\t").append(sorted.get(i).getName()).append("\n");
-                    if (compact == Compacting.COMPACT) {
+                    if (compact == Compacting.COMPACT){
                         sb2.append("\n");
                     }
                 }
@@ -101,13 +94,13 @@ public abstract class RoleCommand extends Command {
     }
 
     protected Compacting detectCompact(MessageEmbed me){
-        if (me.getFields().size() > 0) {
+        if (me.getFields().size() > 0){
             if (me.getFields().get(0).getValue().contains("\n\n")){
                 return Compacting.SUPER_COMPACT;
             } else {
                 return Compacting.COMPACT;
             }
-        } else{
+        } else {
             return Compacting.NORMAL;
         }
     }
