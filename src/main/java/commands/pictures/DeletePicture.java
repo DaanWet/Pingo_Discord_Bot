@@ -21,7 +21,7 @@ public class DeletePicture extends Command {
     private HashMap<String, OpenExplorerData> openExplorers = new HashMap();
     private HashMap<String, ScheduledFuture<?>> autoClosers = new HashMap<>();
 
-    public DeletePicture(CommandHandler commandHandler) {
+    public DeletePicture(CommandHandler commandHandler){
         this.name = "delete";
         this.aliases = new String[]{"del", "deletepicture"};
         this.commandHandler = commandHandler;
@@ -31,16 +31,16 @@ public class DeletePicture extends Command {
         this.priveligedGuild = 203572340280262657L;
     }
 
-    public OpenExplorerData getExplorerData(String command) {
+    public OpenExplorerData getExplorerData(String command){
         return openExplorers.getOrDefault(command, null);
     }
 
-    public RestAction<?> deleteMessage(String command, Message message) {
+    public RestAction<?> deleteMessage(String command, Message message){
         RestAction<Message> getM = openExplorers.get(command).getMessage();
         return message.delete().flatMap(s -> getM.flatMap(Message::delete));
     }
 
-    public void closeExplorer(String command, Message message) {
+    public void closeExplorer(String command, Message message){
         autoClosers.get(command).cancel(false);
         deleteMessage(command, message).queue();
         openExplorers.remove(command);
@@ -48,27 +48,27 @@ public class DeletePicture extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (e.getGuild().getIdLong() != 203572340280262657L) return;
-        if (args.length == 1 && commandHandler.getPcommands().contains(args[0].toLowerCase())) {
-            if (openExplorers.containsKey(args[0]))
-                throw new MessageException("An explorer is already open");
-
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[0], 0, random.nextInt(), random.nextInt()));
-            eb.setTitle("Delete pictures from " + args[0]);
-            eb.setDescription("0.jpg");
-            e.getChannel().sendMessage(eb.build()).queue(m -> {
-                openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(), e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));
-                m.addReaction("U+25C0").queue();
-                m.addReaction("U+1F5D1").queue();
-                m.addReaction("U+25B6").queue();
-                m.addReaction("U+274C").queue();
-                autoClosers.put(args[0], deleteMessage(args[0], m).queueAfter(10, TimeUnit.MINUTES));
-            });
-
-        } else {
+        if (args.length != 1 || !commandHandler.getPcommands().contains(args[0].toLowerCase()))
             throw new MessageException(getUsage());
-        }
+
+        if (openExplorers.containsKey(args[0]))
+            throw new MessageException("An explorer is already open");
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[0], 0, random.nextInt(), random.nextInt()));
+        eb.setTitle("Delete pictures from " + args[0]);
+        eb.setDescription("0.jpg");
+        e.getChannel().sendMessage(eb.build()).queue(m -> {
+            openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(), e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));
+            m.addReaction("U+25C0").queue();
+            m.addReaction("U+1F5D1").queue();
+            m.addReaction("U+25B6").queue();
+            m.addReaction("U+274C").queue();
+            autoClosers.put(args[0], deleteMessage(args[0], m).queueAfter(10, TimeUnit.MINUTES));
+        });
+
+
     }
 }

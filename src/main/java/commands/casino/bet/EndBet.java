@@ -37,7 +37,7 @@ public class EndBet extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
 
         long guildId = e.getGuild().getIdLong();
         int id = args.length == 0 ? -1 : Utils.getInt(args[0]);
@@ -60,7 +60,6 @@ public class EndBet extends Command {
         for (Member m : e.getMessage().getMentionedMembers()){
             if (!bet.didBet(m.getIdLong()))
                 throw new MessageException(String.format("%s did not bet and can't win"));
-
             winners.add(m.getIdLong());
         }
         bet.end();
@@ -79,7 +78,7 @@ public class EndBet extends Command {
         eb.setTitle(String.format("Bet #%d has ended", bet.getID()), String.format("https://discord.com/channels/%d/%d/%d", guildId, bet.getChannelId(), bet.getMessageId()));
         eb.appendDescription(String.format("There was a prize pool of %d credits", prize + winnerTotal));
 
-        for(long winner : winners){
+        for (long winner : winners){
             double percentage = (double) bet.getBet(winner) / winnerTotal;
             int won = (int) (percentage * prize);
             dh.addCredits(guildId, winner, won);

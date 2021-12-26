@@ -17,12 +17,10 @@ public class Hit extends BCommand {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         long id = e.getAuthor().getIdLong();
         long guildId = e.getGuild().getIdLong();
-        if (args.length == 0) {
-            BlackJackGame bjg = gameHandler.getBlackJackGame(guildId, id);
-            if (bjg != null) {
-                bjg.hit();
-                updateMessage(e.getChannel(), bjg, new DataHandler(), guildId, id, e.getAuthor().getName());
-            }
+        BlackJackGame bjg = gameHandler.getBlackJackGame(guildId, id);
+        if (args.length == 0 && bjg != null){
+            bjg.hit();
+            updateMessage(e.getChannel(), bjg, new DataHandler(), guildId, id, e.getAuthor().getName());
         }
     }
 }
