@@ -3,6 +3,7 @@ package commands.casino.blackjack;
 import casino.BlackJackGame;
 import casino.GameHandler;
 import commands.Command;
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import utils.DataHandler;
@@ -22,7 +23,8 @@ public abstract class BCommand extends Command {
         if (bjg.hasEnded())
             gameHandler.removeBlackJackGame(guildId, id);
         channel.retrieveMessageById(bjg.getMessageId()).queue(m -> {
-            EmbedBuilder eb = bjg.buildEmbed(author);
+            String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
+            EmbedBuilder eb = bjg.buildEmbed(author, prefix);
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);

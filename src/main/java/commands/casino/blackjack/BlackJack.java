@@ -58,7 +58,8 @@ public class BlackJack extends BCommand {
 
         BlackJackGame bjg = new BlackJackGame(bet);
         dataHandler.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
-        EmbedBuilder eb = bjg.buildEmbed(author.getName());
+        String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
+        EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix);
         if (!bjg.hasEnded()){
             gameHandler.putBlackJackGame(guildId, playerId, bjg);
         } else {

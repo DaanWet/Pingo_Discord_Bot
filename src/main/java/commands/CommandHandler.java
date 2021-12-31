@@ -19,32 +19,30 @@ import commands.roles.RoleAssign;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import commands.settings.Settings;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.GitHub;
 import utils.DataHandler;
 import utils.MessageException;
 import utils.OpenExplorerData;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandHandler {
 
-    private Random random;
+    private final Random random;
 
-    private HashMap<String, Command> commands;
+    private final HashMap<String, Command> commands;
     public static final String pathname = "./Pictures";
-    private GitHub gitHub;
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
-    public CommandHandler(GitHub gitHub) {
-        this.gitHub = gitHub;
+    public CommandHandler(GitHub gitHub){
         random = new Random();
         CommandHandler commh = this;
         gameHandler = new GameHandler();
@@ -58,7 +56,7 @@ public class CommandHandler {
                 put("roleassign", new RoleAssign());
                 put("addRA", new AddRoleAssign());
                 put("removeRA", new RemoveRoleAssign());
-                put("daily", new CollectCredits());
+                put("daily", new CollectEventCredits());
                 put("weekly", new Weekly());
                 put("balance", new ShowCredits(gameHandler));
                 put("blackjack", new BlackJack(gameHandler));
@@ -95,7 +93,7 @@ public class CommandHandler {
         return ((DeletePicture) commands.get("delete")).getExplorerData(command);
     }
 
-    public GameHandler getGameHandler() {
+    public GameHandler getGameHandler(){
         return gameHandler;
     }
 
@@ -106,11 +104,12 @@ public class CommandHandler {
     public Set<String> getPcommands(){
         File cdir = new File(pathname);
         Set<String> pcommands = new HashSet<>();
-        for (File file : cdir.listFiles()) {
+        for (File file : cdir.listFiles()){
             pcommands.add(file.getName().toLowerCase());
         }
         return pcommands;
     }
+
     public void updateNickName(String name){
         ((FuckPingo) commands.get("fuckpingo")).setNickName(name);
     }
@@ -123,62 +122,67 @@ public class CommandHandler {
         String[] words = split(message.getContentRaw()).toArray(new String[]{});
         String prefix = new DataHandler().getStringSetting(e.getGuild().getIdLong(), Setting.PREFIX).get(0);
         String command = words[0].substring(prefix.length());
-        for (Command c : commands.values()){
+
+        boolean commandFound = false;
+        Iterator<Command> iterator = commands.values().iterator();
+
+
+        while (!commandFound && iterator.hasNext()){
+            Command c = iterator.next();
             if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){
-                if (!c.getCategory().equalsIgnoreCase("moderation") || e.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    CommandState state = c.canBeExecuted(e.getGuild().getIdLong(), channel.getIdLong(), message.getMember());
-                    if (state == CommandState.ENABLED) {
-                        c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.trim().isEmpty()).toArray(String[]::new), e);
-                        break;
-                    } else {
-                        throw new MessageException(state.getError(), 5);
-                    }
-                } else {
+                if (c.getCategory().equalsIgnoreCase("moderation") && !e.getMember().hasPermission(Permission.ADMINISTRATOR))
                     throw new MessageException(CommandState.USER.getError(), 5);
-                }
+
+                CommandState state = c.canBeExecuted(e.getGuild().getIdLong(), channel.getIdLong(), message.getMember());
+                if (state != CommandState.ENABLED)
+                    throw new MessageException(state.getError(), 5);
+
+                c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.trim().isEmpty()).toArray(String[]::new), e);
+                commandFound = true;
             }
         }
         Set<String> pcommands = getPcommands();
-        if (pcommands.contains(command.toLowerCase()) && e.getGuild().getIdLong() == 203572340280262657L) {
+        if (pcommands.contains(command.toLowerCase()) && e.getGuild().getIdLong() == 203572340280262657L){
             try {
                 File dir = new File(String.format("%s/%s", pathname, command));
                 File photo = new File(String.format("%s/%s/%d.jpg", pathname, command, random.nextInt(dir.listFiles().length)));
                 channel.sendFile(photo.getAbsoluteFile()).queue();
-            } catch (Exception exc) {
+            } catch (Exception exc){
                 exc.printStackTrace();
             }
         }
     }
+
     private ArrayList<String> split(String subjectString){
         ArrayList<String> matchList = new ArrayList<>();
         Pattern regex = Pattern.compile("\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|“([^“”\\\\]*(?:\\\\.[^“”\\\\]*)*)”|“([^“\\\\]*(?:\\\\.[^“\\\\]*)*)“|”([^”\\\\]*(?:\\\\.[^”\\\\]*)*)”|‘([^‘’\\\\]*(?:\\\\.[^‘’\\\\]*)*)’|‘([^‘\\\\]*(?:\\\\.[^‘\\\\]*)*)‘|’([^’\\\\]*(?:\\\\.[^’\\\\]*)*)’|[^\\s]+");
         Matcher regexMatcher = regex.matcher(subjectString);
-        while (regexMatcher.find()) {
-            if (regexMatcher.group(1) != null) {
+        while (regexMatcher.find()){
+            if (regexMatcher.group(1) != null){
                 // Add double-quoted string without the quotes
                 matchList.add(regexMatcher.group(1));
-            } else if (regexMatcher.group(2) != null) {
+            } else if (regexMatcher.group(2) != null){
                 // Add single-quoted string without the quotes
                 matchList.add(regexMatcher.group(2));
-            } else if (regexMatcher.group(3) != null) {
+            } else if (regexMatcher.group(3) != null){
                 // Add left right double-quoted string without the quotes
                 matchList.add(regexMatcher.group(3));
-            }else if (regexMatcher.group(4) != null) {
+            } else if (regexMatcher.group(4) != null){
                 // Add left double-quoted string without the quotes
                 matchList.add(regexMatcher.group(4));
-            }else if (regexMatcher.group(5) != null) {
+            } else if (regexMatcher.group(5) != null){
                 // Add right double-quoted string without the quotes
                 matchList.add(regexMatcher.group(5));
-            } else if (regexMatcher.group(6) != null) {
+            } else if (regexMatcher.group(6) != null){
                 // Add left right single-quoted string without the quotes
                 matchList.add(regexMatcher.group(6));
-            } else if (regexMatcher.group(7) != null) {
+            } else if (regexMatcher.group(7) != null){
                 // Add left single-quoted string without the quotes
                 matchList.add(regexMatcher.group(7));
-            }else if (regexMatcher.group(8) != null) {
+            } else if (regexMatcher.group(8) != null){
                 // Add right single-quoted string without the quotes
                 matchList.add(regexMatcher.group(8));
-            }else {
+            } else {
                 // Add unquoted word
                 matchList.add(regexMatcher.group());
             }

@@ -8,7 +8,7 @@ import utils.MessageException;
 
 import java.util.concurrent.TimeUnit;
 
-public class AmongUs extends Command{
+public class AmongUs extends Command {
 
     public AmongUs(){
         this.name = "amongus";
@@ -16,23 +16,21 @@ public class AmongUs extends Command{
         this.description = "Mutes or unmutes among us players";
 
     }
+
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         GuildVoiceState vs = e.getMember().getVoiceState();
-        if (vs != null && vs.inVoiceChannel()){
-            VoiceChannel vc = vs.getChannel();
-            //if (vc.getIdLong() == 764495094375645205L || vc.getIdLong() == 636590365100474398L){
-                boolean mute = !vs.isGuildMuted();
-                for (Member m : vc.getMembers()){
-                    m.mute(mute).queue();
-                }
-                e.getChannel().sendMessage(String.format("Succesfully %s all playing members", mute ? "muted" : "unmuted")).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
-            //} else {
-            //    e.getChannel().sendMessage("Wrong voicechannel noob").queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
-            //}
-        } else {
+        if (vs == null || !vs.inVoiceChannel())
             throw new MessageException("You're not connected to a voice channel", 10);
+
+        VoiceChannel vc = vs.getChannel();
+        boolean mute = !vs.isGuildMuted();
+        for (Member m : vc.getMembers()){
+            m.mute(mute).queue();
         }
+        e.getChannel().sendMessage(String.format("Succesfully %s all playing members", mute ? "muted" : "unmuted")).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
+
+
         e.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
     }
 }

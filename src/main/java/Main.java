@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.log4j.*;
@@ -16,6 +17,7 @@ import utils.DataHandler;
 import utils.logging.ErrorLayout;
 import utils.logging.MyFileAppender;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -32,6 +34,17 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception{
+        /*int[] l = new int[]{1000000, 100000, 50000, 10000, 7500, 5000, 3000};
+        double[] f = new double[]{0.01, 0.05, 0.105, 0.155, 0.17, 0.2, 0.31};
+        double av = 0.0;
+        double tot = 0;
+        for (int i = 0; i < 7; i++){
+            av += l[i] * f[i];
+            System.out.println(tot += f[i]);
+        }
+        System.out.println(av);
+        System.out.println(tot);
+*/
         Files.createDirectories(Paths.get(MyFileAppender.folder));
         Logger.getRootLogger().removeAllAppenders();
         MyFileAppender fileAppender = new MyFileAppender();
@@ -66,6 +79,8 @@ public class Main {
         jda.addEventListener(new JoinListener());
         CommandHandler ch = ml.getCommandHandler();
         jda.addEventListener(new ReactionListener(ch, github, ch.getGameHandler()));
+
+
     }
 
 }
