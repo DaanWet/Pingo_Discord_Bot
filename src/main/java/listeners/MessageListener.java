@@ -11,6 +11,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.kohsuke.github.GitHub;
+import utils.EmbedException;
 import utils.MessageException;
 import utils.DataHandler;
 
@@ -72,6 +73,12 @@ public class MessageListener extends ListenerAdapter {
             else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))) {
                 try  {
                     commandListener.onCommandReceived(e);
+                } catch (EmbedException exc){
+                    e.getChannel().sendMessage(exc.getEmbed().build()).queue(m -> {
+                        if (exc.getDelete() != 0)
+                            m.delete().queueAfter(exc.getDelete(), TimeUnit.SECONDS);
+                    });
+                    logger.info(String.format("Content: %s, error: %s", contentRaw, exc.getMessage()));
                 } catch (MessageException exc){
                     e.getChannel().sendMessage(exc.getMessage()).queue(m -> {
                         if (exc.getDelete() != 0)

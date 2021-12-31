@@ -1,6 +1,8 @@
 package casino;
 
+import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
+import utils.DataHandler;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -197,11 +199,12 @@ public class BlackJackGame {
         return ((Double) (bet * endstate.reward + (hasSplit ? secondbet * secondEndstate.reward : 0))).intValue();
     }
 
-    public EmbedBuilder buildEmbed(String user){
+    public EmbedBuilder buildEmbed(String user, String prefix){
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(String.format("\u2063Blackjack | %s | Bet : %d         \u2063", user, bet + secondbet));
         eb.addField(String.format("%sPlayer Cards", hasSplit && firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**", playerHand.toString(), playerHand.getValue()), true);
         eb.addField("Dealer Cards", String.format("%s\nValue: **%s**", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", hasEnded ? dealerHand.getValue() : ":question:"), true);
+
         if (hasSplit){
             eb.addField(String.format("%sSecond Hand Cards", !firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**", secondPlayerHand.toString(), secondPlayerHand.getValue()), false);
         }
@@ -211,7 +214,13 @@ public class BlackJackGame {
             eb.addField(String.format("%s%s", endstate.display, hasSplit ? " and " + secondEndstate.display : ""), String.format("You %s %d credits", credits > 0 ? "won" : credits == 0 ? "won/lost" : "lost", credits), hasSplit);
             eb.setColor(credits > 0 ? Color.GREEN : credits == 0 ? Color.BLUE : Color.RED);
         } else {
-            eb.addField("Commands", String.format("!stand : see dealer cards\n!hit : take another card%s%s", canDouble() ? "\n!double : double bet and take last card" : "", canSplit() && !hasSplit ? "\n!split : split your cards" : ""), false);
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%sstand : see dealer cards\n%shit : take another card", prefix, prefix));
+            if (canDouble())
+                sb.append(String.format("\n%sdouble : double bet and take last card", prefix));
+            if (canSplit() && !hasSplit)
+                sb.append(String.format("\n%ssplit : split your cards", prefix));
+            eb.addField("Commands", sb.toString(), false);
         }
         return eb;
     }
