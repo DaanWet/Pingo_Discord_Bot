@@ -32,11 +32,11 @@ public class BlackJackGame {
         }
     }
 
-    private Long messageId;
     private final ArrayList<Card> deck;
     private final BlackJackHand playerHand;
     private final BlackJackHand secondPlayerHand;
     private final BlackJackHand dealerHand;
+    private Long messageId;
     private boolean hasEnded;
     private EndState endstate;
     private EndState secondEndstate;
@@ -44,7 +44,6 @@ public class BlackJackGame {
     private int secondbet;
     private boolean firsthand;
     private boolean hasSplit;
-
 
     public BlackJackGame(int bet){
         hasEnded = false;
@@ -162,7 +161,6 @@ public class BlackJackGame {
 
 
     }
-
 
     public BlackJackHand getDealerHand(){
         return dealerHand;
