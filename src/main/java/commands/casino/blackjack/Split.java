@@ -23,6 +23,9 @@ public class Split extends BCommand {
         if (args.length == 0) {
             BlackJackGame bjg = gameHandler.getBlackJackGame(guildId, id);
             if (bjg != null) {
+                if (!bjg.canSplit())
+                    throw new MessageException("You can't split your cards");
+
                 DataHandler dataHandler = new DataHandler();
                 if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet()) 
                     throw new MessageException("You have not enough credits");
