@@ -8,20 +8,20 @@ public class UnoCard {
         GREEN("Green", "g"),
         YELLOW("Yellow", "y");
 
-        public String getName(){
-            return name;
-        }
-
-        public String getToken(){
-            return token;
-        }
-
         private final String name;
         private final String token;
 
         Color(String name, String token){
             this.name = name;
             this.token = token;
+        }
+
+        public String getName(){
+            return name;
+        }
+
+        public String getToken(){
+            return token;
         }
     }
 
@@ -36,7 +36,6 @@ public class UnoCard {
         SEVEN("seven", "7", 7),
         EIGHT("eight", "8", 8),
         NINE("nine", "9", 9),
-        //TEN("ten", "10", 10),
         REVERSE("Reverse", "e", 20),
         PLUSTWO("PlusTwo", "t", 20),
         SKIP("Skip", "s", 20),
@@ -46,6 +45,12 @@ public class UnoCard {
         private final String name;
         private final String token;
         private final int value;
+
+        Value(String name, String token, int value){
+            this.name = name;
+            this.token = token;
+            this.value = value;
+        }
 
         public String getName(){
             return name;
@@ -57,12 +62,6 @@ public class UnoCard {
 
         public int getValue(){
             return value;
-        }
-
-        Value(String name, String token, int value){
-            this.name = name;
-            this.token = token;
-            this.value = value;
         }
     }
 
@@ -123,7 +122,6 @@ public class UnoCard {
 
     }
 
-
     public boolean canBePlayed(UnoCard card){
         return card.value == Value.PLUSFOUR || card.value == Value.WILD || this.color == card.color || this.value == card.value;
     }
@@ -131,7 +129,6 @@ public class UnoCard {
     public String toString(){
         return color.getName() + (value.getValue() < 10 ? value.getToken() : value.getName());
     }
-
 
     public Color getColor(){
         return color;

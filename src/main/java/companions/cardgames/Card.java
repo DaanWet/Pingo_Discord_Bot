@@ -67,7 +67,6 @@ public class Card {
     private final Face face;
     private final Value value;
 
-
     public Card(Face face, Value value){
         this.face = face;
         this.value = value;

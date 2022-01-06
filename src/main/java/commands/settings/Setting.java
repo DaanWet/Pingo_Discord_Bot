@@ -19,73 +19,6 @@ public enum Setting {
 
     UNO_PLACE("unoPlace", Type.UNO, ValueType.INTEGER, false, -1, List.of(), "", "");
 
-    private final String name;
-    private final Setting.Type type;
-    private final Setting.ValueType valueType;
-    private final boolean multiple;
-    private final Object defaultValue;
-    private final List<SubSetting> subSettings;
-    private final String description;
-    private final String suffix;
-    Setting(String name, Setting.Type type, Setting.ValueType valueType, boolean multiple, Object defaultValue, List<SubSetting> subSettings,
-            String description, String suffix){
-        this.name = name;
-        this.type = type;
-        this.valueType = valueType;
-        this.multiple = multiple;
-        this.defaultValue = defaultValue;
-        this.subSettings = subSettings;
-        this.description = description;
-        this.suffix = suffix;
-    }
-
-    public static HashMap<Setting.Type, ArrayList<Setting>> getTypeMap(){
-        HashMap<Setting.Type, ArrayList<Setting>> map = new HashMap<>();
-        Arrays.stream(Setting.values()).forEach(s -> map.merge(s.type, new ArrayList<>(List.of(s)), (currentL, newL) -> {
-            currentL.addAll(newL);
-            return currentL;
-        }));
-        return map;
-    }
-
-    public static Setting fromString(String name, Type type){
-        Optional<Setting> optional = Arrays.stream(Setting.values()).filter(s -> s.name.equalsIgnoreCase(name) && s.type == type).findFirst();
-        return optional.orElse(null);
-
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public String getType(){
-        return type.getName();
-    }
-
-    public ValueType getValueType(){
-        return valueType;
-    }
-
-    public boolean isMultiple(){
-        return multiple;
-    }
-
-    public Object getDefaultValue(){
-        return defaultValue;
-    }
-
-    public List<SubSetting> getSubSettings(){
-        return subSettings;
-    }
-
-    public String getDescription(){
-        return description;
-    }
-
-    public String getSuffix(){
-        return suffix;
-    }
-
     public enum Type {
         COMMANDS("Commands", new String[]{"Command"}, (list, eb, prefix) -> {
             eb.addField("Enable/Disable Command", String.format("Turn a specific command (or module) on or off.\n `%ssettings commands <command> [on|off]`", prefix), false);
@@ -201,6 +134,74 @@ public enum Setting {
         public String getSuffix(){
             return suffix;
         }
+    }
+
+    private final String name;
+    private final Setting.Type type;
+    private final Setting.ValueType valueType;
+    private final boolean multiple;
+    private final Object defaultValue;
+    private final List<SubSetting> subSettings;
+    private final String description;
+    private final String suffix;
+
+    Setting(String name, Setting.Type type, Setting.ValueType valueType, boolean multiple, Object defaultValue, List<SubSetting> subSettings,
+            String description, String suffix){
+        this.name = name;
+        this.type = type;
+        this.valueType = valueType;
+        this.multiple = multiple;
+        this.defaultValue = defaultValue;
+        this.subSettings = subSettings;
+        this.description = description;
+        this.suffix = suffix;
+    }
+
+    public static HashMap<Setting.Type, ArrayList<Setting>> getTypeMap(){
+        HashMap<Setting.Type, ArrayList<Setting>> map = new HashMap<>();
+        Arrays.stream(Setting.values()).forEach(s -> map.merge(s.type, new ArrayList<>(List.of(s)), (currentL, newL) -> {
+            currentL.addAll(newL);
+            return currentL;
+        }));
+        return map;
+    }
+
+    public static Setting fromString(String name, Type type){
+        Optional<Setting> optional = Arrays.stream(Setting.values()).filter(s -> s.name.equalsIgnoreCase(name) && s.type == type).findFirst();
+        return optional.orElse(null);
+
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public String getType(){
+        return type.getName();
+    }
+
+    public ValueType getValueType(){
+        return valueType;
+    }
+
+    public boolean isMultiple(){
+        return multiple;
+    }
+
+    public Object getDefaultValue(){
+        return defaultValue;
+    }
+
+    public List<SubSetting> getSubSettings(){
+        return subSettings;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public String getSuffix(){
+        return suffix;
     }
 
 }
