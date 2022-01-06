@@ -1,18 +1,18 @@
 package commands.casino;
 
-import companions.GameHandler;
-import companions.paginators.RecordPaginator;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import companions.GameHandler;
+import companions.paginators.RecordPaginator;
+import data.DataHandler;
+import data.models.RecordData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import data.DataHandler;
 import utils.MessageException;
 import utils.Utils;
-import data.models.RecordData;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,9 +1,5 @@
 package listeners;
 
-import commands.suggestion.EditSuggestion;
-import commands.suggestion.ListIssues;
-import commands.suggestion.Suggest;
-import companions.GameHandler;
 import commands.*;
 import commands.casino.*;
 import commands.casino.bet.Bet;
@@ -23,14 +19,18 @@ import commands.roles.RoleAssign;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import commands.settings.Settings;
+import commands.suggestion.EditSuggestion;
+import commands.suggestion.ListIssues;
+import commands.suggestion.Suggest;
+import companions.GameHandler;
+import companions.paginators.OpenExplorerData;
+import data.DataHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.GitHub;
-import data.DataHandler;
 import utils.MessageException;
-import companions.paginators.OpenExplorerData;
 
 import java.io.File;
 import java.util.*;

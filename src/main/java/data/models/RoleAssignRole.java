@@ -2,25 +2,25 @@ package data.models;
 
 public class RoleAssignRole {
 
-    private String name;
-    private String emoji;
-    private Long roleId;
+    private final String name;
+    private final String emoji;
+    private final Long roleId;
 
-    public RoleAssignRole(String emoji, String name, Long roleId) {
+    public RoleAssignRole(String emoji, String name, Long roleId){
         this.name = name;
         this.emoji = emoji;
         this.roleId = roleId;
     }
 
-    public String getName() {
+    public String getName(){
         return name;
     }
 
-    public String getEmoji() {
+    public String getEmoji(){
         return emoji;
     }
 
-    public Long getRoleId() {
+    public Long getRoleId(){
         return roleId;
     }
 }

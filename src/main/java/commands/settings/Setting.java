@@ -15,7 +15,6 @@ public enum Setting {
     CUSTOMBET("custombet", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
 
 
-
     PREFIX("prefix", Type.GENERAL, ValueType.STRING, false, "!", List.of(), "", ""),
 
     UNO_PLACE("unoPlace", Type.UNO, ValueType.INTEGER, false, -1, List.of(), "", "");
@@ -30,7 +29,7 @@ public enum Setting {
     private final String suffix;
 
     Setting(String name, Setting.Type type, Setting.ValueType valueType, boolean multiple, Object defaultValue, List<SubSetting> subSettings,
-            String description, String suffix) {
+            String description, String suffix){
         this.name = name;
         this.type = type;
         this.valueType = valueType;
@@ -41,23 +40,23 @@ public enum Setting {
         this.suffix = suffix;
     }
 
-    public String getName() {
+    public String getName(){
         return name;
     }
 
-    public String getType() {
+    public String getType(){
         return type.getName();
     }
 
-    public ValueType getValueType() {
+    public ValueType getValueType(){
         return valueType;
     }
 
-    public boolean isMultiple() {
+    public boolean isMultiple(){
         return multiple;
     }
 
-    public static HashMap<Setting.Type, ArrayList<Setting>> getTypeMap() {
+    public static HashMap<Setting.Type, ArrayList<Setting>> getTypeMap(){
         HashMap<Setting.Type, ArrayList<Setting>> map = new HashMap<>();
         Arrays.stream(Setting.values()).forEach(s -> map.merge(s.type, new ArrayList<>(List.of(s)), (currentL, newL) -> {
             currentL.addAll(newL);
@@ -66,25 +65,25 @@ public enum Setting {
         return map;
     }
 
-    public static Setting fromString(String name, Type type) {
+    public static Setting fromString(String name, Type type){
         Optional<Setting> optional = Arrays.stream(Setting.values()).filter(s -> s.name.equalsIgnoreCase(name) && s.type == type).findFirst();
         return optional.orElse(null);
 
     }
 
-    public Object getDefaultValue() {
+    public Object getDefaultValue(){
         return defaultValue;
     }
 
-    public List<SubSetting> getSubSettings() {
+    public List<SubSetting> getSubSettings(){
         return subSettings;
     }
 
-    public String getDescription() {
+    public String getDescription(){
         return description;
     }
 
-    public String getSuffix() {
+    public String getSuffix(){
         return suffix;
     }
 
@@ -110,7 +109,7 @@ public enum Setting {
         private final TypeDescription typeDescription;
         private final String[] aliases;
 
-        Type(String name, String[] aliases, TypeDescription typeDescription) {
+        Type(String name, String[] aliases, TypeDescription typeDescription){
             this.name = name;
             this.typeDescription = typeDescription;
             this.aliases = aliases;
@@ -122,16 +121,16 @@ public enum Setting {
             this.aliases = new String[]{};
         }
 
-        public String getName() {
+        public String getName(){
             return name;
         }
 
-        public static Type fromString(String name) {
+        public static Type fromString(String name){
             Optional<Type> optional = Arrays.stream(Type.values()).filter(s -> s.name.equalsIgnoreCase(name) || Arrays.stream(s.aliases).anyMatch(al -> al.equalsIgnoreCase(name))).findFirst();
             return optional.orElse(null);
         }
 
-        public TypeDescription getTypeDescription() {
+        public TypeDescription getTypeDescription(){
             return typeDescription;
         }
     }
@@ -145,11 +144,11 @@ public enum Setting {
         ROLE_LONG("Role_Long");
         private final String name;
 
-        ValueType(String name) {
+        ValueType(String name){
             this.name = name;
         }
 
-        public String getName() {
+        public String getName(){
             return name;
         }
     }
@@ -160,7 +159,7 @@ public enum Setting {
         USER;
     }
 
-    public enum SubSetting{
+    public enum SubSetting {
         COOLDOWN(ValueType.INTEGER, false, 0, "", " seconds"),
         BLACKLIST(ValueType.LONG, true, List.of(), "", ""),
         WHITELIST(ValueType.LONG, true, List.of(), "", "");
@@ -179,23 +178,23 @@ public enum Setting {
             this.suffix = suffix;
         }
 
-        public boolean isMultiple() {
+        public boolean isMultiple(){
             return multiple;
         }
 
-        public ValueType getValueType() {
+        public ValueType getValueType(){
             return valueType;
         }
 
-        public Object getDefaultValue() {
+        public Object getDefaultValue(){
             return defaultValue;
         }
 
-        public String getDescription() {
+        public String getDescription(){
             return description;
         }
 
-        public String getSuffix() {
+        public String getSuffix(){
             return suffix;
         }
 

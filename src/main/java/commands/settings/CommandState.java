@@ -22,7 +22,7 @@ public enum CommandState {
         return other;
     }
 
-    public String getError() {
+    public String getError(){
         return error;
     }
 }

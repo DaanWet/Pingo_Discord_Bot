@@ -2,12 +2,12 @@ package commands.roles;
 
 import com.vdurmont.emoji.EmojiManager;
 import commands.Command;
+import data.models.RoleAssignData;
+import data.models.RoleAssignRole;
 import emoji4j.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import data.models.RoleAssignData;
-import data.models.RoleAssignRole;
 
 import java.util.ArrayList;
 import java.util.Arrays;

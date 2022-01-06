@@ -1,9 +1,9 @@
 package commands.casino.blackjack;
 
-import companions.cardgames.BlackJackGame;
 import companions.GameHandler;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import companions.cardgames.BlackJackGame;
 import data.DataHandler;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Hit extends BCommand {
 

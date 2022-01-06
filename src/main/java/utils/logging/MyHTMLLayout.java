@@ -23,18 +23,18 @@ public class MyHTMLLayout extends HTMLLayout {
 
 
     @Override
-    public String format(@NotNull LoggingEvent event) {
+    public String format(@NotNull LoggingEvent event){
         StringBuilder sb = new StringBuilder();
         sb.append(LINE_SEP).append("<tr>").append(LINE_SEP);
         LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.getTimeStamp()), ZoneId.systemDefault());
         sb.append(TD).append(dtf.format(time)).append(CTD).append(LINE_SEP);
 
         sb.append(TD);
-        if (event.getLevel().equals(Level.DEBUG)) {
+        if (event.getLevel().equals(Level.DEBUG)){
             sb.append("<font color=\"#339933\">");
             sb.append(Transform.escapeTags(String.valueOf(event.getLevel())));
             sb.append("</font>");
-        } else if (event.getLevel().isGreaterOrEqual(Level.WARN)) {
+        } else if (event.getLevel().isGreaterOrEqual(Level.WARN)){
             sb.append("<font color=\"#993300\"><strong>");
             sb.append(Transform.escapeTags(String.valueOf(event.getLevel())));
             sb.append("</strong></font>");
@@ -59,7 +59,7 @@ public class MyHTMLLayout extends HTMLLayout {
     }
 
     @Override
-    public String getHeader() {
+    public String getHeader(){
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">");
         sb.append(LINE_SEP).append("<html>").append(LINE_SEP);
@@ -112,7 +112,7 @@ public class MyHTMLLayout extends HTMLLayout {
         return sb.toString();
     }
 
-    public void setLink(boolean link) {
+    public void setLink(boolean link){
         this.link = link;
     }
 }

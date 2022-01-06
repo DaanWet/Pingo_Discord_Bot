@@ -1,12 +1,12 @@
 package commands.casino.uno;
 
-import companions.GameHandler;
 import commands.Command;
 import commands.settings.Setting;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import companions.GameHandler;
 import companions.uno.UnoGame;
 import data.DataHandler;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.Utils;
 
@@ -16,7 +16,7 @@ public class Uno extends Command {
 
     private GameHandler gameHandler;
 
-    public Uno(GameHandler gameHandler) {
+    public Uno(GameHandler gameHandler){
         this.name = "uno";
         this.aliases = new String[]{"playuno"};
         this.category = "Casino";
@@ -26,15 +26,15 @@ public class Uno extends Command {
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        if (gameHandler.getUnoGame(e.getGuild().getIdLong()) != null) {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        if (gameHandler.getUnoGame(e.getGuild().getIdLong()) != null){
             throw new MessageException("A game has already started");
         }
         int bet = 0;
         if (args.length > 1)
             throw new MessageException("You need to place a valid bet");
         DataHandler dataHandler = new DataHandler();
-        if (args.length == 1) {
+        if (args.length == 1){
             if (!dataHandler.getBoolSetting(e.getGuild().getIdLong(), Setting.BETTING)){
                 e.getChannel().sendMessage("Betting is currently disabled in this server, starting a game without credits").queue();
             } else {
