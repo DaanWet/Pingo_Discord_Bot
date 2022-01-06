@@ -1,4 +1,4 @@
-package utils.dbdata;
+package data.models;
 
 import commands.roles.RoleCommand;
 

@@ -1,13 +1,13 @@
 package commands.casino;
 
-import casino.BalancePaginator;
-import casino.GameHandler;
+import companions.paginators.BalancePaginator;
+import companions.GameHandler;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
 
 public class ShowCredits extends Command {

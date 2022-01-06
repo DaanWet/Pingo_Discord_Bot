@@ -1,13 +1,13 @@
 package commands.casino.blackjack;
 
-import casino.BlackJackGame;
-import casino.GameHandler;
+import companions.cardgames.BlackJackGame;
+import companions.GameHandler;
 import commands.Command;
 import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
-import utils.DataHandler;
-import utils.dbdata.RecordData;
+import data.DataHandler;
+import data.models.RecordData;
 
 public abstract class BCommand extends Command {
 

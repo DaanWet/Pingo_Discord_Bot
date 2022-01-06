@@ -1,10 +1,9 @@
-package casino;
+package companions.paginators;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import utils.DataHandler;
-import utils.EmbedPaginator;
-import utils.dbdata.RecordData;
+import data.DataHandler;
+import data.models.RecordData;
 
 import java.util.ArrayList;
 import java.util.Properties;

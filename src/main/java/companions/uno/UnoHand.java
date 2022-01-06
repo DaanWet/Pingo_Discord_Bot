@@ -1,4 +1,4 @@
-package casino.uno;
+package companions.uno;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,6 @@
-package utils;
+package data;
 
-import casino.uno.UnoCard;
+import companions.uno.UnoCard;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

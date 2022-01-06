@@ -1,11 +1,11 @@
 package listeners;
 
-import casino.GameHandler;
-import casino.uno.UnoGame;
-import casino.uno.UnoHand;
-import commands.CommandHandler;
+
 import org.apache.log4j.MDC;
-import utils.dbdata.RoleAssignRole;
+import companions.GameHandler;
+import companions.uno.UnoGame;
+import companions.uno.UnoHand;
+import data.models.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -16,9 +16,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import utils.DataHandler;
-import utils.EmbedPaginator;
-import utils.ImageHandler;
+import data.DataHandler;
+import companions.paginators.EmbedPaginator;
+import data.ImageHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static commands.CommandHandler.pathname;
+import static listeners.CommandHandler.pathname;
 
 public class ReactionListener extends ListenerAdapter {
     private CommandHandler commandHandler;

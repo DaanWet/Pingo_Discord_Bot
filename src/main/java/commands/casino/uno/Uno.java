@@ -1,12 +1,12 @@
 package commands.casino.uno;
 
-import casino.GameHandler;
+import companions.GameHandler;
 import commands.Command;
 import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import casino.uno.UnoGame;
-import utils.DataHandler;
+import companions.uno.UnoGame;
+import data.DataHandler;
 import utils.MessageException;
 import utils.Utils;
 

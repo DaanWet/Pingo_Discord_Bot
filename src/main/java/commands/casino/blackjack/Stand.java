@@ -1,9 +1,9 @@
 package commands.casino.blackjack;
 
-import casino.BlackJackGame;
-import casino.GameHandler;
+import companions.cardgames.BlackJackGame;
+import companions.GameHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.DataHandler;
+import data.DataHandler;
 
 public class Stand extends BCommand {
 

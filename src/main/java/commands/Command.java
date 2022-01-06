@@ -6,10 +6,9 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import utils.DataHandler;
+import data.DataHandler;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Command {

@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
 import utils.Utils;
 

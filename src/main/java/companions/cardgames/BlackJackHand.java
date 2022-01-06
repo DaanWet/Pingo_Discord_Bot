@@ -1,4 +1,4 @@
-package casino;
+package companions.cardgames;
 
 import java.util.ArrayList;
 

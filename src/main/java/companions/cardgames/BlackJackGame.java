@@ -1,8 +1,6 @@
-package casino;
+package companions.cardgames;
 
-import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
-import utils.DataHandler;
 
 import java.awt.*;
 import java.util.ArrayList;

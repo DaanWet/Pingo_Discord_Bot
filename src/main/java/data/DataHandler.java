@@ -1,4 +1,4 @@
-package utils;
+package data;
 
 
 import com.mysql.cj.exceptions.WrongArgumentException;
@@ -6,11 +6,11 @@ import commands.roles.RoleCommand;
 import commands.settings.Setting;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.sk.PrettyTable;
-import utils.dbdata.RecordData;
-import utils.dbdata.RoleAssignData;
-import utils.dbdata.RoleAssignRole;
+import data.models.RecordData;
+import data.models.RoleAssignData;
+import data.models.RoleAssignRole;
+import utils.Utils;
 
-import java.io.UncheckedIOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

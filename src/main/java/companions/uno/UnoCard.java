@@ -1,4 +1,4 @@
-package casino.uno;
+package companions.uno;
 
 public class UnoCard {
 

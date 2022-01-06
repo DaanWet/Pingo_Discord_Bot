@@ -1,4 +1,4 @@
-import commands.CommandHandler;
+import listeners.CommandHandler;
 import listeners.JoinListener;
 import listeners.MessageListener;
 import listeners.NicknameHandler;
@@ -7,17 +7,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.log4j.*;
 import org.kohsuke.github.*;
-import utils.DataHandler;
+import data.DataHandler;
 
 import utils.logging.ErrorLayout;
 import utils.logging.MyFileAppender;
 
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;

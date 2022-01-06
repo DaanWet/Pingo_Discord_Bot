@@ -1,13 +1,13 @@
 package commands.pictures;
 
 import commands.Command;
-import commands.CommandHandler;
+import listeners.CommandHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import utils.MessageException;
-import utils.OpenExplorerData;
+import companions.paginators.OpenExplorerData;
 
 import java.util.HashMap;
 import java.util.Random;

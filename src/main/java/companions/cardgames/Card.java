@@ -1,4 +1,4 @@
-package casino;
+package companions.cardgames;
 
 public class Card {
     public enum Value {

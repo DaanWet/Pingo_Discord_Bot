@@ -1,5 +1,6 @@
-package commands;
+package commands.suggestion;
 
+import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.*;

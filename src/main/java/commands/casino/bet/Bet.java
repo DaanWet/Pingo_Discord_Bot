@@ -1,7 +1,7 @@
 package commands.casino.bet;
 
-import casino.CustomBet;
-import casino.GameHandler;
+import companions.CustomBet;
+import companions.GameHandler;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
 import utils.Utils;
 

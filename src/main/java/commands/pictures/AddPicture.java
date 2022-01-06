@@ -1,7 +1,7 @@
 package commands.pictures;
 
 import commands.Command;
-import commands.CommandHandler;
+import listeners.CommandHandler;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static commands.CommandHandler.pathname;
+import static listeners.CommandHandler.pathname;
 
 public class AddPicture extends Command {
 
