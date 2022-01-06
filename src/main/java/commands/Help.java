@@ -1,12 +1,12 @@
 package commands;
 
-import companions.GameHandler;
 import commands.settings.Setting;
+import companions.GameHandler;
+import data.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import data.DataHandler;
 import utils.EmbedException;
 import utils.MessageException;
 

@@ -1,6 +1,7 @@
 package listeners;
 
 import commands.settings.Setting;
+import data.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -11,7 +12,6 @@ import org.apache.log4j.MDC;
 import org.kohsuke.github.GitHub;
 import utils.EmbedException;
 import utils.MessageException;
-import data.DataHandler;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,15 +19,13 @@ import java.util.concurrent.TimeUnit;
 public class MessageListener extends ListenerAdapter {
 
     private final CommandHandler commandListener;
-    private GitHub github;
     static final Logger logger = Logger.getLogger(MessageListener.class.getName());
 
     public MessageListener(GitHub github){
-        this.github = github;
-        this.commandListener =  new CommandHandler(github);
+        this.commandListener = new CommandHandler(github);
     }
 
-    public CommandHandler getCommandHandler() {
+    public CommandHandler getCommandHandler(){
         return commandListener;
     }
 
@@ -37,7 +35,7 @@ public class MessageListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e){
         User author = e.getAuthor();
         TextChannel channel = e.getChannel();
         Message message = e.getMessage();
@@ -45,13 +43,13 @@ public class MessageListener extends ListenerAdapter {
 
 
         // Minecraft update
-        if (e.isWebhookMessage() || author.isBot()) {
-            if (channel.getIdLong() == 686645470835245079L && (!message.getContentRaw().startsWith("**Minecraft - Beta"))) {
+        if (e.isWebhookMessage() || author.isBot()){
+            if (channel.getIdLong() == 686645470835245079L && (!message.getContentRaw().startsWith("**Minecraft - Beta"))){
                 guild.getTextChannelById(685146958997749801L).sendMessage(message).queue();
             }
-        } else if (!author.isBot()) {
+        } else if (!author.isBot()){
             //Text to speech mute
-            if (message.isTTS()) {
+            if (message.isTTS()){
                 message.delete().complete();
 
                 channel.sendMessage(String.format("%s has been muted, cause TTS sucks", e.getMember().getAsMention())).queue();
@@ -64,12 +62,12 @@ public class MessageListener extends ListenerAdapter {
 
             String contentRaw = e.getMessage().getContentRaw();
             // Codex submissions
-            if (channel.getIdLong() == 664230911935512586L) {
+            if (channel.getIdLong() == 664230911935512586L){
                 message.delete().queue();
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
             } // Check for commands
-            else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))) {
-                try  {
+            else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))){
+                try {
                     commandListener.onCommandReceived(e);
                 } catch (EmbedException exc){
                     e.getChannel().sendMessage(exc.getEmbed().build()).queue(m -> {
@@ -94,7 +92,7 @@ public class MessageListener extends ListenerAdapter {
                     e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
                 }
                 MDC.clear();
-            } else if (e.getGuild().getIdLong() == 712013079629660171L) {
+            } else if (e.getGuild().getIdLong() == 712013079629660171L){
                 message.delete().queue();
                 e.getJDA().getGuildById(203572340280262657L).getTextChannelById(203572340280262657L).sendMessage(message.getContentRaw()).queue();
             }
@@ -103,7 +101,7 @@ public class MessageListener extends ListenerAdapter {
 
     }
 
-    public void buildSuggestion(User author, String content, Guild g, TextChannel channel) {
+    public void buildSuggestion(User author, String content, Guild g, TextChannel channel){
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(author.getName(), null, author.getEffectiveAvatarUrl());
         eb.setDescription(content);

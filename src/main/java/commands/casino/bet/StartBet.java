@@ -1,10 +1,10 @@
 package commands.casino.bet;
 
-import companions.CustomBet;
-import companions.GameHandler;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import companions.CustomBet;
+import companions.GameHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;

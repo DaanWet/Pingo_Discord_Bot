@@ -1,8 +1,8 @@
 package commands;
 
 import commands.settings.Setting;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import data.DataHandler;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.Utils;
 

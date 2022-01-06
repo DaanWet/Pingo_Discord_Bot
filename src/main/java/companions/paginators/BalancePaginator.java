@@ -1,8 +1,8 @@
 package companions.paginators;
 
+import data.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import data.DataHandler;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,8 +1,8 @@
 package commands;
 
 import commands.settings.Setting;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import data.DataHandler;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ public class Clean extends Command {
 
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         e.getChannel().getIterableHistory().queue(list -> {
             list.forEach(m -> {
                 if (m.getContentRaw().equals("[Original Message Deleted]")) m.delete().queue();

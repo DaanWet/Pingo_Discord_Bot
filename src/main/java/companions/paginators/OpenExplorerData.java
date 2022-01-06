@@ -6,31 +6,31 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 public class OpenExplorerData {
 
-    private String playerId;
-    private String channelid;
-    private String messageId;
+    private final String playerId;
+    private final String channelId;
+    private final String messageId;
     private Guild g;
 
     public OpenExplorerData(String playerId, String channelId, String messageId, Guild g){
-        this.channelid = channelId;
+        this.channelId = channelId;
         this.playerId = playerId;
         this.messageId = messageId;
         this.g = g;
     }
 
-    public String getPlayerId() {
+    public String getPlayerId(){
         return playerId;
     }
 
-    public String getChannelid() {
-        return channelid;
+    public String getChannelId(){
+        return channelId;
     }
 
-    public String getMessageId() {
+    public String getMessageId(){
         return messageId;
     }
 
     public RestAction<Message> getMessage(){
-        return g.getTextChannelById(channelid).retrieveMessageById(messageId);
+        return g.getTextChannelById(channelId).retrieveMessageById(messageId);
     }
 }

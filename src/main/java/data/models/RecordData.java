@@ -16,35 +16,35 @@ public class RecordData {
         this.link = link;
     }
 
-    public String getLink() {
+    public String getLink(){
         return link;
     }
 
-    public void setLink(String link) {
+    public void setLink(String link){
         this.link = link;
     }
 
-    public double getValue() {
+    public double getValue(){
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(double value){
         this.value = value;
     }
 
-    public long getUserId() {
+    public long getUserId(){
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(long userId){
         this.userId = userId;
     }
 
-    public String getRecord() {
+    public String getRecord(){
         return record;
     }
 
-    public void setRecord(String record) {
+    public void setRecord(String record){
         this.record = record;
     }
 }

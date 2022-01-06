@@ -1,11 +1,11 @@
 package commands.settings;
 
 import commands.Command;
+import data.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import data.DataHandler;
 import utils.EmbedException;
 import utils.Utils;
 

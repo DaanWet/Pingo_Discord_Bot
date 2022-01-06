@@ -1,9 +1,9 @@
 package commands;
 
+import data.DataHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.sk.PrettyTable;
-import data.DataHandler;
 import utils.MessageException;
 
 public class Eval extends Command {

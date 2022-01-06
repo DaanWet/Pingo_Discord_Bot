@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class ImageHandler {
 
-    private static final String PATH = "./Uno"; //"src/main/resources/uno_cards"; //
+    private static final String PATH = "./Uno";
     private static final int height = 362;
     private static final int width = 242;
 
@@ -31,7 +31,7 @@ public class ImageHandler {
             BufferedImage img = new BufferedImage(cards.size() * width, height, BufferedImage.TYPE_INT_ARGB);
             for (int i = 0; i < cards.size(); i++){
                 BufferedImage card = ImageIO.read(getCardImage(cards.get(i), true));
-                img.createGraphics().drawImage(card, i * width, 0,null);
+                img.createGraphics().drawImage(card, i * width, 0, null);
             }
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             ImageIO.write(img, "png", os);

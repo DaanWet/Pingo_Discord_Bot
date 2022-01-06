@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class QueueMap<K, V> extends HashMap<K, V> {
 
     private ArrayList<K> q;
-    private int maxSize;
+    private final int maxSize;
 
     public QueueMap(){
         this(8);
@@ -15,7 +15,7 @@ public class QueueMap<K, V> extends HashMap<K, V> {
     public QueueMap(int maxSize){
         super();
         this.maxSize = maxSize;
-        this.q  = new ArrayList<>();
+        this.q = new ArrayList<>();
     }
 
     @Override

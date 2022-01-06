@@ -1,11 +1,11 @@
 package commands;
 
 import commands.settings.Setting;
+import data.DataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import data.DataHandler;
 import utils.MessageException;
 import utils.Utils;
 

@@ -35,7 +35,6 @@ public class ListIssues extends Command {
         }
 
 
-
         EmbedBuilder eb = new EmbedBuilder();
         StringBuilder sb = new StringBuilder();
         if (args.length == 1){

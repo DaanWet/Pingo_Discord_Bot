@@ -3,9 +3,9 @@ package commands.casino;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import data.DataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import data.DataHandler;
 import utils.MessageException;
 
 import java.time.LocalDateTime;

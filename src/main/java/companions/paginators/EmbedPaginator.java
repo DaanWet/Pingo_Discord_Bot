@@ -52,6 +52,7 @@ public abstract class EmbedPaginator {
     public void firstPage(){
         page = 1;
     }
+
     public void lastPage(){
         page = -1;
     }

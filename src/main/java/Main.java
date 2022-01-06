@@ -1,18 +1,14 @@
-import listeners.CommandHandler;
-import listeners.JoinListener;
-import listeners.MessageListener;
-import listeners.NicknameHandler;
-import listeners.ReactionListener;
+import data.DataHandler;
+import listeners.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import org.apache.log4j.*;
-import org.kohsuke.github.*;
-import data.DataHandler;
-
+import org.apache.log4j.Logger;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
 import utils.logging.ErrorLayout;
 import utils.logging.MyFileAppender;
 
@@ -32,17 +28,6 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception{
-        /*int[] l = new int[]{1000000, 100000, 50000, 10000, 7500, 5000, 3000};
-        double[] f = new double[]{0.01, 0.05, 0.105, 0.155, 0.17, 0.2, 0.31};
-        double av = 0.0;
-        double tot = 0;
-        for (int i = 0; i < 7; i++){
-            av += l[i] * f[i];
-            System.out.println(tot += f[i]);
-        }
-        System.out.println(av);
-        System.out.println(tot);
-*/
         Files.createDirectories(Paths.get(MyFileAppender.folder));
         Logger.getRootLogger().removeAllAppenders();
         MyFileAppender fileAppender = new MyFileAppender();
@@ -55,7 +40,7 @@ public class Main {
         } catch (Exception exc){
             logger.fatal("Setting up JDA failed", exc);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread("shutdown"){
+        Runtime.getRuntime().addShutdownHook(new Thread("shutdown") {
             @Override
             public void run(){
                 fileAppender.close();
