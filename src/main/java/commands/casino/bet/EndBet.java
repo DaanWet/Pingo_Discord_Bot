@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class EndBet extends Command {
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
     public EndBet(GameHandler gameHandler){
         this.gameHandler = gameHandler;

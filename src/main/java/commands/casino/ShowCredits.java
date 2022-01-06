@@ -12,7 +12,7 @@ import utils.MessageException;
 
 public class ShowCredits extends Command {
 
-    private GameHandler handler;
+    private final GameHandler handler;
 
     public ShowCredits(GameHandler handler){
         this.name = "balance";

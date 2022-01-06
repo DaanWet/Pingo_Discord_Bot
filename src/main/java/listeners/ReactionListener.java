@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 import static listeners.CommandHandler.pathname;
 
 public class ReactionListener extends ListenerAdapter {
-    private CommandHandler commandHandler;
-    private GitHub gitHub;
-    private Random random = new Random();
-    private GameHandler gameHandler;
+    private final CommandHandler commandHandler;
+    private final GitHub gitHub;
+    private final Random random = new Random();
+    private final GameHandler gameHandler;
 
     public ReactionListener(CommandHandler commandHandler, GitHub gitHub, GameHandler gameHandler){
         this.commandHandler = commandHandler;

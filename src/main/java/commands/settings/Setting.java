@@ -27,7 +27,6 @@ public enum Setting {
     private final List<SubSetting> subSettings;
     private final String description;
     private final String suffix;
-
     Setting(String name, Setting.Type type, Setting.ValueType valueType, boolean multiple, Object defaultValue, List<SubSetting> subSettings,
             String description, String suffix){
         this.name = name;
@@ -38,6 +37,21 @@ public enum Setting {
         this.subSettings = subSettings;
         this.description = description;
         this.suffix = suffix;
+    }
+
+    public static HashMap<Setting.Type, ArrayList<Setting>> getTypeMap(){
+        HashMap<Setting.Type, ArrayList<Setting>> map = new HashMap<>();
+        Arrays.stream(Setting.values()).forEach(s -> map.merge(s.type, new ArrayList<>(List.of(s)), (currentL, newL) -> {
+            currentL.addAll(newL);
+            return currentL;
+        }));
+        return map;
+    }
+
+    public static Setting fromString(String name, Type type){
+        Optional<Setting> optional = Arrays.stream(Setting.values()).filter(s -> s.name.equalsIgnoreCase(name) && s.type == type).findFirst();
+        return optional.orElse(null);
+
     }
 
     public String getName(){
@@ -54,21 +68,6 @@ public enum Setting {
 
     public boolean isMultiple(){
         return multiple;
-    }
-
-    public static HashMap<Setting.Type, ArrayList<Setting>> getTypeMap(){
-        HashMap<Setting.Type, ArrayList<Setting>> map = new HashMap<>();
-        Arrays.stream(Setting.values()).forEach(s -> map.merge(s.type, new ArrayList<>(List.of(s)), (currentL, newL) -> {
-            currentL.addAll(newL);
-            return currentL;
-        }));
-        return map;
-    }
-
-    public static Setting fromString(String name, Type type){
-        Optional<Setting> optional = Arrays.stream(Setting.values()).filter(s -> s.name.equalsIgnoreCase(name) && s.type == type).findFirst();
-        return optional.orElse(null);
-
     }
 
     public Object getDefaultValue(){
@@ -121,13 +120,13 @@ public enum Setting {
             this.aliases = new String[]{};
         }
 
-        public String getName(){
-            return name;
-        }
-
         public static Type fromString(String name){
             Optional<Type> optional = Arrays.stream(Type.values()).filter(s -> s.name.equalsIgnoreCase(name) || Arrays.stream(s.aliases).anyMatch(al -> al.equalsIgnoreCase(name))).findFirst();
             return optional.orElse(null);
+        }
+
+        public String getName(){
+            return name;
         }
 
         public TypeDescription getTypeDescription(){
@@ -156,7 +155,7 @@ public enum Setting {
     public enum LongType {
         CHANNEL,
         ROLE,
-        USER;
+        USER
     }
 
     public enum SubSetting {
@@ -178,6 +177,11 @@ public enum Setting {
             this.suffix = suffix;
         }
 
+        public static SubSetting fromString(String name){
+            Optional<SubSetting> optional = Arrays.stream(SubSetting.values()).filter(s -> s.toString().toLowerCase().equalsIgnoreCase(name)).findFirst();
+            return optional.orElse(null);
+        }
+
         public boolean isMultiple(){
             return multiple;
         }
@@ -196,11 +200,6 @@ public enum Setting {
 
         public String getSuffix(){
             return suffix;
-        }
-
-        public static SubSetting fromString(String name){
-            Optional<SubSetting> optional = Arrays.stream(SubSetting.values()).filter(s -> s.toString().toLowerCase().equalsIgnoreCase(name)).findFirst();
-            return optional.orElse(null);
         }
     }
 

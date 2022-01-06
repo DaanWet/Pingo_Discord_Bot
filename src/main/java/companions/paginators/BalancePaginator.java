@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 
 public class BalancePaginator extends EmbedPaginator {
 
-    private boolean global;
-    private long guildId;
+    private final boolean global;
+    private final long guildId;
 
     public BalancePaginator(boolean global, long guildId){
         this.global = global;

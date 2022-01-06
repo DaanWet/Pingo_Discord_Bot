@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class UnoHand {
 
     private final ArrayList<UnoCard> cards;
-    private long channelId;
-    private long messageId;
     private final long playerId;
     private final String playerName;
+    private long channelId;
+    private long messageId;
     private boolean drawn;
 
 
@@ -46,8 +46,16 @@ public class UnoHand {
         return channelId;
     }
 
+    public void setChannelId(long channelId){
+        this.channelId = channelId;
+    }
+
     public long getMessageId(){
         return messageId;
+    }
+
+    public void setMessageId(long messageId){
+        this.messageId = messageId;
     }
 
     public long getPlayerId(){
@@ -56,13 +64,5 @@ public class UnoHand {
 
     public String getPlayerName(){
         return playerName;
-    }
-
-    public void setChannelId(long channelId){
-        this.channelId = channelId;
-    }
-
-    public void setMessageId(long messageId){
-        this.messageId = messageId;
     }
 }

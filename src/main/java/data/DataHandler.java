@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class DataHandler {
 
-    private final String JDBC_URL = "jdbc:mysql://localhost:3306/pingo?character_set_server=utf8mb4&serverTimezone=CET";
     private static String USER_ID;
     private static String PASSWD;
+    private final String JDBC_URL = "jdbc:mysql://localhost:3306/pingo?character_set_server=utf8mb4&serverTimezone=CET";
     private final Properties properties;
     private final Properties nomultiproperties;
 
@@ -107,7 +107,7 @@ public class DataHandler {
     public ArrayList<String> getRoleCategories(long guildId) throws SQLException{
         ArrayList<String> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USER_ID, PASSWD);
-             PreparedStatement stmn = conn.prepareStatement("SELECT Name FROM RoleAssign WHERE GuildId = ?");
+             PreparedStatement stmn = conn.prepareStatement("SELECT Name FROM RoleAssign WHERE GuildId = ?")
         ) {
             stmn.setLong(1, guildId);
             try (ResultSet set = stmn.executeQuery()) {
@@ -274,7 +274,7 @@ public class DataHandler {
 
     public int getCredits(long guildID, long userId){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stm = conn.prepareStatement("SELECT Credits FROM Member WHERE GuildId = ? AND UserId = ?");
+             PreparedStatement stm = conn.prepareStatement("SELECT Credits FROM Member WHERE GuildId = ? AND UserId = ?")
         ) {
             stm.setLong(1, guildID);
             stm.setLong(2, userId);
@@ -358,7 +358,7 @@ public class DataHandler {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("INSERT INTO Member(UserId, GuildId, LastDaily, LastWeekly, Credits) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Credits = Credits + ?;" +
                                                                    "INSERT INTO UserRecord(UserId, GuildId, Name, Value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Value = GREATEST(Value, ?);");
-             PreparedStatement stmnt2 = conn.prepareStatement("SELECT Credits FROM Member  WHERE GuildId = ? AND UserId = ?");
+             PreparedStatement stmnt2 = conn.prepareStatement("SELECT Credits FROM Member  WHERE GuildId = ? AND UserId = ?")
         ) {
             stm.setLong(1, userId);
             stm.setLong(2, guildId);
@@ -921,7 +921,7 @@ public class DataHandler {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareCall("SELECT @id := ID FROM Setting WHERE Name LIKE ? AND Type LIKE ? AND ValueType LIKE ?;" +
                                                               "UPDATE GuildSetting SET Value = ? WHERE GuildId = ? AND ID = @id;" +
-                                                              "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value) VALUES(?, @id, ?);");
+                                                              "INSERT IGNORE INTO GuildSetting(GuildId, ID, Value) VALUES(?, @id, ?);")
         ) {
             stm.setString(1, setting.getName() + (subSetting != null ? "_" + subSetting : "") + "_on");
             stm.setString(2, setting.getType());

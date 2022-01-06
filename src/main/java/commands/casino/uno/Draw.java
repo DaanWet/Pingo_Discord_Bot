@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class Draw extends Command {
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
     public Draw(GameHandler gameHandler){
         this.name = "Draw";
@@ -55,13 +55,13 @@ public class Draw extends Command {
                 if (newCard.getValue() == UnoCard.Value.PLUSFOUR || newCard.getValue() == UnoCard.Value.WILD){
                     UnoHand hand = unoGame.getPlayerHand(e.getMember().getIdLong());
                     TextChannel channel = guild.getTextChannelById(hand.getChannelId());
-                    deb.setTitle(String.format("You drew a %s", newCard.toString()));
+                    deb.setTitle(String.format("You drew a %s", newCard));
                     channel.sendMessage(deb.build()).queue();
                     return;
                 }
                 unoGame.playCard(newCard);
                 played = true;
-                deb.setTitle(String.format("You drew and played a %s", newCard.toString()));
+                deb.setTitle(String.format("You drew and played a %s", newCard));
             } else {
                 hands.get(turn).endTurn(null);
                 unoGame.nextTurn(false);
@@ -78,7 +78,7 @@ public class Draw extends Command {
                         eb.setColor(guild.getSelfMember().getColor());
                         EmbedBuilder eb2 = new EmbedBuilder();
                         eb2.setColor(color);
-                        eb2.setTitle(String.format("You had to draw 2 cards because %s played a %s", hands.get(turn).getPlayerName(), newCard.toString()));
+                        eb2.setTitle(String.format("You had to draw 2 cards because %s played a %s", hands.get(turn).getPlayerName(), newCard));
                         channel.sendMessage(eb2.build()).queue();
                         channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
                     } else {

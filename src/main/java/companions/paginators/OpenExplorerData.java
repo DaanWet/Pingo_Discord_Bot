@@ -9,7 +9,7 @@ public class OpenExplorerData {
     private final String playerId;
     private final String channelId;
     private final String messageId;
-    private Guild g;
+    private final Guild g;
 
     public OpenExplorerData(String playerId, String channelId, String messageId, Guild g){
         this.channelId = channelId;

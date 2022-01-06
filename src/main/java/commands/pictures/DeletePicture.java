@@ -16,10 +16,10 @@ import java.util.concurrent.TimeUnit;
 
 public class DeletePicture extends Command {
 
-    private CommandHandler commandHandler;
-    private Random random = new Random();
-    private HashMap<String, OpenExplorerData> openExplorers = new HashMap();
-    private HashMap<String, ScheduledFuture<?>> autoClosers = new HashMap<>();
+    private final CommandHandler commandHandler;
+    private final Random random = new Random();
+    private final HashMap<String, OpenExplorerData> openExplorers = new HashMap();
+    private final HashMap<String, ScheduledFuture<?>> autoClosers = new HashMap<>();
 
     public DeletePicture(CommandHandler commandHandler){
         this.name = "delete";

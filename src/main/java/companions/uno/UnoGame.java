@@ -15,14 +15,14 @@ public class UnoGame {
     private final ArrayList<UnoHand> hands;
     private final ArrayList<UnoCard> trekstapel;
     private final ArrayList<UnoCard> aflegstapel;
+    private final Random random = new Random();
+    private final int bet;
+    private final long channelID;
+    private final long starter;
     private int turn;
     private boolean clockwise;
     private boolean finished;
-    private final Random random = new Random();
-    private final int bet;
     private long messageID;
-    private final long channelID;
-    private final long starter;
     private long category;
 
     public UnoGame(int bet, long starter, long channelID){
@@ -166,8 +166,16 @@ public class UnoGame {
         return category;
     }
 
+    public void setCategory(long category){
+        this.category = category;
+    }
+
     public long getMessageID(){
         return messageID;
+    }
+
+    public void setMessageID(long messageID){
+        this.messageID = messageID;
     }
 
     public boolean isFinished(){
@@ -198,14 +206,6 @@ public class UnoGame {
         return trekstapel;
     }
 
-    public void setCategory(long category){
-        this.category = category;
-    }
-
-    public void setMessageID(long messageID){
-        this.messageID = messageID;
-    }
-
     public UnoHand getPlayerHand(long id){
         UnoHand hand = null;
         int i = 0;
@@ -231,7 +231,7 @@ public class UnoGame {
             if (c.getValue() == UnoCard.Value.WILD || c.getValue() == UnoCard.Value.PLUSFOUR){
                 sb.append(c.getValue().getName()).append(", ");
             } else {
-                sb.append(c.toString()).append(", ");
+                sb.append(c).append(", ");
             }
 
         }
@@ -245,7 +245,7 @@ public class UnoGame {
         for (int i = 0; i < hands.size(); i++){
             hand = hands.get(i);
             String name = hand.getPlayerName();
-            names.append(name.substring(0, min(name.length(), 5)));
+            names.append(name, 0, min(name.length(), 5));
             names.append(name.length() > 5 ? "." : "");
             cards.append("   ").append(hand.getCards().size()).append("   ");
             if (hand.getPlayerId() == player){

@@ -20,8 +20,8 @@ import static listeners.CommandHandler.pathname;
 
 public class Help extends Command {
 
+    private final GameHandler gameHandler;
     private Collection<Command> commands;
-    private GameHandler gameHandler;
 
     public Help(GameHandler gameHandler){
         this.name = "help";
