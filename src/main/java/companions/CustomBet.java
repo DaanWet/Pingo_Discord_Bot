@@ -1,4 +1,4 @@
-package casino;
+package companions;
 
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 

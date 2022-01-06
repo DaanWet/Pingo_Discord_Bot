@@ -1,7 +1,7 @@
 package commands.casino.bet;
 
-import casino.CustomBet;
-import casino.GameHandler;
+import companions.CustomBet;
+import companions.GameHandler;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;

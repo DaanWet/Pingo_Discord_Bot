@@ -1,6 +1,10 @@
-package commands;
+package listeners;
 
-import casino.GameHandler;
+import commands.suggestion.EditSuggestion;
+import commands.suggestion.ListIssues;
+import commands.suggestion.Suggest;
+import companions.GameHandler;
+import commands.*;
 import commands.casino.*;
 import commands.casino.bet.Bet;
 import commands.casino.bet.EndBet;
@@ -24,9 +28,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.GitHub;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
-import utils.OpenExplorerData;
+import companions.paginators.OpenExplorerData;
 
 import java.io.File;
 import java.util.*;

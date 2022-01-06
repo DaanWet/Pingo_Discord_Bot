@@ -1,15 +1,15 @@
 package commands.casino.uno;
 
-import casino.GameHandler;
-import casino.uno.UnoCard;
-import casino.uno.UnoGame;
-import casino.uno.UnoHand;
+import companions.GameHandler;
+import companions.uno.UnoCard;
+import companions.uno.UnoGame;
+import companions.uno.UnoHand;
 import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.ImageHandler;
+import data.ImageHandler;
 import utils.MessageException;
 
 import java.awt.*;

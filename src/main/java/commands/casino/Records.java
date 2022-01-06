@@ -1,7 +1,7 @@
 package commands.casino;
 
-import casino.GameHandler;
-import casino.RecordPaginator;
+import companions.GameHandler;
+import companions.paginators.RecordPaginator;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
@@ -9,10 +9,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
 import utils.Utils;
-import utils.dbdata.RecordData;
+import data.models.RecordData;
 
 import java.io.IOException;
 import java.util.ArrayList;

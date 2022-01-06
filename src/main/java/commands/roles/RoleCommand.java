@@ -6,8 +6,8 @@ import emoji4j.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import utils.dbdata.RoleAssignData;
-import utils.dbdata.RoleAssignRole;
+import data.models.RoleAssignData;
+import data.models.RoleAssignRole;
 
 import java.util.ArrayList;
 import java.util.Arrays;

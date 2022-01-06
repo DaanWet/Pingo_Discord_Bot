@@ -3,10 +3,10 @@ package commands.roles;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
-import utils.dbdata.RoleAssignData;
-import utils.dbdata.RoleAssignRole;
+import data.models.RoleAssignData;
+import data.models.RoleAssignRole;
 
 import java.util.ArrayList;
 import java.util.Objects;

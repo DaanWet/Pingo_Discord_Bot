@@ -1,9 +1,10 @@
-package casino;
+package companions;
 
 
-import casino.uno.UnoGame;
-import casino.uno.UnoHand;
-import utils.EmbedPaginator;
+import companions.cardgames.BlackJackGame;
+import companions.paginators.EmbedPaginator;
+import companions.uno.UnoGame;
+import companions.uno.UnoHand;
 import utils.QueueMap;
 
 import java.util.ArrayList;

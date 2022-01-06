@@ -1,6 +1,6 @@
 package utils;
 
-import casino.uno.UnoGame;
+import companions.uno.UnoGame;
 
 public class Utils {
 

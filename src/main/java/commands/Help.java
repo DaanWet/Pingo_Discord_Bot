@@ -1,12 +1,12 @@
 package commands;
 
-import casino.GameHandler;
+import companions.GameHandler;
 import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.EmbedException;
 import utils.MessageException;
 
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static commands.CommandHandler.pathname;
+import static listeners.CommandHandler.pathname;
 
 public class Help extends Command {
 

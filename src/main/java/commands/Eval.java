@@ -3,7 +3,7 @@ package commands;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.sk.PrettyTable;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
 
 public class Eval extends Command {

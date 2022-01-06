@@ -1,14 +1,14 @@
 package commands.casino.blackjack;
 
-import casino.BlackJackGame;
-import casino.GameHandler;
+import companions.cardgames.BlackJackGame;
+import companions.GameHandler;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.DataHandler;
+import data.DataHandler;
 import utils.MessageException;
 import utils.Utils;
 
