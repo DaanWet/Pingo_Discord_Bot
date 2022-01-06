@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class QueueMap<K, V> extends HashMap<K, V> {
 
-    private ArrayList<K> q;
+    private final ArrayList<K> q;
     private final int maxSize;
 
     public QueueMap(){

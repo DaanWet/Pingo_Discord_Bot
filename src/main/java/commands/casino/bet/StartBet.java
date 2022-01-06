@@ -13,7 +13,7 @@ import utils.Utils;
 
 public class StartBet extends Command {
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
     public StartBet(GameHandler gameHandler){
         this.gameHandler = gameHandler;

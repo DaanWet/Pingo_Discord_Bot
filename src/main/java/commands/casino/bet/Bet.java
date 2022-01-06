@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class Bet extends Command {
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
     public Bet(GameHandler gameHandler){
         this.gameHandler = gameHandler;

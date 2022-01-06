@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class Challenge extends Command {
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
     public Challenge(GameHandler gameHandler){
         this.name = "challenge";

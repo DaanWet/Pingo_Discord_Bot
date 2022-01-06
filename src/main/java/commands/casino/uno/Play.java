@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class Play extends Command {
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
     public Play(GameHandler gameHandler){
         this.name = "play";
@@ -74,7 +74,7 @@ public class Play extends Command {
                             int size = hands.size() - 1;
                             int bet = unoGame.getBet();
                             int credits = bet == 0 ? 200 * size : bet * size;
-                            eb2.setTitle(String.format("%s played a **%s** and won **%d** credits by winning the game", e.getMember().getEffectiveName(), card.toString(), credits));
+                            eb2.setTitle(String.format("%s played a **%s** and won **%d** credits by winning the game", e.getMember().getEffectiveName(), card, credits));
                             if (bet != 0){
                                 eb2.setDescription(String.format("You lost **%d** credits", bet));
                             }
@@ -92,7 +92,7 @@ public class Play extends Command {
                         } else if (Utils.isBetween(unoGame, turn, finalI) && (card.getValue() == UnoCard.Value.PLUSFOUR || card.getValue() == UnoCard.Value.PLUSTWO)){
                             EmbedBuilder eb2 = new EmbedBuilder();
                             eb2.setColor(color);
-                            eb2.setTitle(String.format("You had to draw %d cards because %s played a %s", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card.toString()));
+                            eb2.setTitle(String.format("You had to draw %d cards because %s played a %s", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card));
                             channel.sendMessage(eb2.build()).queue();
                             channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
                         } else {
@@ -108,7 +108,7 @@ public class Play extends Command {
                         EmbedBuilder eb2 = new EmbedBuilder();
                         int size = hands.size() - 1;
                         int credits = unoGame.getBet() == 0 ? 200 * size : unoGame.getBet() * size;
-                        eb2.setTitle(String.format("You played a **%s** and won, you won **%d** credits", card.toString(), credits));
+                        eb2.setTitle(String.format("You played a **%s** and won, you won **%d** credits", card, credits));
                         dataHandler.addCredits(guild.getIdLong(), player, credits);
                         channel.sendMessage(eb2.build()).queue();
                         guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {

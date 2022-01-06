@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter {
 
-    private final CommandHandler commandListener;
     static final Logger logger = Logger.getLogger(MessageListener.class.getName());
+    private final CommandHandler commandListener;
 
     public MessageListener(GitHub github){
         this.commandListener = new CommandHandler(github);

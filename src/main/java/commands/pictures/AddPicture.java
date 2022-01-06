@@ -15,7 +15,7 @@ import static listeners.CommandHandler.pathname;
 
 public class AddPicture extends Command {
 
-    private CommandHandler commandHandler;
+    private final CommandHandler commandHandler;
 
 
     public AddPicture(CommandHandler commandHandler){

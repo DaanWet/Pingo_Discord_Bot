@@ -20,8 +20,8 @@ import java.util.Properties;
 
 public class Records extends Command {
 
-    private Properties properties;
-    private GameHandler handler;
+    private final Properties properties;
+    private final GameHandler handler;
 
     public Records(GameHandler handler){
         this.name = "records";

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ListIssues extends Command {
 
-    private GitHub gitHub;
+    private final GitHub gitHub;
 
     public ListIssues(GitHub gitHub){
         this.gitHub = gitHub;

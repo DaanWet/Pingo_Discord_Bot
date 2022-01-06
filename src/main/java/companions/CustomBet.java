@@ -6,11 +6,11 @@ import java.util.HashMap;
 
 public class CustomBet {
 
-    private Long messageId;
-    private Long channelId;
     private final int ID;
     private final HashMap<Long, Pair<Integer, String>> bets;
     private final long userId;
+    private Long messageId;
+    private Long channelId;
     private boolean ended;
 
     public CustomBet(int ID, long userId){

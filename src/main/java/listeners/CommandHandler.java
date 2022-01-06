@@ -39,11 +39,9 @@ import java.util.regex.Pattern;
 
 public class CommandHandler {
 
-    private final Random random;
-
-    private final HashMap<String, Command> commands;
     public static final String pathname = "./Pictures";
-
+    private final Random random;
+    private final HashMap<String, Command> commands;
     private final GameHandler gameHandler;
 
     public CommandHandler(GitHub gitHub){

@@ -15,10 +15,10 @@ import java.util.Date;
 
 public class MyHTMLLayout extends HTMLLayout {
 
+    private static final String url = "https://pingo.wettinck.be/logging/";
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM - HH:mm:ss");
     private final String TD = "<td>";
     private final String CTD = "</td>";
-    private static String url = "https://pingo.wettinck.be/logging/";
     private boolean link = true;
 
 

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 public class Uno extends Command {
 
-    private GameHandler gameHandler;
+    private final GameHandler gameHandler;
 
     public Uno(GameHandler gameHandler){
         this.name = "uno";
