@@ -30,7 +30,7 @@ public class Records extends Command {
         this.arguments = "[<member>|<record>|me|list|global]\n<record> global";
         properties = new Properties();
         try {
-            properties.load(Records.class.getClassLoader().getResourceAsStream("config.properties"));
+            properties.load(Records.class.getClassLoader().getResourceAsStream("strings.properties"));
         } catch (IOException ioException){
             ioException.printStackTrace();
         }
