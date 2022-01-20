@@ -12,6 +12,8 @@ import org.apache.log4j.MDC;
 import org.kohsuke.github.GitHub;
 import utils.EmbedException;
 import utils.MessageException;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -51,8 +53,8 @@ public class MessageListener extends ListenerAdapter {
             //Text to speech mute
             if (message.isTTS()){
                 message.delete().complete();
-
-                channel.sendMessage(String.format("%s has been muted, cause TTS sucks", e.getMember().getAsMention())).queue();
+                MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
+                channel.sendMessage(language.getString("tts.muted", e.getMember().getAsMention())).queue();
                 Role role = guild.getRoleById(598551156867858442L);
                 List<Role> roles = e.getMember().getRoles();
                 guild.modifyMemberRoles(e.getMember(), role).queue(em -> {

@@ -11,7 +11,7 @@ public class FuckPingo extends Command {
 
     public FuckPingo(){
         this.name = "fuckpingo";
-        this.description = "Fuck pingo";
+        this.description = "fuckpingo.description";
     }
 
     public void setNickName(String name){
@@ -20,7 +20,8 @@ public class FuckPingo extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        e.getChannel().sendMessage("No, Fuck You").queue();
+
+        e.getChannel().sendMessage(getLanguage(e).getString("fuckpingo.answer")).queue();
         new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.FUCKPINGO, LocalDateTime.now());
     }
 }

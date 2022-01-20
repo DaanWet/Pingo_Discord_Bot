@@ -4,6 +4,7 @@ import companions.GameHandler;
 import companions.cardgames.BlackJackGame;
 import data.DataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.Utils;
 
 public class Stand extends BCommand {
 
@@ -19,7 +20,7 @@ public class Stand extends BCommand {
         BlackJackGame bjg = gameHandler.getBlackJackGame(guildId, id);
         if (args.length == 0 && bjg != null){
             bjg.stand();
-            updateMessage(e.getChannel(), bjg, new DataHandler(), guildId, id, e.getAuthor().getName());
+            updateMessage(e.getChannel(), bjg, new DataHandler(), guildId, id, e.getAuthor().getName(), Utils.getLanguage(guildId));
 
         }
     }

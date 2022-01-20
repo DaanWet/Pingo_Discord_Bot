@@ -4,6 +4,7 @@ import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +14,7 @@ public class Suggest extends Command {
         this.name = "suggest";
         this.aliases = new String[]{"issue", "suggestion"};
         this.arguments = "{**bot** | **plugin** | **discord**} <title> **-d** <description>";
-        this.description = "Create a new suggestion for the bot";
+        this.description = "suggestion.description";
         this.priveligedGuild = 203572340280262657L;
     }
 
@@ -42,14 +43,15 @@ public class Suggest extends Command {
             }
         }
         // If no description is given send error
+        MyResourceBundle language = getLanguage(e);
         if (t)
-            throw new MessageException(String.format("You need to add a description. %s", getUsage()));
+            throw new MessageException(language.getString("suggestion.error") + "\n" + getUsage());
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
         eb.setTitle(title.toString());
         eb.setDescription(descript.toString());
-        eb.setFooter(repo == null ? String.format("Repo: %s", repo) : "");
+        eb.setFooter(repo == null ? language.getString("suggestion.footer", repo) : "");
         e.getGuild().getTextChannelById(747228850353733739L).sendMessage(eb.build()).queue(m -> {
             m.addReaction(":green_tick:667450925677543454").queue();
             m.addReaction(":indifferent_tick:667450939208368130").queue();

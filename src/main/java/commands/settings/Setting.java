@@ -1,5 +1,7 @@
 package commands.settings;
 
+import utils.Utils;
+
 import java.util.*;
 
 public enum Setting {
@@ -16,24 +18,25 @@ public enum Setting {
 
 
     PREFIX("prefix", Type.GENERAL, ValueType.STRING, false, "!", List.of(), "", ""),
+    LANGUAGE("language", Type.GENERAL, ValueType.LANGUAGE, false, "en", List.of(), "", ""),
 
     UNO_PLACE("unoPlace", Type.UNO, ValueType.INTEGER, false, -1, List.of(), "", "");
 
     public enum Type {
-        COMMANDS("Commands", new String[]{"Command"}, (list, eb, prefix) -> {
-            eb.addField("Enable/Disable Command", String.format("Turn a specific command (or module) on or off.\n `%ssettings commands <command> [on|off]`", prefix), false);
-            eb.addField("Set cooldown", String.format("Set a cooldown for a specific command.\n`%ssettings commands <command> cooldown <value>`", prefix), false);
-            eb.addField("Whitelist or Blacklist", String.format("Enable whitelist or blacklist mode and whitelist or blacklist certain roles, users or channels from using a specific command (or module).\n" +
-                                                                        "`%ssettings commands <command> [whitelist|blacklist] [add|remove|enable|disable] <user|role|channel>`", prefix), false
+        COMMANDS("Commands", new String[]{"Command"}, (list, eb, prefix, language) -> {
+            eb.addField(language.getString("commands.enable.title"), language.getString("commands.enable.desc", prefix), false);
+            eb.addField(language.getString("commands.cooldown.title"), language.getString("commands.cooldown.desc", prefix), false);
+            eb.addField(language.getString("commands.whitelist.title"), language.getString("commands.whitelist.desc", prefix), false
             );
             StringBuilder sb = new StringBuilder();
             list.forEach(s -> sb.append("`").append(s.name).append(s.getDescription().equals("") ? "`" : "` - ").append(s.getDescription()).append("\n"));
-            return eb.addField("Available commands or modules are", sb.toString(), false);
+            return eb.addField(language.getString("commands.module"), sb.toString(), false);
         }),
-        GENERAL("General", (list, eb, prefix) -> {
-            return eb.addField("Prefix", String.format("Change the prefix with `%ssettings general prefix <newprefix>`", prefix), false);
+        GENERAL("General", (list, eb, prefix, language) -> {
+            list.forEach(l -> eb.addField(Utils.upperCaseFirst(l.name), language.getString("general.desc", l.name, prefix), false));
+            return eb;
         }),
-        UNO("Uno", (list, eb, prefix) -> {
+        UNO("Uno", (list, eb, prefix, language) -> {
             return eb.addField("Uno", "Change uno idk ", false);
         });
 
@@ -73,7 +76,8 @@ public enum Setting {
         INTEGER("Integer"),
         LONG("Long"),
         CHANNEL_LONG("Channel_Long"),
-        ROLE_LONG("Role_Long");
+        ROLE_LONG("Role_Long"),
+        LANGUAGE("Language");
         private final String name;
 
         ValueType(String name){

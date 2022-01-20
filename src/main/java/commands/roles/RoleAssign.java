@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,7 +20,7 @@ public class RoleAssign extends RoleCommand {
     public RoleAssign(){
         name = "roleassign";
         this.arguments = "<category> [<compact>]";
-        this.description = "Display Role picker";
+        this.description = "roleassign.description";
     }
 
     @Override
@@ -33,8 +35,9 @@ public class RoleAssign extends RoleCommand {
 
         DataHandler dataHandler = new DataHandler();
         ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (roles == null)
-            throw new MessageException(String.format("%s is not an existing category", args[0]));
+            throw new MessageException(language.getString("roleassign.error.category.existing", args[0]));
         RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
         Compacting compact = Objects.requireNonNullElse(data.getCompacting(), Compacting.NORMAL);
         if (args.length == 2){
@@ -43,7 +46,7 @@ public class RoleAssign extends RoleCommand {
             } else if (args[1].equalsIgnoreCase("supercompact")){
                 compact = Compacting.SUPER_COMPACT;
             } else if (!args[1].equalsIgnoreCase("normal")){
-                throw new MessageException(String.format("%s is not an valid compacting method", args[1]));
+                throw new MessageException(language.getString("roleassign.error.sorting", args[1]));
             }
         }
         data.setCompacting(compact);
@@ -53,7 +56,7 @@ public class RoleAssign extends RoleCommand {
                 if (m != null){m.delete().queue();}
             });
         }
-        EmbedBuilder eb = getRoleEmbed(roles, args[0], data);
+        EmbedBuilder eb = getRoleEmbed(roles, args[0], data, language);
         e.getChannel().sendMessage(eb.build()).queue(m -> {
             dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
             for (RoleAssignRole obj : roles){

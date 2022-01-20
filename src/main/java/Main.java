@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.log4j.Logger;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
+import utils.Utils;
 import utils.logging.ErrorLayout;
 import utils.logging.MyFileAppender;
 
@@ -49,6 +50,7 @@ public class Main {
     }
 
     private static void start(String[] args) throws Exception{
+        Utils.findAvailableLanguages();
         DataHandler.setUserId(args[2]);
         DataHandler.setPASSWD(args[3]);
         new DataHandler().createDatabase();

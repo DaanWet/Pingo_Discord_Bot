@@ -1,6 +1,11 @@
 package utils;
 
+import commands.settings.Setting;
 import companions.uno.UnoGame;
+import data.DataHandler;
+
+import java.text.MessageFormat;
+import java.util.*;
 
 public class Utils {
 
@@ -90,5 +95,32 @@ public class Utils {
         return string.toString();
     }
 
+    private static Map<Locale, ResourceBundle> locales;
 
+    public static void findAvailableLanguages(){
+        HashMap<Locale, ResourceBundle> resourceBundles = new HashMap<>();
+        for (Locale locale : Locale.getAvailableLocales()) {
+            try {
+                ResourceBundle bundle = ResourceBundle.getBundle("i18n", locale);
+                if (bundle.getString("language").equals(locale.toString())){
+                    resourceBundles.put(locale, bundle);
+                }
+            } catch (MissingResourceException ignored) {
+            }
+        }
+        locales = Collections.unmodifiableMap(resourceBundles);
+    }
+
+    public static Map<Locale, ResourceBundle> getAvailableLanguages(){
+        return locales;
+    }
+
+    public static MyResourceBundle getLanguage(Long guildId){
+        String setting = new DataHandler().getStringSetting(guildId, Setting.LANGUAGE).get(0);
+        return new MyResourceBundle("i18n", new Locale(setting));
+    }
+
+    public static String format(ResourceBundle language, String key, Object... args){
+        return new MyMessageFormat(language.getString(key)).eformat(args);
+    }
 }

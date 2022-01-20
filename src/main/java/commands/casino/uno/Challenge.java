@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class Challenge extends Command {
         this.category = "Uno";
         this.gameHandler = gameHandler;
         this.hidden = true;
-        this.description = "Challenge the person who just played a +4 on you";
+        this.description = "uno.challenge.description";
     }
 
 
@@ -35,12 +37,13 @@ public class Challenge extends Command {
         UnoGame unoGame = gameHandler.getUnoGame(guild.getIdLong());
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())){
             ArrayList<UnoHand> hands = unoGame.getHands();
+            MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
             if (unoGame.isFinished()){
-                throw new MessageException("The game has already ended");
+                throw new MessageException(language.getString("uno.error.ended"));
             }
             UnoHand skippedHand = hands.get(unoGame.calculateNextTurn(-1));
             if (unoGame.getTopCard().getValue() != UnoCard.Value.PLUSFOUR || skippedHand.getPlayerId() != e.getAuthor().getIdLong())
-                throw new MessageException("You can only challenge draw four cards when you need to draw");
+                throw new MessageException(language.getString("uno.challenge.error"));
 
             int playedturn = unoGame.calculateNextTurn(-2);
             UnoHand playedHand = hands.get(playedturn);
@@ -54,8 +57,8 @@ public class Challenge extends Command {
                 UnoCard card2 = unoGame.getNextCard();
                 skippedHand.addCard(card1, false);
                 skippedHand.addCard(card2, false);
-                eb1.setTitle(String.format("You challenged %s, but you were wrong, you drew a %s and a %s", playedHand.getPlayerName(), card1.toString(), card2.toString()));
-                eb2.setTitle(String.format("%s challenged you but was wrong, he drew 2 cards", skippedHand.getPlayerName()));
+                eb1.setTitle(language.getString("uno.challenge.wrong.sender", playedHand.getPlayerName(), card1.toString(), card2.toString()));
+                eb2.setTitle(language.getString("uno.challenge.wrong.receiver", skippedHand.getPlayerName()));
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < 4; i++){
@@ -64,17 +67,17 @@ public class Challenge extends Command {
                     playedHand.addCard(card, false);
                     sb.append(card.toString()).append(", ");
                 }
-                eb1.setTitle(String.format("You were right, %s drew 4 cards", playedHand.getPlayerName()));
-                eb2.setTitle(String.format("%s challenged you and was right, you drew 4 cards: %s", skippedHand.getPlayerName(), sb.substring(0, sb.length() - 3)));
+                eb1.setTitle(language.getString("uno.challenge.correct.sender", playedHand.getPlayerName()));
+                eb2.setTitle(language.getString("uno.challenge.correct.receiver", skippedHand.getPlayerName(), sb.substring(0, sb.length() - 3)));
             }
             TextChannel skippedchannel = guild.getTextChannelById(skippedHand.getChannelId());
             TextChannel playedChannel = guild.getTextChannelById(playedHand.getChannelId());
             skippedchannel.sendMessage(eb1.build()).queue();
             playedChannel.sendMessage(eb2.build()).queue();
-            EmbedBuilder eb = unoGame.createEmbed(skippedHand.getPlayerId());
+            EmbedBuilder eb = unoGame.createEmbed(skippedHand.getPlayerId(), language);
             eb.setColor(color);
             skippedchannel.sendFile(ImageHandler.getCardsImage(skippedHand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> skippedHand.setMessageId(newmessage.getIdLong()));
-            eb = unoGame.createEmbed(playedHand.getPlayerId());
+            eb = unoGame.createEmbed(playedHand.getPlayerId(), language);
             playedChannel.sendFile(ImageHandler.getCardsImage(playedHand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> playedHand.setMessageId(newmessage.getIdLong()));
 
         }

@@ -23,7 +23,7 @@ public class AddPicture extends Command {
         aliases = new String[]{"addpicture"};
         category = "Pictures";
         this.commandHandler = commandHandler;
-        this.description = "Adds a picture to the !<name> command";
+        this.description = "picture.add.description";
         this.arguments = "<name> <picture>";
         this.priveligedGuild = 203572340280262657L;
     }

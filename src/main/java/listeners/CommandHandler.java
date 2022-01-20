@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.GitHub;
 import utils.MessageException;
+import utils.Utils;
 
 import java.io.File;
 import java.util.*;
@@ -133,11 +134,11 @@ public class CommandHandler {
             Command c = iterator.next();
             if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){
                 if (c.getCategory().equalsIgnoreCase("moderation") && !e.getMember().hasPermission(Permission.ADMINISTRATOR))
-                    throw new MessageException(CommandState.USER.getError(), 5);
+                    throw new MessageException(CommandState.USER.getError(Utils.getLanguage(e.getGuild().getIdLong())), 5);
 
                 CommandState state = c.canBeExecuted(e.getGuild().getIdLong(), channel.getIdLong(), message.getMember());
                 if (state != CommandState.ENABLED)
-                    throw new MessageException(state.getError(), 5);
+                    throw new MessageException(state.getError(Utils.getLanguage(e.getGuild().getIdLong())), 5);
 
                 c.run(Arrays.stream(words, 1, words.length).filter(arg -> !arg.trim().isEmpty()).toArray(String[]::new), e);
                 commandFound = true;

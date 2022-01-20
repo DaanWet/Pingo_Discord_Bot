@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.*;
 import utils.MessageException;
+import utils.MyResourceBundle;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class ListIssues extends Command {
         this.gitHub = gitHub;
         this.name = "issues";
         this.arguments = "{**bot** | **plugin**} [-l]";
-        this.description = "Show all issues of a repo";
+        this.description = "issues.description";
     }
 
 
@@ -37,15 +38,16 @@ public class ListIssues extends Command {
 
         EmbedBuilder eb = new EmbedBuilder();
         StringBuilder sb = new StringBuilder();
+        MyResourceBundle language = getLanguage(e);
         if (args.length == 1){
             List<GHIssue> issues = repo.listIssues(GHIssueState.OPEN).toList();
-            eb.setTitle(String.format("%s issues", repo.getName()));
+            eb.setTitle(language.getString("issues.title", repo.getName()));
             for (GHIssue issue : issues){
                 sb.append(":small_blue_diamond:").append(issue.getTitle()).append("\n");
             }
         } else if (args[1].equalsIgnoreCase("-l")){
             List<GHLabel> labels = repo.listLabels().toList();
-            eb.setTitle(String.format("%s labels", repo.getName()));
+            eb.setTitle(language.getString("issues.label", repo.getName()));
             for (GHLabel label : labels){
                 sb.append(":small_blue_diamond:").append(label.getName()).append("\n");
             }

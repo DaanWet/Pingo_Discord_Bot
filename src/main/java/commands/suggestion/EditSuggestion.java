@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 public class EditSuggestion extends Command {
@@ -14,7 +15,7 @@ public class EditSuggestion extends Command {
         this.aliases = new String[]{"editIssue", "editSuggest", "editI"};
         this.category = "Moderation";
         this.arguments = "<messageId> {**-r** | **-t** | **-d** | **-l**} <edit>";
-        this.description = "Edits a suggestion";
+        this.description = "suggestion.edit.description";
         this.priveligedGuild = 203572340280262657L;
     }
 
@@ -33,14 +34,15 @@ public class EditSuggestion extends Command {
             throw new MessageException(getUsage());
 
         String edit = Utils.concat(args, 2);
+        MyResourceBundle language = getLanguage(e);
         e.getGuild().getTextChannelById(747228850353733739L).retrieveMessageById(messageid).queue(m -> {
             MessageEmbed me = m.getEmbeds().get(0);
             EmbedBuilder eb = new EmbedBuilder(me);
             if (args[1].equalsIgnoreCase("-r")){
                 if (edit.equalsIgnoreCase("bot")){
-                    eb.setFooter(String.format("Repo: %s", "DaanWet/Pingo_Discord_Bot"));
+                    eb.setFooter(language.getString("suggestion.footer", "DaanWet/Pingo_Discord_Bot"));
                 } else if (args[0].equalsIgnoreCase("plugin")){
-                    eb.setFooter(String.format("Repo: %s", "DaanWet/MinecraftTeamsPlugin"));
+                    eb.setFooter(language.getString("suggestion.footer", "DaanWet/MinecraftTeamsPlugin"));
                 }
             } else if (args[1].equalsIgnoreCase("-t")){
                 eb.setTitle(edit);
@@ -48,7 +50,7 @@ public class EditSuggestion extends Command {
                 eb.setDescription(edit);
             } else if (args[1].equalsIgnoreCase("-l")){
                 eb.clearFields();
-                eb.addField("Labels", edit, false);
+                eb.addField(language.getString("suggestion.labels"), edit, false);
             }
             m.editMessage(eb.build()).queue();
         });

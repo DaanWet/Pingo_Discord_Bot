@@ -8,6 +8,7 @@ import data.DataHandler;
 import data.models.RecordData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import utils.MyResourceBundle;
 
 public abstract class BCommand extends Command {
 
@@ -19,16 +20,16 @@ public abstract class BCommand extends Command {
         this.hidden = true;
     }
 
-    protected void updateMessage(TextChannel channel, BlackJackGame bjg, DataHandler dataHandler, long guildId, long id, String author){
+    protected void updateMessage(TextChannel channel, BlackJackGame bjg, DataHandler dataHandler, long guildId, long id, String author, MyResourceBundle language){
         if (bjg.hasEnded())
             gameHandler.removeBlackJackGame(guildId, id);
         channel.retrieveMessageById(bjg.getMessageId()).queue(m -> {
             String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
-            EmbedBuilder eb = bjg.buildEmbed(author, prefix);
+            EmbedBuilder eb = bjg.buildEmbed(author, prefix, language);
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);
-                eb.addField("Credits", String.format("You now have %d credits", credits), false);
+                eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);
                 updateRecords(guildId, id, dataHandler, won_lose, m.getJumpUrl());
             }
             m.editMessage(eb.build()).queue();

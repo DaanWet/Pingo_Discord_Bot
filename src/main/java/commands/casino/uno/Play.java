@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.awt.*;
@@ -29,7 +30,7 @@ public class Play extends Command {
         this.category = "Uno";
         this.arguments = "<color><value>";
         this.gameHandler = gameHandler;
-        this.description = "Play a card from your hand, pick the color for a wildcard immediately";
+        this.description = "uno.play.description";
         this.hidden = true;
     }
 
@@ -40,19 +41,20 @@ public class Play extends Command {
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())){
             int turn = unoGame.getTurn();
             ArrayList<UnoHand> hands = unoGame.getHands();
+            Guild guild = e.getGuild();
+            MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
             if (unoGame.isFinished())
-                throw new MessageException("The game has already ended");
+                throw new MessageException(language.getString("uno.ended"));
 
             if (turn == -1 || hands.get(turn).getPlayerId() != e.getAuthor().getIdLong())
-                throw new MessageException("It's not your turn yet");
+                throw new MessageException(language.getString("uno.turn"));
 
             if (args.length == 0)
                 throw new MessageException(getUsage());
 
             UnoCard card = UnoCard.fromString(args[0]);
-            Guild guild = e.getGuild();
             if (card == null || !unoGame.canPlay(card))
-                throw new MessageException("You need to play a valid card that's in your hand");
+                throw new MessageException(language.getString("uno.play.error"));
 
 
             unoGame.playCard(card);
@@ -66,7 +68,7 @@ public class Play extends Command {
                 if (player != e.getMember().getIdLong()){
                     int finalI = i;
                     channel.retrieveMessageById(hand.getMessageId()).queue(message -> {
-                        EmbedBuilder eb = unoGame.createEmbed(player);
+                        EmbedBuilder eb = unoGame.createEmbed(player, language);
                         eb.setColor(color);
                         if (unoGame.isFinished()){
                             message.editMessage(eb.build()).queue();
@@ -74,9 +76,9 @@ public class Play extends Command {
                             int size = hands.size() - 1;
                             int bet = unoGame.getBet();
                             int credits = bet == 0 ? 200 * size : bet * size;
-                            eb2.setTitle(String.format("%s played a **%s** and won **%d** credits by winning the game", e.getMember().getEffectiveName(), card, credits));
+                            eb2.setTitle(language.getString("uno.win", e.getMember().getEffectiveName(), card, credits));
                             if (bet != 0){
-                                eb2.setDescription(String.format("You lost **%d** credits", bet));
+                                eb2.setDescription(language.getString("uno.lost", bet));
                             }
 
                             if (bet != 0) dataHandler.addCredits(e.getGuild().getIdLong(), player, -1 * credits);
@@ -86,13 +88,13 @@ public class Play extends Command {
                         } else if (newturn == finalI){
                             message.editMessage(eb.build()).queue();
                             EmbedBuilder eb2 = new EmbedBuilder();
-                            eb2.setTitle("It's your turn!");
+                            eb2.setTitle(language.getString("uno.turn"));
                             eb2.setColor(color);
                             channel.sendMessage(eb2.build()).queue();
                         } else if (Utils.isBetween(unoGame, turn, finalI) && (card.getValue() == UnoCard.Value.PLUSFOUR || card.getValue() == UnoCard.Value.PLUSTWO)){
                             EmbedBuilder eb2 = new EmbedBuilder();
                             eb2.setColor(color);
-                            eb2.setTitle(String.format("You had to draw %d cards because %s played a %s", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card));
+                            eb2.setTitle(language.getString("uno.draw", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card));
                             channel.sendMessage(eb2.build()).queue();
                             channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
                         } else {
@@ -101,20 +103,20 @@ public class Play extends Command {
                     });
                 } else {
                     if (!unoGame.isFinished()){
-                        EmbedBuilder eb = unoGame.createEmbed(player);
+                        EmbedBuilder eb = unoGame.createEmbed(player, language);
                         eb.setColor(guild.getSelfMember().getColor());
                         channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> hand.setMessageId(newmessage.getIdLong()));
                     } else {
                         EmbedBuilder eb2 = new EmbedBuilder();
                         int size = hands.size() - 1;
                         int credits = unoGame.getBet() == 0 ? 200 * size : unoGame.getBet() * size;
-                        eb2.setTitle(String.format("You played a **%s** and won, you won **%d** credits", card, credits));
+                        eb2.setTitle(language.getString("uno.win.you", card, credits));
                         dataHandler.addCredits(guild.getIdLong(), player, credits);
                         channel.sendMessage(eb2.build()).queue();
                         guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
                             EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));
-                            eb.setTitle("The game of uno has concluded");
-                            eb.setDescription(String.format("%s won the game and won **%d** credits", hand.getPlayerName(), credits));
+                            eb.setTitle(language.getString("uno.end"));
+                            eb.setDescription(language.getString("uno.win.short", hand.getPlayerName(), credits));
                             m.editMessage(eb.build()).queue();
                         });
                         channel.delete().queueAfter(1, TimeUnit.MINUTES);
