@@ -3,6 +3,7 @@ package commands;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class TeamPicker extends Command {
         this.name = "teams";
         this.aliases = new String[]{"t"};
         this.arguments = "<t|p> <number> ";
-        this.description = "Create random teams";
+        this.description = "team.description";
     }
 
 
@@ -54,9 +55,10 @@ public class TeamPicker extends Command {
         }
 
         EmbedBuilder eb = new EmbedBuilder();
+        MyResourceBundle language = getLanguage(e);
         for (int i = 0; i < teams.size(); i++){
             String teamString = "```\n" + String.join("\n", teams.get(i)) + "```";
-            eb.addField("Team " + (i + 1), teamString, true);
+            eb.addField(language.getString("team.title", (i + 1)), teamString, true);
             if (i % 2 == 1 && teams.size() % 3 != 0 && teams.size() % 2 == 0) eb.addBlankField(true);
         }
         e.getChannel().sendMessage(eb.build()).queue();

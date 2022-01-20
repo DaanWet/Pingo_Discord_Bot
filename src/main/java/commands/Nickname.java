@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ public class Nickname extends Command {
     public Nickname(){
         this.name = "nickname";
         this.aliases = new String[]{"rename", "bijnaam"};
-        this.description = "Edits the nickname of a given person";
+        this.description = "nick.description";
     }
 
 
@@ -27,22 +28,24 @@ public class Nickname extends Command {
         Message m = e.getMessage();
         List<Member> mentionedmembers = m.getMentionedMembers();
         Member target;
+        MyResourceBundle language = getLanguage(e);
         try {
             target = mentionedmembers.size() == 1 && args[0].startsWith("<@") ? mentionedmembers.get(0) : e.getGuild().getMemberById(args[0]);
         } catch (Exception exc){
-            throw new MessageException("Usage: !nickname <Member> <Nickname>");
+            throw new MessageException(language.getString("nick.error.member"));
         }
         if (args.length >= 2 && (target != null)){
+
             try {
                 String nick = Utils.concat(args, 1).trim();
                 if (nick.length() > 32)
-                    throw new MessageException("Nickname too long");
+                    throw new MessageException(language.getString("nick.error.name"));
 
                 target.modifyNickname(nick).queue();
                 new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.NICKNAME, LocalDateTime.now());
 
             } catch (HierarchyException hexc){
-                throw new MessageException("Sorry, I can't change the nickname of my master");
+                throw new MessageException(language.getString("nick.error.perm"));
             }
         }
     }

@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class Records extends Command {
     public Records(GameHandler handler){
         this.name = "records";
         this.category = "Casino";
-        this.description = "Show all records, records for one member or one record. List all possible records using the `list` argument";
+        this.description = "records.description";
         this.arguments = "[<member>|<record>|me|list|global]\n<record> global";
         properties = new Properties();
         try {
@@ -47,8 +48,9 @@ public class Records extends Command {
         DataHandler dataHandler = new DataHandler();
         Guild guild = e.getGuild();
         ArrayList<String> recordTypes = dataHandler.getRecordTypes();
+        MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
         if (args.length == 0){
-            e.getChannel().sendMessage(getRecords(dataHandler, guild.getIdLong()).build()).queue();
+            e.getChannel().sendMessage(getRecords(dataHandler, language, guild.getIdLong()).build()).queue();
         } else if (args.length == 1){
             Long l = Utils.isLong(args[0]);
             Member target = null;
@@ -58,7 +60,7 @@ public class Records extends Command {
             } else if (args[0].equalsIgnoreCase("me")){
                 target = e.getMember();
             } else if (args[0].equalsIgnoreCase("list")){
-                eb.setTitle("Records list");
+                eb.setTitle(language.getString("records.list"));
                 StringBuilder sb = new StringBuilder();
                 for (String record : recordTypes){
                     sb.append(":small_blue_diamond: ").append(record)/*.append(": ").append(properties.getProperty(record))*/.append("\n");
@@ -67,7 +69,7 @@ public class Records extends Command {
                 e.getChannel().sendMessage(eb.build()).queue();
                 return;
             } else if (args[0].equalsIgnoreCase("global")){
-                e.getChannel().sendMessage(getRecords(dataHandler, null).build()).queue();
+                e.getChannel().sendMessage(getRecords(dataHandler, language,null).build()).queue();
                 return;
             } else if (l != null){
                 target = e.getGuild().getMemberById(l);
@@ -82,7 +84,7 @@ public class Records extends Command {
                 recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
             } else if (target != null){
                 ArrayList<RecordData> records = dataHandler.getRecords(e.getGuild().getIdLong(), target.getIdLong());
-                eb.setTitle(String.format("%s's Records", target.getUser().getName()));
+                eb.setTitle(language.getString("records.person", target.getUser().getName()));
                 StringBuilder sb = new StringBuilder();
                 for (RecordData record : records){
 
@@ -101,24 +103,24 @@ public class Records extends Command {
                     sb.append("\n");
                 }
                 if (records.size() == 0){
-                    sb.append("No records yet for ").append(target.getUser().getName());
+                    sb.append(language.getString("records.no_records.person", target.getUser().getName()));
                 }
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
             } else {
-                throw new MessageException(String.format("%s is not a valid member name or record name", args[0]));
+                throw new MessageException(language.getString("records.error.valid", args[0]));
             }
         } else if (args.length == 2 && recordTypes.contains(args[0].toLowerCase()) && args[1].equalsIgnoreCase("global")){
             RecordPaginator recordPaginator = new RecordPaginator(args[0], null, properties);
             recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
         } else {
-            throw new MessageException(String.format("This commands takes max 2 optional arguments. \n%s\n If the name of the member consists of multiple words, put it between quotes for it to be recognised as a name.", getUsage()));
+            throw new MessageException(language.getString("records.error.args", getUsage()));
         }
     }
 
-    private EmbedBuilder getRecords(DataHandler dataHandler, Long guildId){
+    private EmbedBuilder getRecords(DataHandler dataHandler, MyResourceBundle language, Long guildId){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(guildId == null ? "Global Casino Records" : "Casino Records");
+        eb.setTitle(language.getString(guildId == null ? "records.global" : "records.local"));
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords() : dataHandler.getRecords(guildId);
         StringBuilder sb = new StringBuilder();
         for (RecordData record : records){
@@ -137,7 +139,7 @@ public class Records extends Command {
         }
         eb.setDescription(sb.toString());
         if (records.size() == 0)
-            eb.setDescription("There are no records yet, claim credits and play a game to start the records");
+            eb.setDescription(language.getString("records.no_records"));
         return eb;
     }
 }

@@ -6,6 +6,7 @@ import commands.settings.Setting;
 import data.DataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 public class AdminAbuse extends Command {
@@ -15,7 +16,7 @@ public class AdminAbuse extends Command {
         this.name = "AdminAbuse";
         this.category = "Moderation";
         this.arguments = "[<member>] <amount>";
-        this.description = "Give coins to someone";
+        this.description = "give.description";
         this.priveligedGuild = 203572340280262657L;
     }
 
@@ -30,26 +31,25 @@ public class AdminAbuse extends Command {
         int coins = 0;
         Member target;
         String msg;
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length == 1){
             coins = Utils.getInt(args[0]);
             target = e.getMember();
-            msg = "You now have **%d** credits";
+            msg = language.getString("bet.new", dataHandler.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins));
         } else if (args.length == 2 && e.getMessage().mentionsEveryone()){
             coins = Utils.getInt(args[1]);
             for (Long uuid : dataHandler.getAllCredits(e.getGuild().getIdLong()).keySet()){
                 dataHandler.addCredits(e.getGuild().getIdLong(), uuid, coins);
             }
-            e.getChannel().sendMessage(String.format("Everyone received **%d** credits", coins)).queue();
+            e.getChannel().sendMessage(language.getString("give.everyone", coins)).queue();
             return;
         } else if (args.length == 2 && e.getMessage().getMentions().size() == 1){
             coins = Utils.getInt(args[1]);
             target = e.getMessage().getMentionedMembers().get(0);
-            msg = String.format("%s now has **%s** credits", target.getEffectiveName(), "%d");
+            msg = language.getString("give.success", target.getEffectiveName(), dataHandler.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins));
         } else {
             return;
         }
-        if (target == null) return;
-        int value = dataHandler.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins);
-        e.getChannel().sendMessage(String.format(msg, value)).queue();
+        e.getChannel().sendMessage(msg).queue();
     }
 }

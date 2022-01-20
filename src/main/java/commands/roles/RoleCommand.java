@@ -8,10 +8,13 @@ import emoji4j.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public abstract class RoleCommand extends Command {
@@ -37,10 +40,10 @@ public abstract class RoleCommand extends Command {
         this.category = "moderation";
     }
 
-    protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, RoleAssignData data){
+    protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, RoleAssignData data, MyResourceBundle language){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(data.getTitle() == null ? String.format("%s Roles", category) : data.getTitle());
-        StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", category));
+        eb.setTitle(data.getTitle() == null ? language.getString("roleassign.embed.title", category) : data.getTitle());
+        StringBuilder sb = new StringBuilder(language.getString("roleassign.embed.description", category));
         ArrayList<RoleAssignRole> sorted;
         switch (data.getSorting()){
             case EMOJI -> sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());

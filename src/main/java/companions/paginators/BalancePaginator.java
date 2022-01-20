@@ -3,6 +3,8 @@ package companions.paginators;
 import data.DataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +37,8 @@ public class BalancePaginator extends EmbedPaginator {
             page = maxpage;
         else
             page = Math.min(maxpage, page);
-
-        eb.setTitle(global ? "Global leaderboard" : "Leaderboard");
+        MyResourceBundle language = Utils.getLanguage(guildId);
+        eb.setTitle(language.getString(global ? "leaderboard.global" : "leaderboard.title"));
         for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++){
             sb.append("`").append(i + 1).append(i >= 9 ? ".`  " : ". `  ")
                     .append("<@!")
@@ -46,9 +48,9 @@ public class BalancePaginator extends EmbedPaginator {
         }
         eb.setDescription(sb.toString());
         if (sorted.size() == 0)
-            eb.setDescription("No leaderboard yet, nobody has claimed credits yet.");
+            eb.setDescription(language.getString("leaderboard.error"));
         else
-            eb.setFooter(String.format("Page %d/%d", page, maxpage));
+            eb.setFooter(language.getString("paginator.footer", page, maxpage));
         return eb.build();
     }
 }

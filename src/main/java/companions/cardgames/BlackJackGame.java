@@ -1,6 +1,7 @@
 package companions.cardgames;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import utils.MyResourceBundle;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -8,12 +9,12 @@ import java.util.Collections;
 
 public class BlackJackGame {
     public enum EndState {
-        WON("You Won", 1),
-        LOST("You Lost", -1),
-        BUST("You Bust", -1),
-        DEALER_BUST("The Dealer Bust", 1),
-        PUSH("It's a push", 0),
-        BLACKJACK("You have blackjack", 1.5);
+        WON("blackjack.won", 1),
+        LOST("blackjack.lost", -1),
+        BUST("blackjack.bust", -1),
+        DEALER_BUST("blackjack.dealer", 1),
+        PUSH("blackjack.push", 0),
+        BLACKJACK("blackjack.blackjack", 1.5);
 
         private final String display;
         private final double reward;
@@ -23,8 +24,8 @@ public class BlackJackGame {
             this.reward = reward;
         }
 
-        public String getDisplay(){
-            return display;
+        public String getDisplay(MyResourceBundle language){
+            return language.getString(display);
         }
 
         public double getReward(){
@@ -195,28 +196,29 @@ public class BlackJackGame {
         return ((Double) (bet * endstate.reward + (hasSplit ? secondbet * secondEndstate.reward : 0))).intValue();
     }
 
-    public EmbedBuilder buildEmbed(String user, String prefix){
+    public EmbedBuilder buildEmbed(String user, String prefix, MyResourceBundle language){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(String.format("\u2063Blackjack | %s | Bet : %d         \u2063", user, bet + secondbet));
-        eb.addField(String.format("%sPlayer Cards", hasSplit && firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**", playerHand.toString(), playerHand.getValue()), true);
-        eb.addField("Dealer Cards", String.format("%s\nValue: **%s**", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", hasEnded ? dealerHand.getValue() : ":question:"), true);
+        eb.setTitle(String.format("\u2063%s         \u2063", language.getString("blackjack.title", user, bet + secondbet)));
+        eb.addField((hasSplit && firsthand ? ":arrow_right: " : "") + language.getString("blackjack.player.title"), String.format("%s\n%s", playerHand.toString(), language.getString("blackjack.player.value", playerHand.getValue())), true);
+        eb.addField(language.getString("blackjack.dealer.title"), String.format("%s\n%s", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", language.getString("blackjack.value" ,hasEnded ? dealerHand.getValue() : ":question:")), true);
 
         if (hasSplit){
-            eb.addField(String.format("%sSecond Hand Cards", !firsthand ? ":arrow_right: " : ""), String.format("%s\nValue: **%s**", secondPlayerHand.toString(), secondPlayerHand.getValue()), false);
+            eb.addField((!firsthand ? ":arrow_right: " : "") + language.getString("blackjack.player.second"), String.format("%s\n%s", secondPlayerHand.toString(), language.getString("blackjack.value" ,secondPlayerHand.getValue())), false);
         }
         eb.setColor(Color.BLUE);
         if (hasEnded){
             int credits = getWonCreds();
-            eb.addField(String.format("%s%s", endstate.display, hasSplit ? " and " + secondEndstate.display : ""), String.format("You %s %d credits", credits > 0 ? "won" : credits == 0 ? "won/lost" : "lost", credits), hasSplit);
+            eb.addField(hasSplit ? language.getString("blackjack.end.split", endstate.getDisplay(language), secondEndstate.getDisplay(language)) : language.getString("blackjack.end", endstate.getDisplay(language)), language.getString("blackjack.end.desc", credits), hasSplit);
             eb.setColor(credits > 0 ? Color.GREEN : credits == 0 ? Color.BLUE : Color.RED);
         } else {
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%sstand : see dealer cards\n%shit : take another card", prefix, prefix));
+            sb.append(language.getString("blackjack.stand", prefix + "stand")).append("\n");
+            sb.append(language.getString("blackjack.hit", prefix + "stand"));
             if (canDouble())
-                sb.append(String.format("\n%sdouble : double bet and take last card", prefix));
+                sb.append("\n").append(language.getString("blackjack.double", prefix + "double"));
             if (canSplit() && !hasSplit)
-                sb.append(String.format("\n%ssplit : split your cards", prefix));
-            eb.addField("Commands", sb.toString(), false);
+                sb.append("\n").append(language.getString("blackjack.split", prefix + "split"));
+            eb.addField(language.getString("commands.title"), sb.toString(), false);
         }
         return eb;
     }

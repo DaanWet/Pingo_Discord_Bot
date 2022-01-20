@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import utils.MessageException;
+import utils.MyResourceBundle;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -26,7 +27,7 @@ public class DeletePicture extends Command {
         this.aliases = new String[]{"del", "deletepicture"};
         this.commandHandler = commandHandler;
         this.category = "Pictures";
-        this.description = "Gets the prompt to delete a picture";
+        this.description = "picture.delete.description";
         this.arguments = "<command>";
         this.priveligedGuild = 203572340280262657L;
     }
@@ -52,13 +53,13 @@ public class DeletePicture extends Command {
         if (e.getGuild().getIdLong() != 203572340280262657L) return;
         if (args.length != 1 || !commandHandler.getPcommands().contains(args[0].toLowerCase()))
             throw new MessageException(getUsage());
-
+        MyResourceBundle language = getLanguage(e);
         if (openExplorers.containsKey(args[0]))
-            throw new MessageException("An explorer is already open");
+            throw new MessageException(language.getString("picture.delete.error"));
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[0], 0, random.nextInt(), random.nextInt()));
-        eb.setTitle("Delete pictures from " + args[0]);
+        eb.setTitle(language.getString( "picture.delete.embed", args[0]));
         eb.setDescription("0.jpg");
         e.getChannel().sendMessage(eb.build()).queue(m -> {
             openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(), e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));

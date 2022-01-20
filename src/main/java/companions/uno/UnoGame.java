@@ -1,6 +1,7 @@
 package companions.uno;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import utils.MyResourceBundle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -218,13 +219,13 @@ public class UnoGame {
     }
 
 
-    public EmbedBuilder createEmbed(long player){
+    public EmbedBuilder createEmbed(long player, MyResourceBundle language){
         EmbedBuilder eb = new EmbedBuilder();
         UnoHand hand = hands.get(turn);
         if (player == hand.getPlayerId()){
-            eb.setTitle("It's your turn");
+            eb.setTitle(language.getString("uno.turn"));
         } else {
-            eb.setTitle(String.format("It's %s's turn", hand.getPlayerName()));
+            eb.setTitle(language.getString("uno.his_turn", hand.getPlayerName()));
         }
         StringBuilder sb = new StringBuilder();
         for (UnoCard c : getPlayerHand(player).getCards()){
@@ -236,12 +237,12 @@ public class UnoGame {
 
         }
         sb.delete(sb.length() - 2, sb.length());
-        eb.addField("Current Card", getTopCard().toString(), false);
-        eb.addField("Your cards", sb.toString(), false);
+        eb.addField(language.getString("uno.current_card"), getTopCard().toString(), false);
+        eb.addField(language.getString("uno.your_cards"), sb.toString(), false);
 
         StringBuilder names = new StringBuilder();
         StringBuilder cards = new StringBuilder();
-        names.append("Order: ").append(clockwise ? ":arrow_forward:\n" : ":arrow_backward:\n");
+        names.append(language.getString("uno.order")).append(clockwise ? " :arrow_forward:\n" : " :arrow_backward:\n");
         for (int i = 0; i < hands.size(); i++){
             hand = hands.get(i);
             String name = hand.getPlayerName();
@@ -258,7 +259,7 @@ public class UnoGame {
             names.append(" ");
         }
         names.append("\n").append(cards);
-        eb.addField("Other players' cards", names.toString(), false);
+        eb.addField(language.getString("uno.other_cards"), names.toString(), false);
         eb.setImage("attachment://hand.png");
         eb.setThumbnail(String.format("%s%s%s.png", PATH, getTopCard().getColor().getToken(), getTopCard().getValue().getToken()));
         return eb;

@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -19,14 +21,14 @@ public class CollectEventCredits extends Command {
 
     private final String ROLL = "<a:rolling_number_75:922895069827194880>";
     private final String[] emoji = new String[]{"0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"};
-    private final String eDescription = "Your gift is falling down the chimney, it contains:\n%s%s%s%s%s%s%s **credits**";
+    private final String eDescription = "daily.event.falling";
 
 
     public CollectEventCredits(){
         this.name = "daily";
         this.aliases = new String[]{"collect", "dailycredits"};
         this.category = "Casino";
-        this.description = "Collect your daily credits";
+        this.description = "daily.description";
     }
 
     @Override
@@ -41,15 +43,13 @@ public class CollectEventCredits extends Command {
         long id = e.getAuthor().getIdLong();
         DataHandler dataHandler = new DataHandler();
         LocalDateTime latestcollect = dataHandler.getLatestCollect(e.getGuild().getIdLong(), id);
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (latestcollect != null && !LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(1);
             LocalDateTime temp = LocalDateTime.now();
             long hours = temp.until(till, ChronoUnit.HOURS);
             long minutes = temp.plusHours(hours).until(till, ChronoUnit.MINUTES);
-            throw new MessageException(
-                    String.format(
-                            "You need to wait %d hour%s and %d minute%s before you can collect your next credits",
-                            hours, hours == 1 ? "" : "s", minutes, minutes == 1 ? "" : "s"));
+            throw new MessageException(language.getString("daily.wait", hours, minutes));
         }
         Random random = new Random();
         double c = random.nextDouble();
@@ -86,22 +86,22 @@ public class CollectEventCredits extends Command {
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.GREEN);
-        eb.setTitle("You're collecting your daily christmas gift");
+        eb.setTitle(language.getString("daily.event.collecting"));
         eb.setDescription(String.format(eDescription, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL));
 
 
         e.getChannel().sendMessage(eb.build()).queue(m -> {
-            m.editMessage(eb.setDescription(String.format(eDescription, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL, emoji[0])).build()).queueAfter(3, TimeUnit.SECONDS);
-            m.editMessage(eb.setDescription(String.format(eDescription, ROLL, ROLL, ROLL, ROLL, ROLL, emoji[0], emoji[0])).build()).queueAfter(4, TimeUnit.SECONDS);
-            m.editMessage(eb.setDescription(String.format(eDescription, ROLL, ROLL, ROLL, ROLL, emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(5, TimeUnit.SECONDS);
-            m.editMessage(eb.setDescription(String.format(eDescription, ROLL, ROLL, ROLL, emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(6, TimeUnit.SECONDS);
-            m.editMessage(eb.setDescription(String.format(eDescription, ROLL, ROLL, emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(7, TimeUnit.SECONDS);
-            m.editMessage(eb.setDescription(String.format(eDescription, ROLL, emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(8, TimeUnit.SECONDS);
-            m.editMessage(eb.setTitle("You collected your daily christmas gift")
-                                  .setDescription(String.format("Your gift fell down the chimney, it contained:\n%s%s%s%s%s%s%s **credits**", emoji[first], emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(9, TimeUnit.SECONDS, me -> {
+            m.editMessage(eb.setDescription(language.getString(eDescription, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL, emoji[0])).build()).queueAfter(3, TimeUnit.SECONDS);
+            m.editMessage(eb.setDescription(language.getString(eDescription, ROLL, ROLL, ROLL, ROLL, ROLL, emoji[0], emoji[0])).build()).queueAfter(4, TimeUnit.SECONDS);
+            m.editMessage(eb.setDescription(language.getString(eDescription, ROLL, ROLL, ROLL, ROLL, emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(5, TimeUnit.SECONDS);
+            m.editMessage(eb.setDescription(language.getString(eDescription, ROLL, ROLL, ROLL, emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(6, TimeUnit.SECONDS);
+            m.editMessage(eb.setDescription(language.getString(eDescription, ROLL, ROLL, emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(7, TimeUnit.SECONDS);
+            m.editMessage(eb.setDescription(language.getString(eDescription, ROLL, emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(8, TimeUnit.SECONDS);
+            m.editMessage(eb.setTitle(language.getString("daily.event.collected"))
+                                  .setDescription(language.getString("daily.event.fell", emoji[first], emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(9, TimeUnit.SECONDS, me -> {
                 int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, value);
                 dataHandler.setLatestCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
-                me.editMessage(new EmbedBuilder(me.getEmbeds().get(0)).appendDescription(String.format("\n\nYour new balance is now **%d credits **", creds)).build()).queue();
+                me.editMessage(new EmbedBuilder(me.getEmbeds().get(0)).appendDescription(language.getString("daily.event.balance", creds)).build()).queue();
             });
 
         });

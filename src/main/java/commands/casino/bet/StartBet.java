@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 public class StartBet extends Command {
@@ -21,7 +22,7 @@ public class StartBet extends Command {
         this.aliases = new String[]{"sbet"};
         this.category = "Casino";
         this.arguments = "<question>";
-        this.description = "Starts a custom bet";
+        this.description = "start_bet.description";
     }
 
     @Override
@@ -34,14 +35,15 @@ public class StartBet extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length == 0)
-            throw new MessageException("You need to provide a question to bet on");
+            throw new MessageException(language.getString("start_bet.error.no_question"));
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
         eb.setTitle(Utils.concat(args, 0));
         CustomBet bet = gameHandler.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
-        eb.setFooter(String.format("Id: %d", bet.getID()));
+        eb.setFooter(language.getString("start_bet.footer", bet.getID()));
         e.getChannel().sendMessage(eb.build()).queue(m -> {
             bet.setIds(m.getChannel().getIdLong(), m.getIdLong());
         });

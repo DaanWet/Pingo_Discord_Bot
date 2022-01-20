@@ -1,7 +1,7 @@
 package listeners;
 
-
 import org.apache.log4j.MDC;
+import commands.settings.Setting;
 import companions.GameHandler;
 import companions.paginators.EmbedPaginator;
 import companions.uno.UnoGame;
@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,14 +60,14 @@ public class ReactionListener extends ListenerAdapter {
             handleBotSuggestion(e);
             return;
         }
-
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
         if (roleCat != null){
             try {
                 handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), true);
             } catch (HierarchyException exc){
                 if (e.getGuild().getDefaultChannel() != null)
-                    e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+                    e.getGuild().getDefaultChannel().sendMessage(language.getString("roleassign.error.perms.short")).queue();
             }
             return;
         } else if (gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).contains(e.getMessageIdLong())){
@@ -79,7 +81,7 @@ public class ReactionListener extends ListenerAdapter {
                 if (me.getTitle() != null){
                     if (me.getTitle().contains("Delete pictures from ")){
                         handleDeleteExplorerReaction(e, m, me);
-                    } else if (me.getTitle().equals("A game of uno is going to start!")){
+                    } else if (me.getTitle().equals(language.getString("uno.embed.title"))){
                         handleUnoReaction(e.getMember(), m, e.getReactionEmote());
                     }
                 }
@@ -98,7 +100,7 @@ public class ReactionListener extends ListenerAdapter {
                         handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, u, false);
                     } catch (HierarchyException exc) {
                         if (e.getGuild().getDefaultChannel() != null)
-                            e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();
+                            e.getGuild().getDefaultChannel().sendMessage(Utils.getLanguage(e.getGuild().getIdLong()).getString("roleassign.error.perms.short")).queue();
                     }
                 }
             }
@@ -148,8 +150,9 @@ public class ReactionListener extends ListenerAdapter {
                                 if (me.getFooter() != null && me.getFooter().getText() != null){
                                     GHRepository repo = gitHub.getRepository(me.getFooter().getText().split(" ")[1]);
                                     GHIssueBuilder issue = repo.createIssue(me.getTitle()).body(me.getDescription());
+                                    String title = Utils.getLanguage(e.getGuild().getIdLong()).getString("suggestion.labels");
                                     for (MessageEmbed.Field f : me.getFields()){
-                                        if (f.getName().equalsIgnoreCase("Labels")){
+                                        if (f.getName().equalsIgnoreCase(title)){
                                             for (String label : me.getFields().get(0).getValue().split(", ")){
                                                 issue = issue.label(label);
                                             }
@@ -281,6 +284,7 @@ public class ReactionListener extends ListenerAdapter {
         UnoGame unoGame = gameHandler.getUnoGame(guild.getIdLong());
         if (emoji.isEmoji() && unoGame != null && message.getIdLong() == unoGame.getMessageID()){
             ArrayList<UnoHand> hands = unoGame.getHands();
+            MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
             switch (emoji.getEmoji()){
                 case "▶️":
                     if (unoGame.getStarter() == member.getIdLong() && unoGame.getTurn() == -1){
@@ -291,12 +295,15 @@ public class ReactionListener extends ListenerAdapter {
                                     .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(category -> {
                                         unoGame.setCategory(category.getIdLong());
                                         guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(Math.min(guild.getCategories().size() - 1, 2)).queue();
+
+                                        String prefix = new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0);
+                                        String help = language.getString("uno.help", prefix);
                                         for (UnoHand hand : hands){
                                             category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
                                                     .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                                     .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                                    .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic("Run !help to show which commands you can use").queue(channel -> {
-                                                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId()).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
+                                                    .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic(help).queue(channel -> {
+                                                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId(), language).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
                                                             hand.setChannelId(channel.getIdLong());
                                                             hand.setMessageId(mes.getIdLong());
                                                         });
@@ -318,7 +325,7 @@ public class ReactionListener extends ListenerAdapter {
                         }
                         MessageEmbed me = message.getEmbeds().get(0);
                         EmbedBuilder eb = new EmbedBuilder(me);
-                        eb.setTitle("The game of uno has been canceled");
+                        eb.setTitle(language.getString("uno.embed.cancelled"));
                         message.editMessage(eb.build()).queue();
                         gameHandler.removeUnoGame(guild.getIdLong());
                     }

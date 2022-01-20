@@ -12,7 +12,7 @@ public class Eval extends Command {
         this.name = "eval";
         this.arguments = "<query>";
         this.hidden = true;
-        this.description = "executes a SQL query";
+        this.description = "eval.description";
         this.priveligedGuild = 203572340280262657L;
     }
 

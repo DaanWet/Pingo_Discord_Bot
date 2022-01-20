@@ -9,6 +9,8 @@ import data.DataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 public class ShowCredits extends Command {
 
@@ -19,7 +21,7 @@ public class ShowCredits extends Command {
         this.aliases = new String[]{"bal", "credits", "ShowCredits"};
         this.category = "Casino";
         this.arguments = "[top|global]";
-        this.description = "Show your current credit balance";
+        this.description = "balance.description";
         this.handler = handler;
     }
 
@@ -31,8 +33,9 @@ public class ShowCredits extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         DataHandler dataHandler = new DataHandler();
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length == 0){
-            e.getChannel().sendMessage(String.format("Your current balance is **%d**", dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()))).queue();
+            e.getChannel().sendMessage(language.getString("balance", dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()))).queue();
         } else if (args.length == 1 && args[0].matches("(?i)^(top|global)$")){
             boolean global = args[0].equalsIgnoreCase("global");
             BalancePaginator paginator = new BalancePaginator(global, e.getGuild().getIdLong());

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class BlackJack extends BCommand {
         this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
         this.arguments = "<bet>";
-        this.description = "Start a blackjack game";
+        this.description = "bj.description";
         this.hidden = false;
     }
 
@@ -38,8 +39,9 @@ public class BlackJack extends BCommand {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         User author = e.getAuthor();
         long guildId = e.getGuild().getIdLong();
+        MyResourceBundle language = Utils.getLanguage(guildId);
         if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong()))
-            throw new MessageException("You can't start a game in a uno channel");
+            throw new MessageException(language.getString("bj.error.uno"));
 
         long playerId = author.getIdLong();
         int bet = args.length == 0 ? 0 : Utils.getInt(args[0]);
@@ -49,22 +51,22 @@ public class BlackJack extends BCommand {
         }
 
         if (bet < 10)
-            throw new MessageException("You need to place a bet for at least 10 credits");
+            throw new MessageException(language.getString("credit.error.least"));
         if (dataHandler.getCredits(guildId, playerId) < bet)
-            throw new MessageException(String.format("You don't have enough credits to make a %d credits bet", bet));
+            throw new MessageException(language.getString("credit.error.no_enough", bet));
         BlackJackGame objg = gameHandler.getBlackJackGame(guildId, playerId);
         if (objg != null)
-            throw new MessageException("You're already playing a game");
+            throw new MessageException(language.getString("blackjack.error.playing"));
 
         BlackJackGame bjg = new BlackJackGame(bet);
         dataHandler.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
         String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
-        EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix);
+        EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix, language);
         if (!bjg.hasEnded()){
             gameHandler.putBlackJackGame(guildId, playerId, bjg);
         } else {
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
-            eb.addField("Credits", String.format("You now have %d credits", credits), false);
+            eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);
         }
         e.getChannel().sendMessage(eb.build()).queue(m -> {
             if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());

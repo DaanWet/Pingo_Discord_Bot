@@ -4,6 +4,8 @@ import data.DataHandler;
 import data.models.RecordData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -27,7 +29,8 @@ public class RecordPaginator extends EmbedPaginator {
         EmbedBuilder eb = new EmbedBuilder();
         boolean isInt = dataHandler.isInt(record);
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords(record) : dataHandler.getRecords(guildId, record);
-        eb.setTitle(String.format("%s%s leaderboard", guildId == null ? "Global " : "", properties.getProperty(record.toLowerCase())));
+        MyResourceBundle language = Utils.getLanguage(guildId);
+        eb.setTitle(language.getString(guildId == null ? "record.leaderboard.global" : "record.leaderboard.title", language.getString(record.toLowerCase())));
         StringBuilder sb = new StringBuilder();
         int size = records.size();
         int maxpage = ((size - 1) / 10) + 1;
@@ -49,7 +52,7 @@ public class RecordPaginator extends EmbedPaginator {
             sb.append("\n");
         }
         eb.setDescription(sb.toString());
-        eb.setFooter(String.format("Page %d/%d", page, maxpage));
+        eb.setFooter(language.getString("paginator.footer", page, maxpage));
         return eb.build();
     }
 

@@ -7,9 +7,12 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public abstract class Command {
 
@@ -83,6 +86,11 @@ public abstract class Command {
         return description;
     }
 
+    public String getDescription(ResourceBundle language){
+        return language.getString(description);
+    }
+
+
     public String getName(){
         //if (name == null) throw new ExecutionControl.NotImplementedException("Command should have a name");
         return name;
@@ -124,5 +132,9 @@ public abstract class Command {
         }
 
         return ctr < aliases.length;
+    }
+
+    protected MyResourceBundle getLanguage(GuildMessageReceivedEvent e){
+        return Utils.getLanguage(e.getGuild().getIdLong());
     }
 }
