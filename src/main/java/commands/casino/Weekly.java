@@ -18,7 +18,7 @@ public class Weekly extends Command {
     public Weekly(){
         this.name = "weekly";
         this.aliases = new String[]{"weeklycredits"};
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.description = "weekly.description";
     }
 

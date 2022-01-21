@@ -13,7 +13,7 @@ public class EditSuggestion extends Command {
     public EditSuggestion(){
         this.name = "editSuggestion";
         this.aliases = new String[]{"editIssue", "editSuggest", "editI"};
-        this.category = "Moderation";
+        this.category = Category.MODERATION;
         this.arguments = "<messageId> {**-r** | **-t** | **-d** | **-l**} <edit>";
         this.description = "suggestion.edit.description";
         this.priveligedGuild = 203572340280262657L;

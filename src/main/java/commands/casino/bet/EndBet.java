@@ -16,7 +16,6 @@ import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public class EndBet extends Command {
 
@@ -28,7 +27,7 @@ public class EndBet extends Command {
         this.aliases = new String[]{"ebet"};
         this.arguments = "<bet id> <winners>";
         this.description = "end_bet.description";
-        this.category = "Casino";
+        this.category = Category.CASINO;
     }
 
     @Override
@@ -77,14 +76,14 @@ public class EndBet extends Command {
             }
         }
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(language.getString( "end_bet.ended", bet.getID()), String.format("https://discord.com/channels/%d/%d/%d", guildId, bet.getChannelId(), bet.getMessageId()));
-        eb.appendDescription(language.getString("end_bet.prize" , prize + winnerTotal));
+        eb.setTitle(language.getString("end_bet.ended", bet.getID()), String.format("https://discord.com/channels/%d/%d/%d", guildId, bet.getChannelId(), bet.getMessageId()));
+        eb.appendDescription(language.getString("end_bet.prize", prize + winnerTotal));
 
         for (long winner : winners){
             double percentage = (double) bet.getBet(winner) / winnerTotal;
             int won = (int) (percentage * prize);
             dh.addCredits(guildId, winner, won);
-            eb.appendDescription("\n").appendDescription(language.getString("end_bet.winner" ,String.format("<@!%d>" , winner), won, bet.getAnswer(winner)));
+            eb.appendDescription("\n").appendDescription(language.getString("end_bet.winner", String.format("<@!%d>", winner), won, bet.getAnswer(winner)));
         }
         e.getChannel().sendMessage(eb.build()).queue();
         e.getMessage().delete().queue();

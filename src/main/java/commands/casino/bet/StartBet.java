@@ -20,7 +20,7 @@ public class StartBet extends Command {
         this.gameHandler = gameHandler;
         this.name = "startbet";
         this.aliases = new String[]{"sbet"};
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.arguments = "<question>";
         this.description = "start_bet.description";
     }

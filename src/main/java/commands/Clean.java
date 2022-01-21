@@ -10,7 +10,7 @@ public class Clean extends Command {
 
     public Clean(){
         this.name = "clean";
-        this.category = "Moderation";
+        this.category = Category.MODERATION;
         this.aliases = new String[]{"cleanChannel"};
         this.description = "clean.description";
     }

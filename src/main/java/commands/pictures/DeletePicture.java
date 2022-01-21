@@ -26,7 +26,7 @@ public class DeletePicture extends Command {
         this.name = "delete";
         this.aliases = new String[]{"del", "deletepicture"};
         this.commandHandler = commandHandler;
-        this.category = "Pictures";
+        this.category = Category.PICTURES;
         this.description = "picture.delete.description";
         this.arguments = "<command>";
         this.priveligedGuild = 203572340280262657L;
@@ -59,7 +59,7 @@ public class DeletePicture extends Command {
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", args[0], 0, random.nextInt(), random.nextInt()));
-        eb.setTitle(language.getString( "picture.delete.embed", args[0]));
+        eb.setTitle(language.getString("picture.delete.embed", args[0]));
         eb.setDescription("0.jpg");
         e.getChannel().sendMessage(eb.build()).queue(m -> {
             openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(), e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));

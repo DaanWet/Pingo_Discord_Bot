@@ -26,7 +26,7 @@ public class Draw extends Command {
     public Draw(GameHandler gameHandler){
         this.name = "Draw";
         this.aliases = new String[]{"d"};
-        this.category = "Uno";
+        this.category = Category.UNO;
         this.gameHandler = gameHandler;
         this.description = "uno.draw.description";
         this.hidden = true;

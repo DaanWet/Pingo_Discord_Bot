@@ -4,10 +4,11 @@ import commands.settings.Setting;
 import companions.uno.UnoGame;
 import data.DataHandler;
 
-import java.text.MessageFormat;
 import java.util.*;
 
 public class Utils {
+
+    private static Map<Locale, ResourceBundle> locales;
 
     public static boolean isInteger(String s){
         if (s == null){
@@ -95,17 +96,15 @@ public class Utils {
         return string.toString();
     }
 
-    private static Map<Locale, ResourceBundle> locales;
-
     public static void findAvailableLanguages(){
         HashMap<Locale, ResourceBundle> resourceBundles = new HashMap<>();
-        for (Locale locale : Locale.getAvailableLocales()) {
+        for (Locale locale : Locale.getAvailableLocales()){
             try {
                 ResourceBundle bundle = ResourceBundle.getBundle("i18n", locale);
                 if (bundle.getString("language").equals(locale.toString())){
                     resourceBundles.put(locale, bundle);
                 }
-            } catch (MissingResourceException ignored) {
+            } catch (MissingResourceException ignored){
             }
         }
         locales = Collections.unmodifiableMap(resourceBundles);

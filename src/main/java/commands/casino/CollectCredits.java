@@ -19,7 +19,7 @@ public class CollectCredits extends Command {
     public CollectCredits(){
         this.name = "daily";
         this.aliases = new String[]{"collect", "dailycredits"};
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.description = "daily.description";
     }
 

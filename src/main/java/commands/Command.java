@@ -16,9 +16,30 @@ import java.util.ResourceBundle;
 
 public abstract class Command {
 
+    public enum Category {
+        CASINO("Casino"),
+        MODERATION("Moderation"),
+        PICTURES("Pictures"),
+        UNO("Uno"),
+        OTHER("Other");
+
+
+        private final String display;
+
+        Category(String display){
+            this.display = display;
+        }
+
+        public String getDisplay(){
+            return display;
+        }
+
+    }
+
+
     protected String name;
     protected String[] aliases = new String[0];
-    protected String category = "Other";
+    protected Category category = Category.OTHER;
     protected String arguments = "";
     protected String description;
     protected boolean hidden = false;
@@ -104,7 +125,7 @@ public abstract class Command {
         return aliases;
     }
 
-    public String getCategory(){
+    public Category getCategory(){
         return category;
     }
 

@@ -14,7 +14,7 @@ public class AdminAbuse extends Command {
 
     public AdminAbuse(){
         this.name = "AdminAbuse";
-        this.category = "Moderation";
+        this.category = Category.MODERATION;
         this.arguments = "[<member>] <amount>";
         this.description = "give.description";
         this.priveligedGuild = 203572340280262657L;

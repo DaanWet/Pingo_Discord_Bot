@@ -23,7 +23,6 @@ public class AddRoleAssign extends RoleCommand {
     public AddRoleAssign(){
         name = "addRoleAssign";
         aliases = new String[]{"addRole", "addRoleA", "addRA"};
-        category = "Moderation";
         this.arguments = "<category> <emoji> <role> <name>";
         this.description = "roleassign.add.description";
     }
@@ -50,7 +49,7 @@ public class AddRoleAssign extends RoleCommand {
             throw new MessageException(language.getString("roleassign.error.category") + "\n" + getUsage());
 
         if (!hasEmoji(e.getMessage(), args[1]))
-            throw new MessageException(language.getString("roleassign.error.emoji" , args[1])+ "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.emoji", args[1]) + "\n" + getUsage());
         Role role = null;
         try {
             role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);

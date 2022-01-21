@@ -27,7 +27,7 @@ public class Play extends Command {
     public Play(GameHandler gameHandler){
         this.name = "play";
         this.aliases = new String[]{"p"};
-        this.category = "Uno";
+        this.category = Category.UNO;
         this.arguments = "<color><value>";
         this.gameHandler = gameHandler;
         this.description = "uno.play.description";

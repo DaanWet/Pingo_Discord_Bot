@@ -22,7 +22,6 @@ public class RemoveRoleAssign extends RoleCommand {
     public RemoveRoleAssign(){
         this.name = "removeRoleAssign";
         this.aliases = new String[]{"removeRole", "removeRoleA", "removeRA"};
-        this.category = "Moderation";
         this.arguments = "<category> <emoji>";
         this.description = "roleassign.remove.description";
     }
@@ -42,7 +41,7 @@ public class RemoveRoleAssign extends RoleCommand {
         if (args.length > 2 || !dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0]))
             throw new MessageException(language.getString("roleassign.error.category") + "\n" + getUsage());
         if (!hasEmoji(e.getMessage(), args[1]))
-            throw new MessageException(language.getString("roleassign.edit.error.emoji",  args[1]) + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.edit.error.emoji", args[1]) + "\n" + getUsage());
 
         long guildId = e.getGuild().getIdLong();
         String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");

@@ -21,7 +21,7 @@ public class AddPicture extends Command {
     public AddPicture(CommandHandler commandHandler){
         name = "add";
         aliases = new String[]{"addpicture"};
-        category = "Pictures";
+        category = Category.PICTURES;
         this.commandHandler = commandHandler;
         this.description = "picture.add.description";
         this.arguments = "<name> <picture>";

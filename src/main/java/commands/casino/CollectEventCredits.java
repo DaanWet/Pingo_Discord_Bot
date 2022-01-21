@@ -27,7 +27,7 @@ public class CollectEventCredits extends Command {
     public CollectEventCredits(){
         this.name = "daily";
         this.aliases = new String[]{"collect", "dailycredits"};
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.description = "daily.description";
     }
 

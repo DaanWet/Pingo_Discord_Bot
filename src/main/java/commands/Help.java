@@ -82,7 +82,7 @@ public class Help extends Command {
             eb.setTitle(language.getString("help.uno"));
             StringBuilder sb = new StringBuilder();
             for (Command c : commands){
-                if (c.getCategory() != null && c.getCategory().equalsIgnoreCase("Uno")){
+                if (c.getCategory() != null && c.getCategory() == Category.UNO){
                     sb.append(String.format("\n%s%s %s: *%s*", prefix, c.getName(), c.getArguments(), language.getString(c.getDescription() == null ? "help.error" : c.getDescription().trim())));
                 }
             }
@@ -95,10 +95,10 @@ public class Help extends Command {
     }
 
     public void fillCommands(EmbedBuilder eb, boolean moderation, long guildId, String prefix, MyResourceBundle language){
-        Map<String, StringBuilder> sbs = new HashMap<>();
+        Map<Category, StringBuilder> sbs = new HashMap<>();
         for (Command c : commands){
-            if ((c.getCategory() == null || ((!c.isHidden() && c.getCategory().equalsIgnoreCase("moderation") == moderation))) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == guildId)){
-                String cat = c.getCategory();
+            Category cat = c.getCategory();
+            if ((cat == null || ((!c.isHidden() && cat == Category.MODERATION == moderation))) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == guildId)){
                 if (!sbs.containsKey(cat)){
                     sbs.put(cat, new StringBuilder());
                 }
@@ -107,7 +107,8 @@ public class Help extends Command {
 
             }
         }
-        if (guildId == 203572340280262657L && !moderation) sbs.get("Pictures").append("\n").append(language.getString("help.pictures.list", prefix + "help"));
-        sbs.keySet().forEach(s -> eb.addField(s, sbs.get(s).toString().trim(), false));
+        if (guildId == 203572340280262657L && !moderation)
+            sbs.get("Pictures").append("\n").append(language.getString("help.pictures.list", prefix + "help"));
+        sbs.keySet().forEach(s -> eb.addField(s.getDisplay(), sbs.get(s).toString().trim(), false));
     }
 }

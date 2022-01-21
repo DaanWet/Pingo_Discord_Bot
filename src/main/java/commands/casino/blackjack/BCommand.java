@@ -16,7 +16,7 @@ public abstract class BCommand extends Command {
 
     public BCommand(GameHandler gameHandler){
         this.gameHandler = gameHandler;
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.hidden = true;
     }
 

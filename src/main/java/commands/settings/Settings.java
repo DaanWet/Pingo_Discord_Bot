@@ -16,7 +16,7 @@ public class Settings extends Command {
 
     public Settings(){
         this.name = "settings";
-        this.category = "Moderation";
+        this.category = Category.MODERATION;
         this.description = "settings.description";
     }
 
@@ -200,7 +200,7 @@ public class Settings extends Command {
                 break;
             case LANGUAGE:
                 fieldValue.append(" <language_code>`\n").append(language.getString("general.language.available"));
-                for (Locale locale: Utils.getAvailableLanguages().keySet()){
+                for (Locale locale : Utils.getAvailableLanguages().keySet()){
                     fieldValue.append("\n").append(locale.getDisplayName()).append(" (").append(locale).append(")");
                 }
                 close = false;
@@ -276,11 +276,12 @@ public class Settings extends Command {
                         throw new EmbedException(language.getString("settings.error.input.title"), language.getString("settings.error.input.role"));
                     dataHandler.setLongSetting(guildId, setting, subSetting, id, Setting.LongType.ROLE, null);
                 }
-            } case LANGUAGE -> {
+            }
+            case LANGUAGE -> {
                 Map<Locale, ResourceBundle> languages = Utils.getAvailableLanguages();
                 if (!languages.containsKey(new Locale(value))){
                     StringBuilder sb = new StringBuilder(language.getString("settings.error.language"));
-                    for (Locale locale: languages.keySet()){
+                    for (Locale locale : languages.keySet()){
                         sb.append("\n").append(locale.getDisplayName()).append(" (").append(locale).append(")");
                     }
                     throw new EmbedException(language.getString("settings.error.input.title"), sb.toString());
