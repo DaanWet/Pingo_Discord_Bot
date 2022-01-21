@@ -200,10 +200,10 @@ public class BlackJackGame {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(String.format("\u2063%s         \u2063", language.getString("blackjack.title", user, bet + secondbet)));
         eb.addField((hasSplit && firsthand ? ":arrow_right: " : "") + language.getString("blackjack.player.title"), String.format("%s\n%s", playerHand.toString(), language.getString("blackjack.player.value", playerHand.getValue())), true);
-        eb.addField(language.getString("blackjack.dealer.title"), String.format("%s\n%s", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", language.getString("blackjack.value" ,hasEnded ? dealerHand.getValue() : ":question:")), true);
+        eb.addField(language.getString("blackjack.dealer.title"), String.format("%s\n%s", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + " :question:", language.getString("blackjack.value", hasEnded ? dealerHand.getValue() : ":question:")), true);
 
         if (hasSplit){
-            eb.addField((!firsthand ? ":arrow_right: " : "") + language.getString("blackjack.player.second"), String.format("%s\n%s", secondPlayerHand.toString(), language.getString("blackjack.value" ,secondPlayerHand.getValue())), false);
+            eb.addField((!firsthand ? ":arrow_right: " : "") + language.getString("blackjack.player.second"), String.format("%s\n%s", secondPlayerHand.toString(), language.getString("blackjack.value", secondPlayerHand.getValue())), false);
         }
         eb.setColor(Color.BLUE);
         if (hasEnded){

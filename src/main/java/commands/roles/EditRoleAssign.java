@@ -17,7 +17,6 @@ public class EditRoleAssign extends RoleCommand {
 
     public EditRoleAssign(){
         this.name = "editRoleAssign";
-        this.category = "moderation";
         this.aliases = new String[]{"editRA"};
         this.arguments = "<category> sort {emoji|name|none|\"<custom_emoji_order>\"} {compact|supercompact|normal}\n<category> <emoji> <name>\n<category> {title} <newtitle>";
         this.description = "roleassign.edit.description";
@@ -32,7 +31,7 @@ public class EditRoleAssign extends RoleCommand {
         if (args.length == 0)
             throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());
         if (args.length == 1)
-            throw new MessageException(language.getString("roleassign.edit.error.mode") +"\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.edit.error.mode") + "\n" + getUsage());
         if (args.length == 2)
             throw new MessageException(language.getString("roleassign.edit.error.value"));
         if (!dh.getRoleCategories(guildId).contains(args[0]))
@@ -88,14 +87,14 @@ public class EditRoleAssign extends RoleCommand {
             for (int i = 2; i < args.length; i++){
                 name.append(args[i]).append(" ");
             }
-            dh.setTitle(guildId, category, name.toString().trim());
+            dh.setTitle(guildId, args[0], name.toString().trim());
             e.getMessage().addReaction("✅").queue();
         } else if (hasEmoji(e.getMessage(), args[1])){
             StringBuilder name = new StringBuilder();
             for (int i = 2; i < args.length; i++){
                 name.append(args[i]).append(" ");
             }
-            boolean succeeded = dh.editRoleName(guildId, category, args[1], name.toString().trim());
+            boolean succeeded = dh.editRoleName(guildId, args[0], args[1], name.toString().trim());
             if (!succeeded){
                 e.getMessage().addReaction("❌").queue();
                 throw new MessageException(language.getString("roleassign.edit.error.emoji", args[0]));

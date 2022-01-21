@@ -11,13 +11,10 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
-import utils.MyMessageFormat;
 import utils.MyResourceBundle;
 import utils.Utils;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 public class Bet extends Command {
 
@@ -28,7 +25,7 @@ public class Bet extends Command {
         this.name = "bet";
         this.arguments = "<bet id> <credits> <answer>";
         this.description = "bet.description";
-        this.category = "Casino";
+        this.category = Category.CASINO;
     }
 
     @Override

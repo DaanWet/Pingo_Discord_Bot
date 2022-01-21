@@ -133,7 +133,7 @@ public class CommandHandler {
         while (!commandFound && iterator.hasNext()){
             Command c = iterator.next();
             if (c.isCommandFor(command) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == e.getGuild().getIdLong())){
-                if (c.getCategory().equalsIgnoreCase("moderation") && !e.getMember().hasPermission(Permission.ADMINISTRATOR))
+                if (c.getCategory() == Command.Category.MODERATION && !e.getMember().hasPermission(Permission.ADMINISTRATOR))
                     throw new MessageException(CommandState.USER.getError(Utils.getLanguage(e.getGuild().getIdLong())), 5);
 
                 CommandState state = c.canBeExecuted(e.getGuild().getIdLong(), channel.getIdLong(), message.getMember());

@@ -9,12 +9,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import utils.MyResourceBundle;
-import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public abstract class RoleCommand extends Command {
@@ -37,7 +35,7 @@ public abstract class RoleCommand extends Command {
     }
 
     public RoleCommand(){
-        this.category = "moderation";
+        this.category = Category.MODERATION;
     }
 
     protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, RoleAssignData data, MyResourceBundle language){

@@ -20,7 +20,7 @@ public class Uno extends Command {
     public Uno(GameHandler gameHandler){
         this.name = "uno";
         this.aliases = new String[]{"playuno"};
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.arguments = "[<bet>]";
         this.description = "uno.description";
         this.gameHandler = gameHandler;

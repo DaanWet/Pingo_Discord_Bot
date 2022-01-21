@@ -26,7 +26,7 @@ public class Records extends Command {
 
     public Records(GameHandler handler){
         this.name = "records";
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.description = "records.description";
         this.arguments = "[<member>|<record>|me|list|global]\n<record> global";
         properties = new Properties();
@@ -69,7 +69,7 @@ public class Records extends Command {
                 e.getChannel().sendMessage(eb.build()).queue();
                 return;
             } else if (args[0].equalsIgnoreCase("global")){
-                e.getChannel().sendMessage(getRecords(dataHandler, language,null).build()).queue();
+                e.getChannel().sendMessage(getRecords(dataHandler, language, null).build()).queue();
                 return;
             } else if (l != null){
                 target = e.getGuild().getMemberById(l);

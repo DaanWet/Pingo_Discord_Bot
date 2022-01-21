@@ -24,7 +24,7 @@ public class Challenge extends Command {
 
     public Challenge(GameHandler gameHandler){
         this.name = "challenge";
-        this.category = "Uno";
+        this.category = Category.UNO;
         this.gameHandler = gameHandler;
         this.hidden = true;
         this.description = "uno.challenge.description";

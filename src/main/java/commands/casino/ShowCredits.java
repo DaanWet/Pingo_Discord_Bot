@@ -19,7 +19,7 @@ public class ShowCredits extends Command {
     public ShowCredits(GameHandler handler){
         this.name = "balance";
         this.aliases = new String[]{"bal", "credits", "ShowCredits"};
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.arguments = "[top|global]";
         this.description = "balance.description";
         this.handler = handler;
