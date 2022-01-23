@@ -44,9 +44,10 @@ public class Weekly extends Command {
             long minutes = temp.plusDays(days).plusHours(hours).until(till, ChronoUnit.MINUTES);
             throw new MessageException(language.getString("weekly.wait", hours, minutes));
         }
-        int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, 15000);
+        int weekly = (int) Utils.config.get("weekly");
+        int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, weekly);
         dataHandler.setLatestWeekCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
-        e.getChannel().sendMessage(language.getString("weekly.success", 15000, creds)).queue();
+        e.getChannel().sendMessage(language.getString("weekly.success", weekly, creds)).queue();
 
     }
 }

@@ -103,12 +103,12 @@ public class Help extends Command {
                     sbs.put(cat, new StringBuilder());
                 }
                 StringBuilder sb = sbs.get(cat);
-                sb.append(String.format("\n%S%s: *%s*", prefix, c.getName(), language.getString(c.getDescription() == null ? "help.error" : c.getDescription().trim())));
+                sb.append(String.format("\n%s%s: *%s*", prefix, c.getName(), language.getString(c.getDescription() == null ? "help.error" : c.getDescription().trim())));
 
             }
         }
         if (guildId == 203572340280262657L && !moderation)
-            sbs.get("Pictures").append("\n").append(language.getString("help.pictures.list", prefix + "help"));
+            sbs.get(Category.PICTURES).append("\n").append(language.getString("help.pictures.list", prefix + "help"));
         sbs.keySet().forEach(s -> eb.addField(s.getDisplay(), sbs.get(s).toString().trim(), false));
     }
 }

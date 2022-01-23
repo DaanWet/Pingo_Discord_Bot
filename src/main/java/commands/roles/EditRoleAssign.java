@@ -12,6 +12,7 @@ import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Properties;
 
 public class EditRoleAssign extends RoleCommand {
 
@@ -88,18 +89,19 @@ public class EditRoleAssign extends RoleCommand {
                 name.append(args[i]).append(" ");
             }
             dh.setTitle(guildId, args[0], name.toString().trim());
-            e.getMessage().addReaction("✅").queue();
+            e.getMessage().addReaction(Utils.config.getProperty("emoji.checkmark")).queue();
         } else if (hasEmoji(e.getMessage(), args[1])){
             StringBuilder name = new StringBuilder();
             for (int i = 2; i < args.length; i++){
                 name.append(args[i]).append(" ");
             }
             boolean succeeded = dh.editRoleName(guildId, args[0], args[1], name.toString().trim());
+            Properties config = Utils.config;
             if (!succeeded){
-                e.getMessage().addReaction("❌").queue();
+                e.getMessage().addReaction(config.getProperty("emoji.cancel")).queue();
                 throw new MessageException(language.getString("roleassign.edit.error.emoji", args[0]));
             }
-            e.getMessage().addReaction("✅").queue();
+            e.getMessage().addReaction(config.getProperty("emoji.checkmark")).queue();
             RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
             editEmbed(data, e.getGuild(), args[0], dh, language);
 

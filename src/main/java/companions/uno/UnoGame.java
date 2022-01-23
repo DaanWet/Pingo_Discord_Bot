@@ -2,6 +2,7 @@ package companions.uno;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +12,7 @@ import static java.lang.Math.min;
 
 public class UnoGame {
 
-    private final String PATH = "https://pingo.wettinck.be/uno/";
+    private final String PATH;
 
     private final ArrayList<UnoHand> hands;
     private final ArrayList<UnoCard> trekstapel;
@@ -27,6 +28,7 @@ public class UnoGame {
     private long category;
 
     public UnoGame(int bet, long starter, long channelID){
+        PATH = Utils.config.getProperty("uno.url");
         trekstapel = new ArrayList<>();
         for (UnoCard.Value value : UnoCard.Value.values()){
             for (UnoCard.Color color : UnoCard.Color.values()){
@@ -242,7 +244,7 @@ public class UnoGame {
 
         StringBuilder names = new StringBuilder();
         StringBuilder cards = new StringBuilder();
-        names.append(language.getString("uno.order")).append(clockwise ? " :arrow_forward:\n" : " :arrow_backward:\n");
+        names.append(language.getString("uno.order")).append(String.format(" %s\n", Utils.config.getProperty(clockwise ? "emoji.arrow" : "emoji.back_arrow")));
         for (int i = 0; i < hands.size(); i++){
             hand = hands.get(i);
             String name = hand.getPlayerName();

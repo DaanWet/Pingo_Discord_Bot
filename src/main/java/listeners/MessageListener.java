@@ -16,6 +16,7 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter {
@@ -25,6 +26,7 @@ public class MessageListener extends ListenerAdapter {
 
     public MessageListener(GitHub github){
         this.commandListener = new CommandHandler(github);
+
     }
 
     public CommandHandler getCommandHandler(){
@@ -109,9 +111,10 @@ public class MessageListener extends ListenerAdapter {
         eb.setDescription(content);
         eb.setColor(g.getSelfMember().getColorRaw());
         channel.sendMessage(eb.build()).queue(m -> {
-            m.addReaction(":green_tick:667450925677543454").queue();
-            m.addReaction(":indifferent_tick:667450939208368130").queue();
-            m.addReaction(":red_tick:667450953217212436").queue();
+            Properties config = Utils.config;
+            m.addReaction(config.getProperty("emoji.green_tick")).queue();
+            m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
+            m.addReaction(config.getProperty("emoji.red_tick")).queue();
         });
     }
 

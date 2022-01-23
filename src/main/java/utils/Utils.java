@@ -9,6 +9,8 @@ import java.util.*;
 public class Utils {
 
     private static Map<Locale, ResourceBundle> locales;
+    public static Properties config;
+
 
     public static boolean isInteger(String s){
         if (s == null){
@@ -122,4 +124,10 @@ public class Utils {
     public static String format(ResourceBundle language, String key, Object... args){
         return new MyMessageFormat(language.getString(key)).eformat(args);
     }
+
+    public static void loadProperties() throws Exception{
+        config = new Properties();
+        config.load(Utils.class.getClassLoader().getResourceAsStream("config.properties"));
+    }
+
 }

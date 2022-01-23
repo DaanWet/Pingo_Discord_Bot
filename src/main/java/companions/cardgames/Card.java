@@ -1,5 +1,7 @@
 package companions.cardgames;
 
+import utils.Utils;
+
 public class Card {
     public enum Value {
         TWO("two", "2", 2),
@@ -41,10 +43,10 @@ public class Card {
     }
 
     public enum Face {
-        CLUBS("clubs", ":clubs:"),
-        DIAMONDS("diamonds", ":diamonds:"),
-        HEARTS("hearts", ":hearts:"),
-        SPADES("spades", ":spades:");
+        CLUBS("clubs", "emoji.bj.clubs"),
+        DIAMONDS("diamonds", "emoji.bj.diamonds"),
+        HEARTS("hearts", "emoji.bj.hearts"),
+        SPADES("spades", "emoji.bj.spades");
 
         private final String displayName;
         private final String emoticon;
@@ -85,7 +87,7 @@ public class Card {
     }
 
     public String getEmoticon(){
-        return String.format("%s**%s**", face.emoticon, value.emoticon);
+        return String.format("%s**%s**", Utils.config.getProperty(face.emoticon), value.emoticon);
     }
 
 }

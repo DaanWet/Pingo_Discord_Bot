@@ -153,7 +153,7 @@ public class ReactionListener extends ListenerAdapter {
                                         }
                                     }
                                     issue.create();
-                                    m.addReaction("✅").queue();
+                                    m.addReaction(Utils.config.getProperty("emoji.checkmark")).queue();
                                 }
                             } catch (IOException | NullPointerException ioException){
                                 e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", ioException.getMessage())).queue();
@@ -217,12 +217,13 @@ public class ReactionListener extends ListenerAdapter {
         if (commandHandler.getExplorerData(command).getPlayerId().equals(e.getUserId()) || emoji.equals("❌")){
             File dir = new File(String.format("%s/%s", pathname, command));
             int max = dir.listFiles().length;
+            Properties config = Utils.config;
             switch (emoji){
                 case "◀" -> {
                     m.removeReaction(emoji, user).queue();
                     if (n != 0){
                         n--;
-                        eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
+                        eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
                         eb.setDescription(String.format("%d.jpg", n));
                         m.editMessage(eb.build()).queue();
                     }
@@ -236,7 +237,7 @@ public class ReactionListener extends ListenerAdapter {
                         foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
                         foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
                     }
-                    eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
+                    eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"),command, n, random.nextInt(), random.nextInt()));
                     m.editMessage(eb.build()).queue();
                     if (dir.listFiles().length == 0){
                         dir.delete();
@@ -249,7 +250,7 @@ public class ReactionListener extends ListenerAdapter {
                     m.removeReaction(emoji, user).queue();
                     if (n != max - 1){
                         n++;
-                        eb.setImage(String.format("http://zwervers.wettinck.be/%s/%d&%d=%d", command, n, random.nextInt(), random.nextInt()));
+                        eb.setImage(String.format("%S/%s/%d&%d=%d", config.getProperty("pictures.url"),command, n, random.nextInt(), random.nextInt()));
                         eb.setDescription(String.format("%d.jpg", n));
                         m.editMessage(eb.build()).queue();
 

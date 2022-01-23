@@ -53,7 +53,7 @@ public class Bet extends Command {
 
         long userId = e.getAuthor().getIdLong();
         int bet = args.length == 1 ? 0 : Utils.getInt(args[1]);
-        if (bet < 10)
+        if (bet < 10) // Should this value be added to properties?
             throw new MessageException(language.getString("credit.error.least"));
 
         if (new DataHandler().getCredits(e.getGuild().getIdLong(), userId) < bet)
@@ -65,7 +65,7 @@ public class Bet extends Command {
 
         String answer = Utils.concat(args, 2);
         cbet.addBet(userId, bet, answer);
-        e.getMessage().addReaction("✅").queue();
+        e.getMessage().addReaction(Utils.config.getProperty("emoji.checkmark")).queue();
         e.getGuild().getTextChannelById(cbet.getChannelId()).retrieveMessageById(cbet.getMessageId()).queue(m -> {
             MessageEmbed me = m.getEmbeds().get(0);
             EmbedBuilder eb = new EmbedBuilder(me);

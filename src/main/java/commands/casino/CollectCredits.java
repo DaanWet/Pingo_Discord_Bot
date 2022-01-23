@@ -44,9 +44,10 @@ public class CollectCredits extends Command {
             long minutes = temp.plusHours(hours).until(till, ChronoUnit.MINUTES);
             throw new MessageException(language.getString("daily.wait", hours, minutes));
         }
-        int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, 2500);
+        int daily = (int) Utils.config.get("daily");
+        int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, daily);
         dataHandler.setLatestCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
-        e.getChannel().sendMessage(language.getString("daily.success", 2500, creds)).queue();
+        e.getChannel().sendMessage(language.getString("daily.success", daily, creds)).queue();
 
     }
 }

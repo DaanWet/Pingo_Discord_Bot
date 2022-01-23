@@ -6,6 +6,7 @@ import org.apache.log4j.helpers.Transform;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
+import utils.Utils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -15,11 +16,15 @@ import java.util.Date;
 
 public class MyHTMLLayout extends HTMLLayout {
 
-    private static final String url = "https://pingo.wettinck.be/logging/";
+    private final String url;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM - HH:mm:ss");
     private final String TD = "<td>";
     private final String CTD = "</td>";
     private boolean link = true;
+
+    public MyHTMLLayout(){
+        this.url = Utils.config.getProperty("logging.url");
+    }
 
 
     @Override
