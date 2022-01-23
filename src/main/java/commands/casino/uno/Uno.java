@@ -12,6 +12,7 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 public class Uno extends Command {
 
@@ -56,12 +57,13 @@ public class Uno extends Command {
         if (bet != 0)
             eb.setDescription(language.getString("uno.embed.description", bet));
         eb.addField(language.getString("uno.embed.players.title"), language.getString("uno.embed.players.no_players"), false);
-        eb.setFooter(language.getString("uno.embed.footer", "\uD83D\uDD90", "▶️", "❌"));
+        Properties config = Utils.config;
+        eb.setFooter(language.getString("uno.embed.footer", config.getProperty("emoji.uno.join"), config.getProperty("emoji.uno.start"), config.getProperty("emoji.cancel")));
         e.getChannel().sendMessage(eb.build()).queue(m -> {
             unogame.setMessageID(m.getIdLong());
-            m.addReaction("\uD83D\uDD90️").queue();
-            m.addReaction("▶️").queue();
-            m.addReaction("❌").queue();
+            m.addReaction(config.getProperty("emoji.uno.join")).queue();
+            m.addReaction(config.getProperty("emoji.uno.start")).queue();
+            m.addReaction(config.getProperty("emoji.cancel")).queue();
         });
     }
 }

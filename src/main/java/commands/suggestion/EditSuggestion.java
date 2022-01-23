@@ -40,9 +40,9 @@ public class EditSuggestion extends Command {
             EmbedBuilder eb = new EmbedBuilder(me);
             if (args[1].equalsIgnoreCase("-r")){
                 if (edit.equalsIgnoreCase("bot")){
-                    eb.setFooter(language.getString("suggestion.footer", "DaanWet/Pingo_Discord_Bot"));
+                    eb.setFooter(language.getString("suggestion.footer", Utils.config.getProperty("repo.bot")));
                 } else if (args[0].equalsIgnoreCase("plugin")){
-                    eb.setFooter(language.getString("suggestion.footer", "DaanWet/MinecraftTeamsPlugin"));
+                    eb.setFooter(language.getString("suggestion.footer", Utils.config.getProperty("repo.plugin")));
                 }
             } else if (args[1].equalsIgnoreCase("-t")){
                 eb.setTitle(edit);

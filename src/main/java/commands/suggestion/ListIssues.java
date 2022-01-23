@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kohsuke.github.*;
 import utils.MessageException;
 import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class ListIssues extends Command {
 
         GHRepository repo;
         if (args[0].equalsIgnoreCase("bot")){
-            repo = gitHub.getRepository("DaanWet/Pingo_Discord_Bot");
+            repo = gitHub.getRepository(Utils.config.getProperty("repo.bot"));
         } else if (args[0].equalsIgnoreCase("plugin")){
-            repo = gitHub.getRepository("DaanWet/MinecraftTeamsPlugin");
+            repo = gitHub.getRepository(Utils.config.getProperty("repo.plugin"));
         } else {
             throw new MessageException(getUsage());
         }
@@ -39,17 +40,18 @@ public class ListIssues extends Command {
         EmbedBuilder eb = new EmbedBuilder();
         StringBuilder sb = new StringBuilder();
         MyResourceBundle language = getLanguage(e);
+        String dot = Utils.config.getProperty("emoji.list.dot");
         if (args.length == 1){
             List<GHIssue> issues = repo.listIssues(GHIssueState.OPEN).toList();
             eb.setTitle(language.getString("issues.title", repo.getName()));
             for (GHIssue issue : issues){
-                sb.append(":small_blue_diamond:").append(issue.getTitle()).append("\n");
+                sb.append(dot).append(issue.getTitle()).append("\n");
             }
         } else if (args[1].equalsIgnoreCase("-l")){
             List<GHLabel> labels = repo.listLabels().toList();
             eb.setTitle(language.getString("issues.label", repo.getName()));
             for (GHLabel label : labels){
-                sb.append(":small_blue_diamond:").append(label.getName()).append("\n");
+                sb.append(dot).append(label.getName()).append("\n");
             }
         } else {
             throw new MessageException(getUsage());

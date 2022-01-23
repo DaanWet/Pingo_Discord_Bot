@@ -16,6 +16,7 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class AddRoleAssign extends RoleCommand {
@@ -50,32 +51,32 @@ public class AddRoleAssign extends RoleCommand {
 
         if (!hasEmoji(e.getMessage(), args[1]))
             throw new MessageException(language.getString("roleassign.error.emoji", args[1]) + "\n" + getUsage());
-        Role role = null;
+        Role role;
         try {
             role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);
         } catch (Exception exc){
             throw new MessageException(language.getString("roleassign.error.role") + "\n" + getUsage());
         }
         int pos = role.getPosition();
+        Properties config = Utils.config;
         if (e.getGuild().getSelfMember().getRoles().stream().noneMatch(r -> r.getPosition() > pos) || !e.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)){
-            e.getMessage().addReaction("❌").queue();
+            e.getMessage().addReaction(config.getProperty("emoji.cancel")).queue();
             throw new MessageException(language.getString("roleassign.error.perms"));
         }
         String name = Utils.concat(args, 3);
 
         boolean succeeded = dataHandler.addRoleAssign(e.getGuild().getIdLong(), args[0], args[1], name.trim(), role.getIdLong());
         if (!succeeded){
-            e.getMessage().addReaction("❌").queue();
+            e.getMessage().addReaction(config.getProperty("emoji.cancel")).queue();
             throw new MessageException(language.getString("roleassign.error.emoji.used"));
         }
 
-        e.getMessage().addReaction("✅").queue();
-        e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
+        e.getMessage().addReaction(config.getProperty("emoji.checkmark")).queue();
+        e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS); // Should this value be added to properties?
         RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
         String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
         if (data.getMessageId() != null){
             e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
-                MessageEmbed me = m.getEmbeds().get(0);
                 ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
                 m.editMessage(getRoleEmbed(roles, args[0], data, language).build()).queue();
                 m.addReaction(emote).queue();

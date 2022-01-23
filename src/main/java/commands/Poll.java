@@ -8,6 +8,7 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 public class Poll extends Command {
 
@@ -24,10 +25,11 @@ public class Poll extends Command {
         if (args.length == 0 || args.length == 2)
             throw new MessageException(language.getString("poll.error.least"));
         if (args.length == 1){
+            Properties config = Utils.config;
             e.getChannel().sendMessage(String.format("**%s#%s: %s**", e.getAuthor().getName(), e.getAuthor().getDiscriminator(), Utils.upperCaseFirst(args[0]))).queue(m -> {
-                m.addReaction(":greentick:804432208483844146").queue();
-                m.addReaction(":indifftick:804432286455169044").queue();
-                m.addReaction(":redtick:804432244469923890").queue();
+                m.addReaction(config.getProperty("emoji.green_tick")).queue();
+                m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
+                m.addReaction(config.getProperty("emoji.red_tick")).queue();
             });
         } else {
             if (args.length > 21)

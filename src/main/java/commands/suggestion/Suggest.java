@@ -5,7 +5,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.MyResourceBundle;
+import utils.Utils;
 
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class Suggest extends Command {
@@ -24,9 +26,9 @@ public class Suggest extends Command {
             throw new MessageException(getUsage());
         String repo = null;
         if (args[0].equalsIgnoreCase("bot")){
-            repo = "DaanWet/Pingo_Discord_Bot";
+            repo = "repo.bot";
         } else if (args[0].equalsIgnoreCase("plugin")){
-            repo = "DaanWet/MinecraftTeamsPlugin";
+            repo = "repo.plugin";
         }
         boolean t = true;
         StringBuilder title = new StringBuilder();
@@ -48,14 +50,16 @@ public class Suggest extends Command {
             throw new MessageException(language.getString("suggestion.error") + "\n" + getUsage());
 
         EmbedBuilder eb = new EmbedBuilder();
+        Properties config = Utils.config;
+
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
         eb.setTitle(title.toString());
         eb.setDescription(descript.toString());
-        eb.setFooter(repo == null ? language.getString("suggestion.footer", repo) : "");
+        eb.setFooter(repo != null ? language.getString("suggestion.footer", config.getProperty(repo)) : "");
         e.getGuild().getTextChannelById(747228850353733739L).sendMessage(eb.build()).queue(m -> {
-            m.addReaction(":green_tick:667450925677543454").queue();
-            m.addReaction(":indifferent_tick:667450939208368130").queue();
-            m.addReaction(":red_tick:667450953217212436").queue();
+            m.addReaction(config.getProperty("emoji.green_tick")).queue();
+            m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
+            m.addReaction(config.getProperty("emoji.red_tick")).queue();
         });
         e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
 

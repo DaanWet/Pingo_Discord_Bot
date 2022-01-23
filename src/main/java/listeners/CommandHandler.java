@@ -40,19 +40,20 @@ import java.util.regex.Pattern;
 
 public class CommandHandler {
 
-    public static final String pathname = "./Pictures";
+    public static String pathname;
     private final Random random;
     private final HashMap<String, Command> commands;
     private final GameHandler gameHandler;
 
     public CommandHandler(GitHub gitHub){
+        pathname = Utils.config.getProperty("pictures.path");
         random = new Random();
         CommandHandler commh = this;
         gameHandler = new GameHandler();
         commands = new HashMap<>() {
             {
                 put("help", new Help(gameHandler));
-                put("add", new AddPicture(commh));
+                put("add", new AddPicture());
                 put("fuckpingo", new FuckPingo());
                 put("delete", new DeletePicture(commh));
                 put("nickname", new Nickname());

@@ -5,6 +5,7 @@ import listeners.CommandHandler;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,14 +16,12 @@ import static listeners.CommandHandler.pathname;
 
 public class AddPicture extends Command {
 
-    private final CommandHandler commandHandler;
 
 
-    public AddPicture(CommandHandler commandHandler){
+    public AddPicture(){
         name = "add";
         aliases = new String[]{"addpicture"};
         category = Category.PICTURES;
-        this.commandHandler = commandHandler;
         this.description = "picture.add.description";
         this.arguments = "<name> <picture>";
         this.priveligedGuild = 203572340280262657L;
@@ -43,7 +42,7 @@ public class AddPicture extends Command {
             message.getAttachments().get(0).downloadToFile(p).exceptionally(t -> {
                 t.printStackTrace();
                 throw new MessageException("Something went wrong");
-            }).thenAccept(a -> e.getMessage().addReaction(":green_tick:667450925677543454").queue());
+            }).thenAccept(a -> e.getMessage().addReaction(Utils.config.getProperty("emoji.green_tick")).queue());
         } catch (IOException exc1){
             exc1.printStackTrace();
         }

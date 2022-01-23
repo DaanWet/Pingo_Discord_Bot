@@ -75,7 +75,7 @@ public class Play extends Command {
                             EmbedBuilder eb2 = new EmbedBuilder();
                             int size = hands.size() - 1;
                             int bet = unoGame.getBet();
-                            int credits = bet == 0 ? 200 * size : bet * size;
+                            int credits = bet == 0 ? 200 * size : bet * size; // Should this 200 value be added to properties?
                             eb2.setTitle(language.getString("uno.win", e.getMember().getEffectiveName(), card, credits));
                             if (bet != 0){
                                 eb2.setDescription(language.getString("uno.lost", bet));
@@ -119,13 +119,13 @@ public class Play extends Command {
                             eb.setDescription(language.getString("uno.win.short", hand.getPlayerName(), credits));
                             m.editMessage(eb.build()).queue();
                         });
-                        channel.delete().queueAfter(1, TimeUnit.MINUTES);
+                        channel.delete().queueAfter(1, TimeUnit.MINUTES); // Should this value be added to properties?
 
                     }
                 }
             }
             if (unoGame.isFinished()){
-                guild.getCategoryById(unoGame.getCategory()).delete().queueAfter(65, TimeUnit.SECONDS);
+                guild.getCategoryById(unoGame.getCategory()).delete().queueAfter(65, TimeUnit.SECONDS); // Should this value be added to properties?
                 gameHandler.removeUnoGame(guild.getIdLong());
             }
         }

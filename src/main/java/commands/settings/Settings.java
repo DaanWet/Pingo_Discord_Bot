@@ -61,6 +61,7 @@ public class Settings extends Command {
                 e.getChannel().sendMessage(eb.build()).queue();
             } else {
                 Setting.SubSetting subs = Setting.SubSetting.fromString(args[2]);
+                String emoji = Utils.config.getProperty("emoji.green_tick");
                 if (subs != null){
                     if (!setting.getSubSettings().contains(subs))
                         throw new EmbedException(language.getString("settings.error.subsetting", subs.toString().toLowerCase(), name));
@@ -69,12 +70,12 @@ public class Settings extends Command {
                         if (subs.isMultiple()){
                             if (args.length == 4 && args[3].equalsIgnoreCase("clear")){
                                 handleClear(setting, subs, guildId, dataHandler);
-                                e.getMessage().addReaction(":greentick:804432208483844146").queue();
+                                e.getMessage().addReaction(emoji).queue();
                             } else if (args.length >= 5 && args[3].matches("(?i)^(add|remove)$")){
                                 handleMultiSet(setting, subs, guildId, Arrays.copyOfRange(args, 4, args.length), args[3].equalsIgnoreCase("add"), dataHandler, e.getMessage(), language);
                             } else if (args.length == 4 && args[3].matches("(?i)^(enable|disable)$")){
                                 dataHandler.setListEnabled(guildId, setting, subs, args[3].equalsIgnoreCase("enable"));
-                                e.getMessage().addReaction(":greentick:804432208483844146").queue();
+                                e.getMessage().addReaction(emoji).queue();
                             }
                         } else {
                             handleSet(setting, subs, guildId, args[3], dataHandler, e.getMessage(), language);
@@ -87,7 +88,7 @@ public class Settings extends Command {
                 } else {
                     if (setting.isMultiple()){
                         if (args.length == 3 && args[2].equalsIgnoreCase("clear")){
-                            e.getMessage().addReaction(":greentick:804432208483844146").queue();
+                            e.getMessage().addReaction(emoji).queue();
                             handleClear(setting, null, guildId, dataHandler);
                         } else if (args.length >= 4 && args[2].matches("(?i)^(add|remove)$")){
                             handleMultiSet(setting, null, guildId, Arrays.copyOfRange(args, 3, args.length), args[2].equalsIgnoreCase("add"), dataHandler, e.getMessage(), language);
@@ -96,7 +97,7 @@ public class Settings extends Command {
                         }
                     } else {
                         handleSet(setting, null, guildId, args[2], dataHandler, e.getMessage(), language);
-                        e.getMessage().addReaction(":greentick:804432208483844146").queue();
+                        e.getMessage().addReaction(emoji).queue();
                     }
                 }
             }
@@ -114,7 +115,7 @@ public class Settings extends Command {
         boolean multiple = (subs != null && subs.isMultiple()) || (subs == null && setting.isMultiple());
         if (multiple){
             fieldValue.append(" [add|remove|clear|enable|disable]");
-            fieldName.append(dataHandler.getListEnabled(guildId, setting, subs) ? "<:greentick:804432208483844146> " : "<:redtick:804432244469923890> ");
+            fieldName.append(String.format("<%s> ", Utils.config.getProperty(dataHandler.getListEnabled(guildId, setting, subs) ? "emoji.green_tick" : "emoji.red_tick")));
         }
 
         Setting.ValueType v = setting.getValueType();
@@ -129,7 +130,7 @@ public class Settings extends Command {
         switch (v){
             case BOOLEAN:
                 fieldValue.append(" [on|off]");
-                fieldName.insert(0, dataHandler.getBoolSetting(guildId, setting, subs) ? "<:greentick:804432208483844146>" : "<:redtick:804432244469923890>");
+                fieldName.insert(0, String.format("<%s>", Utils.config.getProperty(dataHandler.getBoolSetting(guildId, setting, subs) ? "emoji.green_tick" : "emoji.red_tick")));
                 break;
             case LONG:
                 fieldValue.append(" <channel|role|member>");
@@ -223,16 +224,17 @@ public class Settings extends Command {
     }
 
     public void handleSet(Setting setting, Setting.SubSetting subSetting, long guildId, String value, DataHandler dataHandler, Message message, MyResourceBundle language) throws Exception{
+        String green = Utils.config.getProperty("emoji.green_tick");
         switch (subSetting == null ? setting.getValueType() : subSetting.getValueType()){
             case BOOLEAN -> {
                 if (!value.matches("(?i)^(on|enable|off|disable)$"))
                     throw new EmbedException(language.getString("settings.error.input.title"), language.getString("settings.error.input.boolean"));
                 dataHandler.setBoolSetting(guildId, setting, subSetting, value.matches("(?i)^(on|enable)$"), null);
-                message.addReaction(":greentick:804432208483844146").queue();
+                message.addReaction(green).queue();
             }
             case STRING -> {
                 dataHandler.setStringSetting(guildId, setting, subSetting, value, null);
-                message.addReaction(":greentick:804432208483844146").queue();
+                message.addReaction(green).queue();
             }
             case LONG -> {
                 List<IMentionable> mentions = message.getMentions();
@@ -243,7 +245,7 @@ public class Settings extends Command {
                         throw new EmbedException(language.getString("settings.error.input.title"), language.getString("settings.error.input.mention"));
 
                     dataHandler.setLongSetting(guildId, setting, subSetting, mention.getIdLong(), type, null);
-                    message.addReaction(":greentick:804432208483844146").queue();
+                    message.addReaction(green).queue();
                 } else if (!parseLong(setting, subSetting, guildId, null, message, value, dataHandler)){
                     throw new EmbedException(language.getString("settings.error.input.title"), language.getString("settings.error.input.long"));
                 }
@@ -257,7 +259,7 @@ public class Settings extends Command {
                 List<TextChannel> mentionedChannels = message.getMentionedChannels();
                 if (mentionedChannels.size() == 1 && value.replaceFirst("!", "").equalsIgnoreCase(mentionedChannels.get(0).getAsMention())){
                     dataHandler.setLongSetting(guildId, setting, subSetting, mentionedChannels.get(0).getIdLong(), Setting.LongType.CHANNEL, null);
-                    message.addReaction(":greentick:804432208483844146").queue();
+                    message.addReaction(green).queue();
                 } else {
                     Long id = Utils.isLong(value);
                     if (id == null || message.getGuild().getTextChannelById(id) == null)
@@ -269,7 +271,7 @@ public class Settings extends Command {
                 List<Role> mentionedRoles = message.getMentionedRoles();
                 if (mentionedRoles.size() == 1 && value.replaceFirst("!", "").equalsIgnoreCase(mentionedRoles.get(0).getAsMention())){
                     dataHandler.setLongSetting(guildId, setting, subSetting, mentionedRoles.get(0).getIdLong(), Setting.LongType.ROLE, null);
-                    message.addReaction(":greentick:804432208483844146").queue();
+                    message.addReaction(green).queue();
                 } else {
                     Long id = Utils.isLong(value);
                     if (id == null || message.getGuild().getRoleById(id) == null)
@@ -313,7 +315,6 @@ public class Settings extends Command {
                 for (String value : values){
                     dataHandler.setStringSetting(guildId, setting, subSetting, value, clear);
                 }
-                message.addReaction(":greentick:804432208483844146").queue();
                 break;
             case LONG:
                 List<IMentionable> mentions = message.getMentions();
@@ -388,7 +389,7 @@ public class Settings extends Command {
         if (!good)
             throw new EmbedException(language.getString("settings.error.input.title", language.getString("settings.error.input.list", add ? "add" : "remove", wrongValues.substring(0, wrongValues.length() - 2), language.getString(wrongType))));
 
-        message.addReaction(":greentick:804432208483844146").queue();
+        message.addReaction(Utils.config.getProperty("emoji.green_tick")).queue();
     }
 
     private void handleClear(Setting setting, Setting.SubSetting subSetting, long guildId, DataHandler dataHandler) throws Exception{

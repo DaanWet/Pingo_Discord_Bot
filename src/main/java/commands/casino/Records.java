@@ -55,6 +55,7 @@ public class Records extends Command {
             Long l = Utils.isLong(args[0]);
             Member target = null;
             EmbedBuilder eb = new EmbedBuilder();
+            String dot = Utils.config.getProperty("emoji.list.dot");
             if (e.getMessage().getMentionedMembers().size() == 1){
                 target = e.getMessage().getMentionedMembers().get(0);
             } else if (args[0].equalsIgnoreCase("me")){
@@ -63,7 +64,7 @@ public class Records extends Command {
                 eb.setTitle(language.getString("records.list"));
                 StringBuilder sb = new StringBuilder();
                 for (String record : recordTypes){
-                    sb.append(":small_blue_diamond: ").append(record)/*.append(": ").append(properties.getProperty(record))*/.append("\n");
+                    sb.append(dot).append(" ").append(record)/*.append(": ").append(properties.getProperty(record))*/.append("\n");
                 }
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessage(eb.build()).queue();
@@ -88,7 +89,7 @@ public class Records extends Command {
                 StringBuilder sb = new StringBuilder();
                 for (RecordData record : records){
 
-                    sb.append(":small_blue_diamond: ").append(properties.getProperty(record.getRecord()))
+                    sb.append(dot).append(" ").append(properties.getProperty(record.getRecord()))
                             .append(": **");
 
                     boolean isInt = dataHandler.isInt(record.getRecord());
@@ -123,8 +124,9 @@ public class Records extends Command {
         eb.setTitle(language.getString(guildId == null ? "records.global" : "records.local"));
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords() : dataHandler.getRecords(guildId);
         StringBuilder sb = new StringBuilder();
+        String dot = Utils.config.getProperty("emoji.list.dot");
         for (RecordData record : records){
-            sb.append(":small_blue_diamond: ").append(properties.getProperty(record.getRecord()))
+            sb.append(dot).append(" ").append(properties.getProperty(record.getRecord()))
                     .append(": **");
             boolean isInt = dataHandler.isInt(record.getRecord());
             // Formats the blackjack winrate into something more human readable

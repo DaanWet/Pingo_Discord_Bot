@@ -1,6 +1,7 @@
 package data;
 
 import companions.uno.UnoCard;
+import utils.Utils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 
 public class ImageHandler {
 
-    private static final String PATH = "./Uno";
     private static final int height = 362;
     private static final int width = 242;
 
@@ -23,7 +23,7 @@ public class ImageHandler {
             url = card.getValue().getToken();
         }
         url += ".png";
-        return new File(PATH, url);
+        return new File(Utils.config.getProperty("uno.path"), url);
     }
 
     public static InputStream getCardsImage(ArrayList<UnoCard> cards){
