@@ -8,9 +8,8 @@ import java.util.*;
 
 public class Utils {
 
-    private static Map<Locale, ResourceBundle> locales;
     public static Properties config;
-
+    private static Map<Locale, ResourceBundle> locales;
 
     public static boolean isInteger(String s){
         if (s == null){
