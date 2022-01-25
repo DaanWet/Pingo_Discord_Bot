@@ -54,7 +54,7 @@ public class RemoveRoleAssign extends RoleCommand {
             e.getGuild().getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                 MessageEmbed me = m.getEmbeds().get(0);
                 ArrayList<RoleAssignRole> roles = dataHandler.getRoles(guildId, args[0]);
-                m.editMessage(getRoleEmbed(roles, args[0], data, language).build()).queue();
+                m.editMessageEmbeds(getRoleEmbed(roles, args[0], data, language).build()).queue();
                 e.getMessage().addReaction(Utils.config.getProperty("emoji.checkmark")).queue();
                 for (MessageReaction mr : e.getMessage().getReactions()){
                     if (mr.getReactionEmote().getAsReactionCode().equals(emote)){

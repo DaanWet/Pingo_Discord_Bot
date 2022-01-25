@@ -12,7 +12,7 @@ import utils.MyResourceBundle;
 
 public abstract class BCommand extends Command {
 
-    protected GameHandler gameHandler;
+    protected final GameHandler gameHandler;
 
     public BCommand(GameHandler gameHandler){
         this.gameHandler = gameHandler;
@@ -32,7 +32,7 @@ public abstract class BCommand extends Command {
                 eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);
                 updateRecords(guildId, id, dataHandler, won_lose, m.getJumpUrl());
             }
-            m.editMessage(eb.build()).queue();
+            m.editMessageEmbeds(eb.build()).queue();
         });
     }
 

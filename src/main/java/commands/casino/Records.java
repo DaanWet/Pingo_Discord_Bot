@@ -50,7 +50,7 @@ public class Records extends Command {
         ArrayList<String> recordTypes = dataHandler.getRecordTypes();
         MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
         if (args.length == 0){
-            e.getChannel().sendMessage(getRecords(dataHandler, language, guild.getIdLong()).build()).queue();
+            e.getChannel().sendMessageEmbeds(getRecords(dataHandler, language, guild.getIdLong()).build()).queue();
         } else if (args.length == 1){
             Long l = Utils.isLong(args[0]);
             Member target = null;
@@ -67,10 +67,10 @@ public class Records extends Command {
                     sb.append(dot).append(" ").append(record)/*.append(": ").append(properties.getProperty(record))*/.append("\n");
                 }
                 eb.setDescription(sb.toString());
-                e.getChannel().sendMessage(eb.build()).queue();
+                e.getChannel().sendMessageEmbeds(eb.build()).queue();
                 return;
             } else if (args[0].equalsIgnoreCase("global")){
-                e.getChannel().sendMessage(getRecords(dataHandler, language, null).build()).queue();
+                e.getChannel().sendMessageEmbeds(getRecords(dataHandler, language, null).build()).queue();
                 return;
             } else if (l != null){
                 target = e.getGuild().getMemberById(l);
@@ -81,7 +81,7 @@ public class Records extends Command {
             }
 
             if (recordTypes.contains(args[0].toLowerCase())){
-                RecordPaginator recordPaginator = new RecordPaginator(args[0], e.getGuild().getIdLong(), properties);
+                RecordPaginator recordPaginator = new RecordPaginator(args[0], e.getGuild().getIdLong());
                 recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
             } else if (target != null){
                 ArrayList<RecordData> records = dataHandler.getRecords(e.getGuild().getIdLong(), target.getIdLong());
@@ -107,12 +107,12 @@ public class Records extends Command {
                     sb.append(language.getString("records.no_records.person", target.getUser().getName()));
                 }
                 eb.setDescription(sb.toString());
-                e.getChannel().sendMessage(eb.build()).queue();
+                e.getChannel().sendMessageEmbeds(eb.build()).queue();
             } else {
                 throw new MessageException(language.getString("records.error.valid", args[0]));
             }
         } else if (args.length == 2 && recordTypes.contains(args[0].toLowerCase()) && args[1].equalsIgnoreCase("global")){
-            RecordPaginator recordPaginator = new RecordPaginator(args[0], null, properties);
+            RecordPaginator recordPaginator = new RecordPaginator(args[0], null);
             recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
         } else {
             throw new MessageException(language.getString("records.error.args", getUsage()));

@@ -91,7 +91,7 @@ public class Help extends Command {
             eb.setTitle(language.getString("help.commands"));
             fillCommands(eb, false, guildId, prefix, language);
         }
-        e.getChannel().sendMessage(eb.build()).queue();
+        e.getChannel().sendMessageEmbeds(eb.build()).queue();
     }
 
     public void fillCommands(EmbedBuilder eb, boolean moderation, long guildId, String prefix, MyResourceBundle language){

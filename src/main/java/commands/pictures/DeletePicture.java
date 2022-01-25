@@ -64,7 +64,7 @@ public class DeletePicture extends Command {
         eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), args[0], 0, random.nextInt(), random.nextInt()));
         eb.setTitle(language.getString("picture.delete.embed", args[0]));
         eb.setDescription("0.jpg");
-        e.getChannel().sendMessage(eb.build()).queue(m -> {
+        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             openExplorers.put(args[0], new OpenExplorerData(e.getAuthor().getId(), e.getChannel().getId(), e.getMessage().getId(), e.getGuild()));
             m.addReaction(config.getProperty("emoji.previous")).queue();
             m.addReaction(config.getProperty("emoji.trash")).queue();

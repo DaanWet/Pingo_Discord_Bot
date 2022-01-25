@@ -59,7 +59,7 @@ public class Uno extends Command {
         eb.addField(language.getString("uno.embed.players.title"), language.getString("uno.embed.players.no_players"), false);
         Properties config = Utils.config;
         eb.setFooter(language.getString("uno.embed.footer", config.getProperty("emoji.uno.join"), config.getProperty("emoji.uno.start"), config.getProperty("emoji.cancel")));
-        e.getChannel().sendMessage(eb.build()).queue(m -> {
+        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             unogame.setMessageID(m.getIdLong());
             m.addReaction(config.getProperty("emoji.uno.join")).queue();
             m.addReaction(config.getProperty("emoji.uno.start")).queue();

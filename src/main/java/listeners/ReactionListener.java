@@ -118,7 +118,7 @@ public class ReactionListener extends ListenerAdapter {
         map.get(emoji).run();
 
         e.retrieveMessage().queue(m -> {
-            m.editMessage(paginator.createEmbed()).queue();
+            m.editMessageEmbeds(paginator.createEmbed()).queue();
             m.removeReaction(e.getReactionEmote().getEmoji(), e.getUser()).queue();
         });
     }
@@ -207,7 +207,7 @@ public class ReactionListener extends ListenerAdapter {
                 if (embed.getFooter() == null || (embed.getFooter().getText().contains("Approved") && con >= 6) || (embed.getFooter().getText().contains("Rejected") && pro >= 6)){
                     eb.setFooter(String.format("Pro: %d, Con: %d => %s", pro, con, pro >= 6 ? "Approved" : "Rejected"));
                     eb.setTimestamp(LocalDateTime.now(ZoneId.systemDefault()));
-                    m.editMessage(eb.build()).queue();
+                    m.editMessageEmbeds(eb.build()).queue();
                 }
             }
         });
@@ -232,7 +232,7 @@ public class ReactionListener extends ListenerAdapter {
                     n--;
                     eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
                     eb.setDescription(String.format("%d.jpg", n));
-                    m.editMessage(eb.build()).queue();
+                    m.editMessageEmbeds(eb.build()).queue();
                 }
             } else if (config.getProperty("emoji.trash").equals(emoji)){//remove image
 
@@ -243,7 +243,7 @@ public class ReactionListener extends ListenerAdapter {
                     foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
                 }
                 eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
-                m.editMessage(eb.build()).queue();
+                m.editMessageEmbeds(eb.build()).queue();
                 if (dir.listFiles().length == 0){
                     dir.delete();
                     commandHandler.closeExplorer(command, m);
@@ -256,7 +256,7 @@ public class ReactionListener extends ListenerAdapter {
                     n++;
                     eb.setImage(String.format("%S/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
                     eb.setDescription(String.format("%d.jpg", n));
-                    m.editMessage(eb.build()).queue();
+                    m.editMessageEmbeds(eb.build()).queue();
 
                 }
             } else if (config.getProperty("emoji.cancel").equals(emoji)){
@@ -302,12 +302,12 @@ public class ReactionListener extends ListenerAdapter {
                                         category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
                                                 .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                                 .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                                .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic(help).queue(channel -> {
-                                                    channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId(), language).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
+                                                .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic(help).queue(channel ->
+                                                    channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").setEmbeds(unoGame.createEmbed(hand.getPlayerId(), language).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
                                                         hand.setChannelId(channel.getIdLong());
                                                         hand.setMessageId(mes.getIdLong());
-                                                    });
-                                                });
+                                                    })
+                                                );
                                     }
                                 });
                     } else {
@@ -325,7 +325,7 @@ public class ReactionListener extends ListenerAdapter {
                     MessageEmbed me = message.getEmbeds().get(0);
                     EmbedBuilder eb = new EmbedBuilder(me);
                     eb.setTitle(language.getString("uno.embed.cancelled"));
-                    message.editMessage(eb.build()).queue();
+                    message.editMessageEmbeds(eb.build()).queue();
                     gameHandler.removeUnoGame(guild.getIdLong());
                 }
             } else if (config.getProperty("emoji.uno.join").equals(emojiEmoji)){
@@ -341,7 +341,7 @@ public class ReactionListener extends ListenerAdapter {
                         sb.append("\n");
                     }
                     eb.addField(f.getName(), sb.toString().trim(), false);
-                    message.editMessage(eb.build()).queue();
+                    message.editMessageEmbeds(eb.build()).queue();
                 }
             }
         }

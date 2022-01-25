@@ -52,7 +52,7 @@ public class EditSuggestion extends Command {
                 eb.clearFields();
                 eb.addField(language.getString("suggestion.labels"), edit, false);
             }
-            m.editMessage(eb.build()).queue();
+            m.editMessageEmbeds(eb.build()).queue();
         });
 
 

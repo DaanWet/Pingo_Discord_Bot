@@ -56,7 +56,7 @@ public class Suggest extends Command {
         eb.setTitle(title.toString());
         eb.setDescription(descript.toString());
         eb.setFooter(repo != null ? language.getString("suggestion.footer", config.getProperty(repo)) : "");
-        e.getGuild().getTextChannelById(747228850353733739L).sendMessage(eb.build()).queue(m -> {
+        e.getGuild().getTextChannelById(747228850353733739L).sendMessageEmbeds(eb.build()).queue(m -> {
             m.addReaction(config.getProperty("emoji.green_tick")).queue();
             m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
             m.addReaction(config.getProperty("emoji.red_tick")).queue();

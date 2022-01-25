@@ -85,7 +85,7 @@ public class EndBet extends Command {
             dh.addCredits(guildId, winner, won);
             eb.appendDescription("\n").appendDescription(language.getString("end_bet.winner", String.format("<@!%d>", winner), won, bet.getAnswer(winner)));
         }
-        e.getChannel().sendMessage(eb.build()).queue();
+        e.getChannel().sendMessageEmbeds(eb.build()).queue();
         e.getMessage().delete().queue();
 
 

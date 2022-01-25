@@ -72,14 +72,14 @@ public class Challenge extends Command {
             }
             TextChannel skippedchannel = guild.getTextChannelById(skippedHand.getChannelId());
             TextChannel playedChannel = guild.getTextChannelById(playedHand.getChannelId());
-            skippedchannel.sendMessage(eb1.build()).queue();
-            playedChannel.sendMessage(eb2.build()).queue();
+            skippedchannel.sendMessageEmbeds(eb1.build()).queue();
+            playedChannel.sendMessageEmbeds(eb2.build()).queue();
             EmbedBuilder eb = unoGame.createEmbed(skippedHand.getPlayerId(), language);
             eb.setColor(color);
             // Should "hand.png" value be added to properties?
-            skippedchannel.sendFile(ImageHandler.getCardsImage(skippedHand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> skippedHand.setMessageId(newmessage.getIdLong()));
+            skippedchannel.sendFile(ImageHandler.getCardsImage(skippedHand.getCards()), "hand.png").setEmbeds(eb.build()).queue(newmessage -> skippedHand.setMessageId(newmessage.getIdLong()));
             eb = unoGame.createEmbed(playedHand.getPlayerId(), language);
-            playedChannel.sendFile(ImageHandler.getCardsImage(playedHand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> playedHand.setMessageId(newmessage.getIdLong()));
+            playedChannel.sendFile(ImageHandler.getCardsImage(playedHand.getCards()), "hand.png").setEmbeds(eb.build()).queue(newmessage -> playedHand.setMessageId(newmessage.getIdLong()));
 
         }
     }

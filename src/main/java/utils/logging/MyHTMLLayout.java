@@ -18,8 +18,6 @@ public class MyHTMLLayout extends HTMLLayout {
 
     private final String url;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM - HH:mm:ss");
-    private final String TD = "<td>";
-    private final String CTD = "</td>";
     private boolean link = true;
 
     public MyHTMLLayout(){
@@ -32,6 +30,8 @@ public class MyHTMLLayout extends HTMLLayout {
         StringBuilder sb = new StringBuilder();
         sb.append(LINE_SEP).append("<tr>").append(LINE_SEP);
         LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.getTimeStamp()), ZoneId.systemDefault());
+        String TD = "<td>";
+        String CTD = "</td>";
         sb.append(TD).append(dtf.format(time)).append(CTD).append(LINE_SEP);
 
         sb.append(TD);

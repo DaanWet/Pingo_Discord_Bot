@@ -61,7 +61,7 @@ public class TeamPicker extends Command {
             eb.addField(language.getString("team.title", (i + 1)), teamString, true);
             if (i % 2 == 1 && teams.size() % 3 != 0 && teams.size() % 2 == 0) eb.addBlankField(true);
         }
-        e.getChannel().sendMessage(eb.build()).queue();
+        e.getChannel().sendMessageEmbeds(eb.build()).queue();
 
     }
 }
