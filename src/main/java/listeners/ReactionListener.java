@@ -104,22 +104,19 @@ public class ReactionListener extends ListenerAdapter {
 
     public void handlePaginatorReaction(GuildMessageReactionAddEvent e){
         EmbedPaginator paginator = gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).get(e.getMessageIdLong());
-        switch (e.getReactionEmote().getEmoji()){
-            case "⏮️":
-                paginator.firstPage();
-                break;
-            case "◀️":
-                paginator.previousPage();
-                break;
-            case "▶️":
-                paginator.nextPage();
-                break;
-            case "⏭️":
-                paginator.lastPage();
-                break;
-            default:
-                return;
-        }
+        Properties config = Utils.config;
+        String emoji = e.getReactionEmote().getEmoji();
+
+        HashMap<String, Runnable> map = new HashMap<>() {{
+            put(config.getProperty("emoji.first"), paginator::firstPage);
+            put(config.getProperty("emoji.previous"), paginator::previousPage);
+            put(config.getProperty("emoji.next"), paginator::nextPage);
+            put(config.getProperty("emoji.last"), paginator::lastPage);
+        }};
+        if (!map.containsKey(emoji))
+            return;
+        map.get(emoji).run();
+
         e.retrieveMessage().queue(m -> {
             m.editMessage(paginator.createEmbed()).queue();
             m.removeReaction(e.getReactionEmote().getEmoji(), e.getUser()).queue();
@@ -170,28 +167,37 @@ public class ReactionListener extends ListenerAdapter {
     public void handleSuggestionReaction(GuildMessageReactionAddEvent e){
         User user = e.getUser();
         e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
-            switch (e.getReactionEmote().getEmote().getId()){
-                case "667450925677543454" -> {
-                    m.removeReaction(":indifferent_tick:667450939208368130", user).queue();
-                    m.removeReaction(":red_tick:667450953217212436", user).queue();
-                }
-                case "667450939208368130" -> {
-                    m.removeReaction(":green_tick:667450925677543454", user).queue();
-                    m.removeReaction(":red_tick:667450953217212436", user).queue();
-                }
-                case "667450953217212436" -> {
-                    m.removeReaction(":green_tick:667450925677543454", user).queue();
-                    m.removeReaction(":indifferent_tick:667450939208368130", user).queue();
-                }
-            }
+            Properties config = Utils.config;
+            HashMap<String, Runnable> map = new HashMap<>() {{
+                put(config.getProperty("emoji.green_tick"), () -> {
+                    m.removeReaction(config.getProperty("emoji.indifferent_tick"), user).queue();
+                    m.removeReaction(config.getProperty("emoji.red_tick"), user).queue();
+                });
+                put(config.getProperty("emoji.indifferent_tick"), () -> {
+                    m.removeReaction(config.getProperty("emoji.green_tick"), user).queue();
+                    m.removeReaction(config.getProperty("emoji.red_tick"), user).queue();
+                });
+                put(config.getProperty("emoji.red_tick"), () -> {
+                    m.removeReaction(config.getProperty("emoji.green_tick"), user).queue();
+                    m.removeReaction(config.getProperty("emoji.indifferent_tick"), user).queue();
+                });
+            }};
+
+            map.get(e.getReactionEmote().getEmote().getAsMention()).run();
+
+
             int pro = 0;
             int con = 0;
             int indif = 0;
+
             for (MessageReaction reaction : m.getReactions()){
-                switch (reaction.getReactionEmote().getEmote().getId()){
-                    case "667450925677543454" -> pro = reaction.getCount();
-                    case "667450939208368130" -> indif = reaction.getCount();
-                    case "667450953217212436" -> con = reaction.getCount();
+                String emoji = reaction.getReactionEmote().getEmote().getAsMention();
+                if (config.getProperty("emoji.green_tick").equals(emoji)){
+                    pro = reaction.getCount();
+                } else if (config.getProperty("emoji.indifferent_tick").equals(emoji)){
+                    indif = reaction.getCount();
+                } else if (config.getProperty("emoji.red_tick").equals(emoji)){
+                    con = reaction.getCount();
                 }
             }
             List<MessageEmbed> embedList = m.getEmbeds();
@@ -218,45 +224,43 @@ public class ReactionListener extends ListenerAdapter {
             File dir = new File(String.format("%s/%s", pathname, command));
             int max = dir.listFiles().length;
             Properties config = Utils.config;
-            switch (emoji){
-                case "◀" -> {
-                    m.removeReaction(emoji, user).queue();
-                    if (n != 0){
-                        n--;
-                        eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
-                        eb.setDescription(String.format("%d.jpg", n));
-                        m.editMessage(eb.build()).queue();
-                    }
-                }
-                case "\uD83D\uDDD1" -> {
-                    //remove image
 
-                    File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
-                    foto.delete();
-                    for (int i = n + 1; i < max; i++){
-                        foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
-                        foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
-                    }
-                    eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"),command, n, random.nextInt(), random.nextInt()));
+
+            if (config.getProperty("emoji.previous").equals(emoji)){
+                m.removeReaction(emoji, user).queue();
+                if (n != 0){
+                    n--;
+                    eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
+                    eb.setDescription(String.format("%d.jpg", n));
                     m.editMessage(eb.build()).queue();
-                    if (dir.listFiles().length == 0){
-                        dir.delete();
-                        commandHandler.closeExplorer(command, m);
-                    } else {
-                        m.removeReaction(emoji, user).queue();
-                    }
                 }
-                case "▶" -> {
-                    m.removeReaction(emoji, user).queue();
-                    if (n != max - 1){
-                        n++;
-                        eb.setImage(String.format("%S/%s/%d&%d=%d", config.getProperty("pictures.url"),command, n, random.nextInt(), random.nextInt()));
-                        eb.setDescription(String.format("%d.jpg", n));
-                        m.editMessage(eb.build()).queue();
+            } else if (config.getProperty("emoji.trash").equals(emoji)){//remove image
 
-                    }
+                File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
+                foto.delete();
+                for (int i = n + 1; i < max; i++){
+                    foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
+                    foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
                 }
-                case "❌" -> commandHandler.closeExplorer(command, m);
+                eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
+                m.editMessage(eb.build()).queue();
+                if (dir.listFiles().length == 0){
+                    dir.delete();
+                    commandHandler.closeExplorer(command, m);
+                } else {
+                    m.removeReaction(emoji, user).queue();
+                }
+            } else if (config.getProperty("emoji.next").equals(emoji)){
+                m.removeReaction(emoji, user).queue();
+                if (n != max - 1){
+                    n++;
+                    eb.setImage(String.format("%S/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
+                    eb.setDescription(String.format("%d.jpg", n));
+                    m.editMessage(eb.build()).queue();
+
+                }
+            } else if (config.getProperty("emoji.cancel").equals(emoji)){
+                commandHandler.closeExplorer(command, m);
             }
         }
     }
@@ -280,67 +284,65 @@ public class ReactionListener extends ListenerAdapter {
         if (emoji.isEmoji() && unoGame != null && message.getIdLong() == unoGame.getMessageID()){
             ArrayList<UnoHand> hands = unoGame.getHands();
             MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
-            switch (emoji.getEmoji()){
-                case "▶️":
-                    if (unoGame.getStarter() == member.getIdLong() && unoGame.getTurn() == -1){
-                        int turn = unoGame.start();
-                        if (turn != -1){
-                            guild.createCategory("Uno")
-                                    .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                    .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(category -> {
-                                        unoGame.setCategory(category.getIdLong());
-                                        guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(Math.min(guild.getCategories().size() - 1, 2)).queue();
+            String emojiEmoji = emoji.getEmoji();
+            Properties config = Utils.config;
+            if (config.getProperty("emoji.uno.start").equals(emojiEmoji)){
+                if (unoGame.getStarter() == member.getIdLong() && unoGame.getTurn() == -1){
+                    int turn = unoGame.start();
+                    if (turn != -1){
+                        guild.createCategory("Uno")
+                                .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
+                                .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).queue(category -> {
+                                    unoGame.setCategory(category.getIdLong());
+                                    guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(Math.min(guild.getCategories().size() - 1, 2)).queue();
 
-                                        String prefix = new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0);
-                                        String help = language.getString("uno.help", prefix);
-                                        for (UnoHand hand : hands){
-                                            category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
-                                                    .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                                    .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
-                                                    .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic(help).queue(channel -> {
-                                                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId(), language).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
-                                                            hand.setChannelId(channel.getIdLong());
-                                                            hand.setMessageId(mes.getIdLong());
-                                                        });
+                                    String prefix = new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0);
+                                    String help = language.getString("uno.help", prefix);
+                                    for (UnoHand hand : hands){
+                                        category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))
+                                                .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
+                                                .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
+                                                .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic(help).queue(channel -> {
+                                                    channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(unoGame.createEmbed(hand.getPlayerId(), language).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
+                                                        hand.setChannelId(channel.getIdLong());
+                                                        hand.setMessageId(mes.getIdLong());
                                                     });
-                                        }
-                                    });
-                        } else {
-                            message.removeReaction((Emote) emoji, member.getUser()).queue();
-                        }
+                                                });
+                                    }
+                                });
+                    } else {
+                        message.removeReaction((Emote) emoji, member.getUser()).queue();
                     }
-                    break;
-                case "❌":
-                    if (unoGame.getStarter() == member.getIdLong()){
-                        for (long channelId : unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList())){
-                            if (channelId != -1) guild.getTextChannelById(channelId).delete().queue();
-                        }
-                        if (unoGame.getTurn() != -1){
-                            guild.getCategoryById(unoGame.getCategory()).delete().queue();
-                        }
-                        MessageEmbed me = message.getEmbeds().get(0);
-                        EmbedBuilder eb = new EmbedBuilder(me);
-                        eb.setTitle(language.getString("uno.embed.cancelled"));
-                        message.editMessage(eb.build()).queue();
-                        gameHandler.removeUnoGame(guild.getIdLong());
+                }
+            } else if (config.getProperty("emoji.cancel").equals(emojiEmoji)){
+                if (unoGame.getStarter() == member.getIdLong()){
+                    for (long channelId : unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList())){
+                        if (channelId != -1) guild.getTextChannelById(channelId).delete().queue();
                     }
-                    break;
-                case "\uD83D\uDD90️":
-                    if (unoGame.getTurn() == -1 && !hands.stream().map(UnoHand::getPlayerId).collect(Collectors.toList()).contains(member.getIdLong())){
-                        unoGame.addPlayer(member.getIdLong(), member.getEffectiveName());
-                        MessageEmbed me = message.getEmbeds().get(0);
-                        EmbedBuilder eb = new EmbedBuilder(me);
-                        eb.clearFields();
-                        MessageEmbed.Field f = me.getFields().get(0);
-                        StringBuilder sb = new StringBuilder();
-                        for (String name : hands.stream().map(UnoHand::getPlayerName).collect(Collectors.toList())){
-                            sb.append(name);
-                            sb.append("\n");
-                        }
-                        eb.addField(f.getName(), sb.toString().trim(), false);
-                        message.editMessage(eb.build()).queue();
+                    if (unoGame.getTurn() != -1){
+                        guild.getCategoryById(unoGame.getCategory()).delete().queue();
                     }
-                    break;
+                    MessageEmbed me = message.getEmbeds().get(0);
+                    EmbedBuilder eb = new EmbedBuilder(me);
+                    eb.setTitle(language.getString("uno.embed.cancelled"));
+                    message.editMessage(eb.build()).queue();
+                    gameHandler.removeUnoGame(guild.getIdLong());
+                }
+            } else if (config.getProperty("emoji.uno.join").equals(emojiEmoji)){
+                if (unoGame.getTurn() == -1 && !hands.stream().map(UnoHand::getPlayerId).collect(Collectors.toList()).contains(member.getIdLong())){
+                    unoGame.addPlayer(member.getIdLong(), member.getEffectiveName());
+                    MessageEmbed me = message.getEmbeds().get(0);
+                    EmbedBuilder eb = new EmbedBuilder(me);
+                    eb.clearFields();
+                    MessageEmbed.Field f = me.getFields().get(0);
+                    StringBuilder sb = new StringBuilder();
+                    for (String name : hands.stream().map(UnoHand::getPlayerName).collect(Collectors.toList())){
+                        sb.append(name);
+                        sb.append("\n");
+                    }
+                    eb.addField(f.getName(), sb.toString().trim(), false);
+                    message.editMessage(eb.build()).queue();
+                }
             }
         }
     }

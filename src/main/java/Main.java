@@ -54,8 +54,8 @@ public class Main {
         DataHandler.setUserId(config.getProperty("jdbc.user"));
         DataHandler.setPASSWD(config.getProperty("jdbc.passwd"));
         new DataHandler().createDatabase();
-        JDA jda = JDABuilder.createDefault(args[0]).enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).build();
-        GitHub github = new GitHubBuilder().withOAuthToken(args[1]).build();
+        JDA jda = JDABuilder.createDefault(config.getProperty("token")).enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).build();
+        GitHub github = new GitHubBuilder().withOAuthToken(config.getProperty("gh_token")).build();
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("!help"));
         jda.setAutoReconnect(true);
         MessageListener ml = new MessageListener(github);
