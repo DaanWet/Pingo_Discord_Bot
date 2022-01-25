@@ -58,7 +58,7 @@ public class ListIssues extends Command {
         }
         eb.setFooter(repo.getHtmlUrl().toString());
         eb.setDescription(sb.toString());
-        e.getChannel().sendMessage(eb.build()).queue();
+        e.getChannel().sendMessageEmbeds(eb.build()).queue();
 
 
     }

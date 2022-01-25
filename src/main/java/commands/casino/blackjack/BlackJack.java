@@ -68,7 +68,7 @@ public class BlackJack extends BCommand {
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
             eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);
         }
-        e.getChannel().sendMessage(eb.build()).queue(m -> {
+        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());
             else
                 updateRecords(guildId, playerId, dataHandler, bjg.getWonCreds(), m.getJumpUrl());

@@ -33,7 +33,7 @@ public class Weekly extends Command {
             throw new MessageException(this.getUsage());
 
         DataHandler dataHandler = new DataHandler();
-        Long id = e.getAuthor().getIdLong();
+        long id = e.getAuthor().getIdLong();
         LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (latestcollect != null && !LocalDateTime.now().minusDays(7).isAfter(latestcollect)){

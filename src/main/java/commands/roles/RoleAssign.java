@@ -57,7 +57,7 @@ public class RoleAssign extends RoleCommand {
             });
         }
         EmbedBuilder eb = getRoleEmbed(roles, args[0], data, language);
-        e.getChannel().sendMessage(eb.build()).queue(m -> {
+        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             dataHandler.setMessage(e.getGuild().getIdLong(), args[0], m.getTextChannel().getIdLong(), m.getIdLong());
             for (RoleAssignRole obj : roles){
                 m.addReaction(obj.getEmoji().replaceFirst("<", "").replaceFirst(">$", "")).queue();

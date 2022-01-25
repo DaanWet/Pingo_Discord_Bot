@@ -23,7 +23,7 @@ public class JoinListener extends ListenerAdapter {
             eb.setTitle(String.format("Gegroet %s!", e.getMember().getEffectiveName()));
             eb.setDescription("Persoonlijke groet hier");
             eb.setImage("https://i.ytimg.com/vi/4W2JKk2czxE/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLA2x0ei5aHAPLflKjlBsYsaLlcJRQ");
-            e.getGuild().getTextChannelById(805176551392935967L).sendMessage(eb.build()).queue();
+            e.getGuild().getTextChannelById(805176551392935967L).sendMessageEmbeds(eb.build()).queue();
         }
     }
 }

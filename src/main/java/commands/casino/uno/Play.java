@@ -71,7 +71,7 @@ public class Play extends Command {
                         EmbedBuilder eb = unoGame.createEmbed(player, language);
                         eb.setColor(color);
                         if (unoGame.isFinished()){
-                            message.editMessage(eb.build()).queue();
+                            message.editMessageEmbeds(eb.build()).queue();
                             EmbedBuilder eb2 = new EmbedBuilder();
                             int size = hands.size() - 1;
                             int bet = unoGame.getBet();
@@ -83,41 +83,41 @@ public class Play extends Command {
 
                             if (bet != 0) dataHandler.addCredits(e.getGuild().getIdLong(), player, -1 * credits);
                             eb2.setColor(color);
-                            channel.sendMessage(eb2.build()).queue();
+                            channel.sendMessageEmbeds(eb2.build()).queue();
                             channel.delete().queueAfter(1, TimeUnit.MINUTES);
                         } else if (newturn == finalI){
-                            message.editMessage(eb.build()).queue();
+                            message.editMessageEmbeds(eb.build()).queue();
                             EmbedBuilder eb2 = new EmbedBuilder();
                             eb2.setTitle(language.getString("uno.turn"));
                             eb2.setColor(color);
-                            channel.sendMessage(eb2.build()).queue();
+                            channel.sendMessageEmbeds(eb2.build()).queue();
                         } else if (Utils.isBetween(unoGame, turn, finalI) && (card.getValue() == UnoCard.Value.PLUSFOUR || card.getValue() == UnoCard.Value.PLUSTWO)){
                             EmbedBuilder eb2 = new EmbedBuilder();
                             eb2.setColor(color);
                             eb2.setTitle(language.getString("uno.draw", card.getValue() == UnoCard.Value.PLUSTWO ? 2 : 4, hands.get(turn).getPlayerName(), card));
-                            channel.sendMessage(eb2.build()).queue();
-                            channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
+                            channel.sendMessageEmbeds(eb2.build()).queue();
+                            channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").setEmbeds(eb.build()).queueAfter(1, TimeUnit.SECONDS, newmessage -> hand.setMessageId(newmessage.getIdLong()));
                         } else {
-                            message.editMessage(eb.build()).queue();
+                            message.editMessageEmbeds(eb.build()).queue();
                         }
                     });
                 } else {
                     if (!unoGame.isFinished()){
                         EmbedBuilder eb = unoGame.createEmbed(player, language);
                         eb.setColor(guild.getSelfMember().getColor());
-                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").embed(eb.build()).queue(newmessage -> hand.setMessageId(newmessage.getIdLong()));
+                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").setEmbeds(eb.build()).queue(newmessage -> hand.setMessageId(newmessage.getIdLong()));
                     } else {
                         EmbedBuilder eb2 = new EmbedBuilder();
                         int size = hands.size() - 1;
                         int credits = unoGame.getBet() == 0 ? 200 * size : unoGame.getBet() * size;
                         eb2.setTitle(language.getString("uno.win.you", card, credits));
                         dataHandler.addCredits(guild.getIdLong(), player, credits);
-                        channel.sendMessage(eb2.build()).queue();
+                        channel.sendMessageEmbeds(eb2.build()).queue();
                         guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
                             EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));
                             eb.setTitle(language.getString("uno.end"));
                             eb.setDescription(language.getString("uno.win.short", hand.getPlayerName(), credits));
-                            m.editMessage(eb.build()).queue();
+                            m.editMessageEmbeds(eb.build()).queue();
                         });
                         channel.delete().queueAfter(1, TimeUnit.MINUTES); // Should this value be added to properties?
 

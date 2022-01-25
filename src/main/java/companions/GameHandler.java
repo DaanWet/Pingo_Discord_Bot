@@ -26,7 +26,7 @@ public class GameHandler {
     }
 
     public BlackJackGame getBlackJackGame(long guildId, long user){
-        return blackJackGames.getOrDefault(guildId, new HashMap<Long, BlackJackGame>()).getOrDefault(user, null);
+        return blackJackGames.getOrDefault(guildId, new HashMap<>()).getOrDefault(user, null);
     }
 
     public void removeBlackJackGame(long guildId, long user){

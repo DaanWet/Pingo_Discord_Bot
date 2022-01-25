@@ -116,7 +116,7 @@ public class EditRoleAssign extends RoleCommand {
             guild.getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                 if (m != null){
                     EmbedBuilder eb = getRoleEmbed(dh.getRoles(guild.getIdLong(), category), category, data, language);
-                    m.editMessage(eb.build()).queue();
+                    m.editMessageEmbeds(eb.build()).queue();
                 }
             });
         }

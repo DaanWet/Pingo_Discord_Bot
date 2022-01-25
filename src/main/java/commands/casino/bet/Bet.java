@@ -70,7 +70,7 @@ public class Bet extends Command {
             MessageEmbed me = m.getEmbeds().get(0);
             EmbedBuilder eb = new EmbedBuilder(me);
             eb.appendDescription("\n").appendDescription(language.getString("bet.success", String.format("<@!%d>", userId), bet, answer));
-            m.editMessage(eb.build()).queue();
+            m.editMessageEmbeds(eb.build()).queue();
         });
 
     }

@@ -14,12 +14,10 @@ public class RecordPaginator extends EmbedPaginator {
 
     private final String record;
     private final Long guildId;
-    private final Properties properties;
 
-    public RecordPaginator(String record, Long guildId, Properties properties){
+    public RecordPaginator(String record, Long guildId){
         this.record = record;
         this.guildId = guildId;
-        this.properties = properties;
     }
 
 

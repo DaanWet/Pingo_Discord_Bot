@@ -44,6 +44,7 @@ public enum Setting {
         private final TypeDescription typeDescription;
         private final String[] aliases;
 
+        @SuppressWarnings("SameParameterValue")
         Type(String name, String[] aliases, TypeDescription typeDescription){
             this.name = name;
             this.typeDescription = typeDescription;

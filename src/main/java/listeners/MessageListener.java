@@ -61,9 +61,7 @@ public class MessageListener extends ListenerAdapter {
                 channel.sendMessage(language.getString("tts.muted", e.getMember().getAsMention())).queue();
                 Role role = guild.getRoleById(598551156867858442L);
                 List<Role> roles = e.getMember().getRoles();
-                guild.modifyMemberRoles(e.getMember(), role).queue(em -> {
-                    guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES);
-                });
+                guild.modifyMemberRoles(e.getMember(), role).queue(em -> guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES));
             }
 
             String contentRaw = e.getMessage().getContentRaw();
@@ -76,7 +74,7 @@ public class MessageListener extends ListenerAdapter {
                 try {
                     commandListener.onCommandReceived(e);
                 } catch (EmbedException exc){
-                    e.getChannel().sendMessage(exc.getEmbed().build()).queue(m -> {
+                    e.getChannel().sendMessageEmbeds(exc.getEmbed().build()).queue(m -> {
                         if (exc.getDelete() != 0)
                             m.delete().queueAfter(exc.getDelete(), TimeUnit.SECONDS);
                     });
@@ -112,7 +110,7 @@ public class MessageListener extends ListenerAdapter {
         eb.setAuthor(author.getName(), null, author.getEffectiveAvatarUrl());
         eb.setDescription(content);
         eb.setColor(g.getSelfMember().getColorRaw());
-        channel.sendMessage(eb.build()).queue(m -> {
+        channel.sendMessageEmbeds(eb.build()).queue(m -> {
             Properties config = Utils.config;
             m.addReaction(config.getProperty("emoji.green_tick")).queue();
             m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();

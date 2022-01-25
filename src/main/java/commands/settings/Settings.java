@@ -33,7 +33,7 @@ public class Settings extends Command {
             for (Setting.Type type : Setting.Type.values()){
                 eb.addField(type.getName(), language.getString("settings.error.category", type.getName(), prefix, type.getName().toLowerCase()), true);
             }
-            e.getChannel().sendMessage(eb.build()).queue();
+            e.getChannel().sendMessageEmbeds(eb.build()).queue();
             return;
         }
         Setting.Type type = Setting.Type.fromString(args[0]);
@@ -45,7 +45,7 @@ public class Settings extends Command {
             eb.setTitle(String.format("%s Settings", type.getName()));
             List<Setting> settings = Setting.getTypeMap().get(type);
             eb = type.getTypeDescription().getDescription(settings, eb, prefix, language);
-            e.getChannel().sendMessage(eb.build()).queue();
+            e.getChannel().sendMessageEmbeds(eb.build()).queue();
         } else {
             Setting setting = Setting.fromString(args[1], type);
             if (setting == null)
@@ -58,7 +58,7 @@ public class Settings extends Command {
                 for (Setting.SubSetting subs : setting.getSubSettings()){
                     addField(eb, setting, subs, dataHandler, e.getGuild(), prefix, language);
                 }
-                e.getChannel().sendMessage(eb.build()).queue();
+                e.getChannel().sendMessageEmbeds(eb.build()).queue();
             } else {
                 Setting.SubSetting subs = Setting.SubSetting.fromString(args[2]);
                 String emoji = Utils.config.getProperty("emoji.green_tick");
@@ -83,7 +83,7 @@ public class Settings extends Command {
                     } else {
                         eb.setTitle(language.getString("settings.subtitle", name, subs.toString().toLowerCase()));
                         addField(eb, setting, subs, dataHandler, e.getGuild(), prefix, language);
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        e.getChannel().sendMessageEmbeds(eb.build()).queue();
                     }
                 } else {
                     if (setting.isMultiple()){

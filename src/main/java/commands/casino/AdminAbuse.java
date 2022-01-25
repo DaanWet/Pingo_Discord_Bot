@@ -28,7 +28,7 @@ public class AdminAbuse extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         DataHandler dataHandler = new DataHandler();
-        int coins = 0;
+        int coins;
         Member target;
         String msg;
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());

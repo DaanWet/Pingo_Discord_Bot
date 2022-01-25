@@ -44,9 +44,7 @@ public class StartBet extends Command {
         eb.setTitle(Utils.concat(args, 0));
         CustomBet bet = gameHandler.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
         eb.setFooter(language.getString("start_bet.footer", bet.getID()));
-        e.getChannel().sendMessage(eb.build()).queue(m -> {
-            bet.setIds(m.getChannel().getIdLong(), m.getIdLong());
-        });
+        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> bet.setIds(m.getChannel().getIdLong(), m.getIdLong()));
         e.getMessage().delete().queue();
 
     }

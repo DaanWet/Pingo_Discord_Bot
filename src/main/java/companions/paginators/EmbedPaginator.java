@@ -29,7 +29,7 @@ public abstract class EmbedPaginator {
     }
 
     public void sendMessage(TextChannel channel, @Nullable Consumer<Message> consumer){
-        channel.sendMessage(createEmbed())
+        channel.sendMessageEmbeds(createEmbed())
                 .queue(m ->
                        {
                            if (consumer != null)
