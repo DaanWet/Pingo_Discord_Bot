@@ -2,7 +2,7 @@ package commands.casino.blackjack;
 
 import companions.GameHandler;
 import companions.cardgames.BlackJackGame;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.MyResourceBundle;
@@ -27,13 +27,13 @@ public class DoubleDown extends BCommand {
             if (!bjg.canDouble()){
                 throw new MessageException(language.getString("bj.error.invalid"));
             }
-            DataHandler dataHandler = new DataHandler();
-            if (new DataHandler().getCredits(guildId, id) < 2 * bjg.getBet()){
+            CreditDataHandler dataHandler = new CreditDataHandler();
+            if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet()){
                 throw new MessageException(language.getString("credit.error.not_enough.short"));
             }
 
             bjg.doubleDown();
-            updateMessage(e.getChannel(), bjg, dataHandler, guildId, id, e.getAuthor().getName(), language);
+            updateMessage(e, bjg, dataHandler, language);
         }
     }
 }

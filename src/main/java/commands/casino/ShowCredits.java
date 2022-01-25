@@ -5,7 +5,7 @@ import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.GameHandler;
 import companions.paginators.BalancePaginator;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
@@ -32,7 +32,7 @@ public class ShowCredits extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        DataHandler dataHandler = new DataHandler();
+        CreditDataHandler dataHandler = new CreditDataHandler();
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length == 0){
             e.getChannel().sendMessage(language.getString("balance", dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()))).queue();

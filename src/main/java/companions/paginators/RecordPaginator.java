@@ -1,6 +1,6 @@
 package companions.paginators;
 
-import data.DataHandler;
+import data.handlers.RecordDataHandler;
 import data.models.RecordData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -8,7 +8,6 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class RecordPaginator extends EmbedPaginator {
 
@@ -23,7 +22,7 @@ public class RecordPaginator extends EmbedPaginator {
 
     @Override
     public MessageEmbed createEmbed(){
-        DataHandler dataHandler = new DataHandler();
+        RecordDataHandler dataHandler = new RecordDataHandler();
         EmbedBuilder eb = new EmbedBuilder();
         boolean isInt = dataHandler.isInt(record);
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords(record) : dataHandler.getRecords(guildId, record);

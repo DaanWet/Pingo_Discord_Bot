@@ -5,7 +5,7 @@ import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.CustomBet;
 import companions.GameHandler;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -66,7 +66,7 @@ public class EndBet extends Command {
         bet.end();
         int winnerTotal = 0;
         int prize = 0;
-        DataHandler dh = new DataHandler();
+        CreditDataHandler dh = new CreditDataHandler();
         for (Map.Entry<Long, Pair<Integer, String>> entry : bet.getBets().entrySet()){
             if (winners.contains(entry.getKey()))
                 winnerTotal += entry.getValue().getLeft();

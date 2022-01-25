@@ -6,8 +6,9 @@ import companions.GameHandler;
 import companions.paginators.EmbedPaginator;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
-import data.DataHandler;
 import data.ImageHandler;
+import data.handlers.RRDataHandler;
+import data.handlers.SettingsDataHandler;
 import data.models.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -61,7 +62,7 @@ public class ReactionListener extends ListenerAdapter {
             return;
         }
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
-        String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
+        String roleCat = new RRDataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
         if (roleCat != null){
             try {
                 handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), true);
@@ -94,7 +95,7 @@ public class ReactionListener extends ListenerAdapter {
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e){
         e.retrieveMember().queue(u -> {
             if (!u.getUser().isBot()){
-                String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
+                String roleCat = new RRDataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
                 if (roleCat != null){
                     try {
                         handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, u, false);
@@ -272,7 +273,7 @@ public class ReactionListener extends ListenerAdapter {
     }
 
     public void handleRoleReaction(String emote, Guild g, String category, Member m, boolean add){
-        ArrayList<RoleAssignRole> gameroles = new DataHandler().getRoles(g.getIdLong(), category);
+        ArrayList<RoleAssignRole> gameroles = new RRDataHandler().getRoles(g.getIdLong(), category);
         for (RoleAssignRole obj : gameroles){
             if (emote.equals(obj.getEmoji().replaceFirst("<:", "").replaceFirst(">$", ""))){
                 if (add){
@@ -302,7 +303,7 @@ public class ReactionListener extends ListenerAdapter {
                                     unoGame.setCategory(category.getIdLong());
                                     guild.modifyCategoryPositions().selectPosition(category.getPosition()).moveTo(Math.min(guild.getCategories().size() - 1, 2)).queue();
 
-                                    String prefix = new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0);
+                                    String prefix = new SettingsDataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0);
                                     String help = language.getString("uno.help", prefix);
                                     for (UnoHand hand : hands){
                                         category.createTextChannel(String.format("%s-uno", hand.getPlayerName()))

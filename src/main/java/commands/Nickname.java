@@ -1,7 +1,7 @@
 package commands;
 
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -42,7 +42,7 @@ public class Nickname extends Command {
                     throw new MessageException(language.getString("nick.error.name"));
 
                 target.modifyNickname(nick).queue();
-                new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.NICKNAME, LocalDateTime.now());
+                new SettingsDataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.NICKNAME, LocalDateTime.now());
 
             } catch (HierarchyException hexc){
                 throw new MessageException(language.getString("nick.error.perm"));

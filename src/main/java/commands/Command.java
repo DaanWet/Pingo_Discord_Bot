@@ -2,7 +2,7 @@ package commands;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -48,7 +48,7 @@ public abstract class Command {
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
     protected CommandState canBeExecuted(long guildId, long channelId, Member member, Setting setting){
-        DataHandler dataHandler = new DataHandler();
+        SettingsDataHandler dataHandler = new SettingsDataHandler();
         CommandState state = CommandState.DISABLED;
         boolean enabled = dataHandler.getBoolSetting(guildId, setting);
         long userId = member.getIdLong();

@@ -2,7 +2,7 @@ package commands.roles;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.RRDataHandler;
 import data.models.RoleAssignData;
 import data.models.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -33,7 +33,7 @@ public class RoleAssign extends RoleCommand {
         if (args.length == 0 || args.length > 2)
             throw new MessageException(getUsage(), 10);
 
-        DataHandler dataHandler = new DataHandler();
+        RRDataHandler dataHandler = new RRDataHandler();
         ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (roles == null)

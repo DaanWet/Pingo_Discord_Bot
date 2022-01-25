@@ -24,7 +24,7 @@ import commands.suggestion.ListIssues;
 import commands.suggestion.Suggest;
 import companions.GameHandler;
 import companions.paginators.OpenExplorerData;
-import data.DataHandler;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -124,7 +124,7 @@ public class CommandHandler {
         Message message = e.getMessage();
         updateNickName(e.getGuild().getSelfMember().getEffectiveName());
         String[] words = split(message.getContentRaw()).toArray(new String[]{});
-        String prefix = new DataHandler().getStringSetting(e.getGuild().getIdLong(), Setting.PREFIX).get(0);
+        String prefix = new SettingsDataHandler().getStringSetting(e.getGuild().getIdLong(), Setting.PREFIX).get(0);
         String command = words[0].substring(prefix.length());
 
         boolean commandFound = false;

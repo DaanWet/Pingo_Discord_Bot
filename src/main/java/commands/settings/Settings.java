@@ -1,7 +1,7 @@
 package commands.settings;
 
 import commands.Command;
-import data.DataHandler;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -22,7 +22,7 @@ public class Settings extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        DataHandler dataHandler = new DataHandler();
+        SettingsDataHandler dataHandler = new SettingsDataHandler();
         long guildId = e.getGuild().getIdLong();
         String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = new EmbedBuilder();
@@ -104,7 +104,7 @@ public class Settings extends Command {
         }
     }
 
-    private void addField(EmbedBuilder eb, Setting setting, Setting.SubSetting subs, DataHandler dataHandler, Guild guild, String prefix, MyResourceBundle language){
+    private void addField(EmbedBuilder eb, Setting setting, Setting.SubSetting subs, SettingsDataHandler dataHandler, Guild guild, String prefix, MyResourceBundle language){
         long guildId = guild.getIdLong();
         boolean close = true;
         StringBuilder fieldName = new StringBuilder();
@@ -223,7 +223,7 @@ public class Settings extends Command {
         eb.addField(fieldName.toString(), fieldValue.toString(), false);
     }
 
-    public void handleSet(Setting setting, Setting.SubSetting subSetting, long guildId, String value, DataHandler dataHandler, Message message, MyResourceBundle language) throws Exception{
+    public void handleSet(Setting setting, Setting.SubSetting subSetting, long guildId, String value, SettingsDataHandler dataHandler, Message message, MyResourceBundle language) throws Exception{
         String green = Utils.config.getProperty("emoji.green_tick");
         switch (subSetting == null ? setting.getValueType() : subSetting.getValueType()){
             case BOOLEAN -> {
@@ -294,7 +294,7 @@ public class Settings extends Command {
     }
 
 
-    private void handleMultiSet(Setting setting, Setting.SubSetting subSetting, long guildId, String[] values, boolean add, DataHandler dataHandler, Message message, MyResourceBundle language) throws Exception{
+    private void handleMultiSet(Setting setting, Setting.SubSetting subSetting, long guildId, String[] values, boolean add, SettingsDataHandler dataHandler, Message message, MyResourceBundle language) throws Exception{
         boolean good = true;
         Boolean clear = add ? null : false;
         StringBuilder wrongValues = new StringBuilder();
@@ -392,7 +392,7 @@ public class Settings extends Command {
         message.addReaction(Utils.config.getProperty("emoji.green_tick")).queue();
     }
 
-    private void handleClear(Setting setting, Setting.SubSetting subSetting, long guildId, DataHandler dataHandler) throws Exception{
+    private void handleClear(Setting setting, Setting.SubSetting subSetting, long guildId, SettingsDataHandler dataHandler) throws Exception{
         switch (subSetting == null ? setting.getValueType() : subSetting.getValueType()){
             case INTEGER -> dataHandler.setIntSetting(guildId, setting, subSetting, 0, true);
             case STRING -> dataHandler.setStringSetting(guildId, setting, subSetting, null, true);
@@ -415,7 +415,7 @@ public class Settings extends Command {
         return type;
     }
 
-    private boolean parseLong(Setting setting, Setting.SubSetting subSetting, Long guildId, Boolean clear, Message message, String value, DataHandler dataHandler) throws Exception{
+    private boolean parseLong(Setting setting, Setting.SubSetting subSetting, Long guildId, Boolean clear, Message message, String value, SettingsDataHandler dataHandler) throws Exception{
         Long id = Utils.isLong(value);
         TextChannel channel = message.getGuild().getTextChannelById(id);
         Role role = message.getGuild().getRoleById(id);

@@ -1,4 +1,5 @@
-import data.DataHandler;
+import data.handlers.GeneralDataHandler;
+import data.handlers.DataHandler;
 import listeners.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -53,7 +54,8 @@ public class Main {
         Properties config = Utils.config;
         DataHandler.setUserId(config.getProperty("jdbc.user"));
         DataHandler.setPASSWD(config.getProperty("jdbc.passwd"));
-        new DataHandler().createDatabase();
+        DataHandler.setJdbcUrl(config.getProperty("jdbc.url"));
+        new GeneralDataHandler().createDatabase();
         JDA jda = JDABuilder.createDefault(config.getProperty("token")).enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).build();
         GitHub github = new GitHubBuilder().withOAuthToken(config.getProperty("gh_token")).build();
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("!help"));

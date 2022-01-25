@@ -3,7 +3,7 @@ package commands.roles;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.RRDataHandler;
 import data.models.RoleAssignData;
 import data.models.RoleAssignRole;
 import net.dv8tion.jda.api.Permission;
@@ -33,17 +33,15 @@ public class AddRoleAssign extends RoleCommand {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        DataHandler dataHandler = new DataHandler();
+        RRDataHandler dataHandler = new RRDataHandler();
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
-        if (args.length == 0)
-            throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());
-        if (args.length == 1)
-            throw new MessageException(language.getString("roleassign.error.no_emoji") + "\n" + getUsage());
-        if (args.length == 2)
-            throw new MessageException(language.getString("roleassign.error.no_role") + "\n" + getUsage());
-        if (args.length == 3)
-            throw new MessageException(language.getString("roleassign.error.no_name") + "\n" + getUsage());
+        switch(args.length){
+            case 0 -> throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());
+            case 1 -> throw new MessageException(language.getString("roleassign.error.no_emoji") + "\n" + getUsage());
+            case 2 -> throw new MessageException(language.getString("roleassign.error.no_role") + "\n" + getUsage());
+            case 3 -> throw new MessageException(language.getString("roleassign.error.no_name") + "\n" + getUsage());
+        }
 
         if (!dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0]))
             throw new MessageException(language.getString("roleassign.error.category") + "\n" + getUsage());

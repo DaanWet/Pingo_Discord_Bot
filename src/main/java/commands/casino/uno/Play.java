@@ -5,8 +5,8 @@ import companions.GameHandler;
 import companions.uno.UnoCard;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
-import data.DataHandler;
 import data.ImageHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -64,7 +64,7 @@ public class Play extends Command {
                 UnoHand hand = hands.get(i);
                 long player = hand.getPlayerId();
                 TextChannel channel = guild.getTextChannelById(hand.getChannelId());
-                DataHandler dataHandler = new DataHandler();
+                CreditDataHandler dataHandler = new CreditDataHandler();
                 if (player != e.getMember().getIdLong()){
                     int finalI = i;
                     channel.retrieveMessageById(hand.getMessageId()).queue(message -> {

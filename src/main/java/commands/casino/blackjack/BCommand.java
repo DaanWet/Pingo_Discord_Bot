@@ -4,10 +4,13 @@ import commands.Command;
 import commands.settings.Setting;
 import companions.GameHandler;
 import companions.cardgames.BlackJackGame;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
+import data.handlers.RecordDataHandler;
+import data.handlers.SettingsDataHandler;
 import data.models.RecordData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MyResourceBundle;
 
 public abstract class BCommand extends Command {
@@ -20,23 +23,26 @@ public abstract class BCommand extends Command {
         this.hidden = true;
     }
 
-    protected void updateMessage(TextChannel channel, BlackJackGame bjg, DataHandler dataHandler, long guildId, long id, String author, MyResourceBundle language){
+    protected void updateMessage(GuildMessageReceivedEvent e, BlackJackGame bjg, CreditDataHandler dataHandler, MyResourceBundle language){
+        long guildId = e.getGuild().getIdLong();
+        long id = e.getMessageIdLong();
         if (bjg.hasEnded())
             gameHandler.removeBlackJackGame(guildId, id);
-        channel.retrieveMessageById(bjg.getMessageId()).queue(m -> {
-            String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
-            EmbedBuilder eb = bjg.buildEmbed(author, prefix, language);
+        e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
+            String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
+            EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName(), prefix, language);
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);
                 eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);
-                updateRecords(guildId, id, dataHandler, won_lose, m.getJumpUrl());
+                updateRecords(guildId, id, won_lose, m.getJumpUrl());
             }
             m.editMessageEmbeds(eb.build()).queue();
         });
     }
 
-    protected void updateRecords(long guildId, long playerId, DataHandler dataHandler, int won_lose, String jumpurl){
+    protected void updateRecords(long guildId, long playerId, int won_lose, String jumpurl){
+        RecordDataHandler dataHandler = new RecordDataHandler();
         dataHandler.setRecord(guildId, playerId, won_lose > 0 ? "biggest_bj_win" : "biggest_bj_loss", won_lose > 0 ? won_lose : won_lose * -1, jumpurl, false);
         RecordData played_games = dataHandler.getRecord(guildId, playerId, "bj_games_played");
         RecordData winrate = dataHandler.getRecord(guildId, playerId, "bj_win_rate");

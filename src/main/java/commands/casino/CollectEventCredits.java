@@ -3,7 +3,7 @@ package commands.casino;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -41,7 +41,7 @@ public class CollectEventCredits extends Command {
         if (args.length != 0)
             throw new MessageException(this.getUsage());
         long id = e.getAuthor().getIdLong();
-        DataHandler dataHandler = new DataHandler();
+        CreditDataHandler dataHandler = new CreditDataHandler();
         LocalDateTime latestcollect = dataHandler.getLatestCollect(e.getGuild().getIdLong(), id);
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (latestcollect != null && !LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
@@ -87,7 +87,7 @@ public class CollectEventCredits extends Command {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.GREEN);
         eb.setTitle(language.getString("daily.event.collecting"));
-        eb.setDescription(String.format(eDescription, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL));
+        eb.setDescription(language.getString(eDescription, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL, ROLL));
 
 
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {

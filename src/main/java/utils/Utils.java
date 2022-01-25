@@ -2,7 +2,8 @@ package utils;
 
 import commands.settings.Setting;
 import companions.uno.UnoGame;
-import data.DataHandler;
+import data.handlers.GeneralDataHandler;
+import data.handlers.SettingsDataHandler;
 
 import java.util.*;
 
@@ -116,7 +117,7 @@ public class Utils {
     }
 
     public static MyResourceBundle getLanguage(Long guildId){
-        String setting = new DataHandler().getStringSetting(guildId, Setting.LANGUAGE).get(0);
+        String setting = new SettingsDataHandler().getStringSetting(guildId, Setting.LANGUAGE).get(0);
         return new MyResourceBundle("i18n", new Locale(setting));
     }
 

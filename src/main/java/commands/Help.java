@@ -2,7 +2,7 @@ package commands;
 
 import commands.settings.Setting;
 import companions.GameHandler;
-import data.DataHandler;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -41,7 +41,7 @@ public class Help extends Command {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(e.getGuild().getSelfMember().getColor());
         long guildId = e.getGuild().getIdLong();
-        String prefix = new DataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
+        String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
         MyResourceBundle language = Utils.getLanguage(guildId);
         if (args.length == 1){
             if (args[0].equalsIgnoreCase("moderation")){

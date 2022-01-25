@@ -5,7 +5,7 @@ import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.GameHandler;
 import companions.paginators.RecordPaginator;
-import data.DataHandler;
+import data.handlers.RecordDataHandler;
 import data.models.RecordData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -45,7 +45,7 @@ public class Records extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        DataHandler dataHandler = new DataHandler();
+        RecordDataHandler dataHandler = new RecordDataHandler();
         Guild guild = e.getGuild();
         ArrayList<String> recordTypes = dataHandler.getRecordTypes();
         MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
@@ -119,7 +119,7 @@ public class Records extends Command {
         }
     }
 
-    private EmbedBuilder getRecords(DataHandler dataHandler, MyResourceBundle language, Long guildId){
+    private EmbedBuilder getRecords(RecordDataHandler dataHandler, MyResourceBundle language, Long guildId){
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(language.getString(guildId == null ? "records.global" : "records.local"));
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords() : dataHandler.getRecords(guildId);

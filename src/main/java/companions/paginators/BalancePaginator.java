@@ -1,6 +1,6 @@
 package companions.paginators;
 
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import utils.MyResourceBundle;
@@ -25,7 +25,7 @@ public class BalancePaginator extends EmbedPaginator {
 
     @Override
     public MessageEmbed createEmbed(){
-        DataHandler dataHandler = new DataHandler();
+        CreditDataHandler dataHandler = new CreditDataHandler();
         HashMap<Long, Integer> map = global ? dataHandler.getAllCredits() : dataHandler.getAllCredits(guildId);
         Stream<Map.Entry<Long, Integer>> stream = map.entrySet().stream().sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue());
         List<Map.Entry<Long, Integer>> sorted = stream.collect(Collectors.toList());
