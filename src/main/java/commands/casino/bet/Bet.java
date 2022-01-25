@@ -5,7 +5,7 @@ import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.CustomBet;
 import companions.GameHandler;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -56,7 +56,7 @@ public class Bet extends Command {
         if (bet < 10) // Should this value be added to properties?
             throw new MessageException(language.getString("credit.error.least"));
 
-        if (new DataHandler().getCredits(e.getGuild().getIdLong(), userId) < bet)
+        if (new CreditDataHandler().getCredits(e.getGuild().getIdLong(), userId) < bet)
             throw new MessageException(language.getString("credit.error.not_enough", bet));
 
         if (args.length == 2)

@@ -3,7 +3,7 @@ package commands.casino;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MyResourceBundle;
@@ -27,7 +27,7 @@ public class AdminAbuse extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        DataHandler dataHandler = new DataHandler();
+        CreditDataHandler dataHandler = new CreditDataHandler();
         int coins;
         Member target;
         String msg;

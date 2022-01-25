@@ -1,7 +1,7 @@
 package commands;
 
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.time.LocalDateTime;
@@ -24,6 +24,6 @@ public class Clean extends Command {
             });
             e.getMessage().delete().queue();
         });
-        new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.CLEAN, LocalDateTime.now());
+        new SettingsDataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.CLEAN, LocalDateTime.now());
     }
 }

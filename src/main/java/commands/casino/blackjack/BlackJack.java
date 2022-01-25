@@ -4,7 +4,8 @@ import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.GameHandler;
 import companions.cardgames.BlackJackGame;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -45,7 +46,7 @@ public class BlackJack extends BCommand {
 
         long playerId = author.getIdLong();
         int bet = args.length == 0 ? 0 : Utils.getInt(args[0]);
-        DataHandler dataHandler = new DataHandler();
+        CreditDataHandler dataHandler = new CreditDataHandler();
         if (args.length != 0 && args[0].matches("(?i)all(-?in)?")){
             bet = dataHandler.getCredits(guildId, playerId);
         }
@@ -59,8 +60,9 @@ public class BlackJack extends BCommand {
             throw new MessageException(language.getString("blackjack.error.playing"));
 
         BlackJackGame bjg = new BlackJackGame(bet);
-        dataHandler.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
-        String prefix = dataHandler.getStringSetting(guildId, Setting.PREFIX).get(0);
+        SettingsDataHandler settingDH = new SettingsDataHandler();
+        settingDH.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
+        String prefix = settingDH.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix, language);
         if (!bjg.hasEnded()){
             gameHandler.putBlackJackGame(guildId, playerId, bjg);
@@ -71,7 +73,7 @@ public class BlackJack extends BCommand {
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());
             else
-                updateRecords(guildId, playerId, dataHandler, bjg.getWonCreds(), m.getJumpUrl());
+                updateRecords(guildId, playerId, bjg.getWonCreds(), m.getJumpUrl());
         });
     }
 }

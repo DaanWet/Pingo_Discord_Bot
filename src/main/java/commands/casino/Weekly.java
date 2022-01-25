@@ -3,7 +3,7 @@ package commands.casino;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
@@ -32,7 +32,7 @@ public class Weekly extends Command {
         if (args.length != 0)
             throw new MessageException(this.getUsage());
 
-        DataHandler dataHandler = new DataHandler();
+        CreditDataHandler dataHandler = new CreditDataHandler();
         long id = e.getAuthor().getIdLong();
         LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());

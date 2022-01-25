@@ -1,6 +1,6 @@
 package commands.roles;
 
-import data.DataHandler;
+import data.handlers.RRDataHandler;
 import data.models.RoleAssignData;
 import data.models.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -26,7 +26,7 @@ public class EditRoleAssign extends RoleCommand {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        DataHandler dh = new DataHandler();
+        RRDataHandler dh = new RRDataHandler();
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
         if (args.length == 0)
@@ -111,7 +111,7 @@ public class EditRoleAssign extends RoleCommand {
 
     }
 
-    private void editEmbed(RoleAssignData data, Guild guild, String category, DataHandler dh, MyResourceBundle language){
+    private void editEmbed(RoleAssignData data, Guild guild, String category, RRDataHandler dh, MyResourceBundle language){
         if (data.getMessageId() != null){
             guild.getTextChannelById(data.getChannelId()).retrieveMessageById(data.getMessageId()).queue(m -> {
                 if (m != null){

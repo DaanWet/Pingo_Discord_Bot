@@ -2,7 +2,8 @@ package commands.roles;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.DataHandler;
+import data.handlers.GeneralDataHandler;
+import data.handlers.RRDataHandler;
 import data.models.RoleAssignData;
 import data.models.RoleAssignRole;
 import net.dv8tion.jda.api.entities.Member;
@@ -32,7 +33,7 @@ public class RemoveRoleAssign extends RoleCommand {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        DataHandler dataHandler = new DataHandler();
+        RRDataHandler dataHandler = new RRDataHandler();
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length == 0)
             throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());

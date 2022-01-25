@@ -1,6 +1,6 @@
 package commands;
 
-import data.DataHandler;
+import data.handlers.GeneralDataHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.sk.PrettyTable;
@@ -26,7 +26,7 @@ public class Eval extends Command {
         String lquery = query.trim().toLowerCase();
         StringBuilder sb = new StringBuilder();
         if (lquery.startsWith("select") || lquery.startsWith("show")){
-            PrettyTable table = new DataHandler().executeQuery(query);
+            PrettyTable table = new GeneralDataHandler().executeQuery(query);
             if (table == null)
                 throw new MessageException(String.format("Invalid SQL Query Noob: `%s`", query));
             sb.append("```").append(table).append("```");
@@ -34,7 +34,7 @@ public class Eval extends Command {
             if (!e.getMember().hasPermission(Permission.ADMINISTRATOR))
                 throw new MessageException("You don't have permission to update the db");
 
-            int i = new DataHandler().executeUpdate(query);
+            int i = new GeneralDataHandler().executeUpdate(query);
             if (i < 0)
                 throw new MessageException(String.format("Invalid SQL Query Noob: `%s`", query));
 
