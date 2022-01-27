@@ -54,10 +54,10 @@ public class BlackJack extends BCommand {
         if (bet < 10)
             throw new MessageException(language.getString("credit.error.least"));
         if (dataHandler.getCredits(guildId, playerId) < bet)
-            throw new MessageException(language.getString("credit.error.no_enough", bet));
+            throw new MessageException(language.getString("credit.error.not_enough", bet));
         BlackJackGame objg = gameCompanion.getBlackJackGame(guildId, playerId);
         if (objg != null)
-            throw new MessageException(language.getString("blackjack.error.playing"));
+            throw new MessageException(language.getString("bj.error.playing"));
 
         BlackJackGame bjg = new BlackJackGame(bet);
         SettingsDataHandler settingDH = new SettingsDataHandler();

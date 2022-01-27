@@ -282,7 +282,7 @@ public class Settings extends Command {
             case LANGUAGE -> {
                 Map<Locale, ResourceBundle> languages = Utils.getAvailableLanguages();
                 if (!languages.containsKey(new Locale(value))){
-                    StringBuilder sb = new StringBuilder(language.getString("settings.error.language"));
+                    StringBuilder sb = new StringBuilder(language.getString("settings.error.input.language"));
                     for (Locale locale : languages.keySet()){
                         sb.append("\n").append(locale.getDisplayName()).append(" (").append(locale).append(")");
                     }
