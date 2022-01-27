@@ -1,7 +1,7 @@
 package commands.casino.uno;
 
 import commands.Command;
-import companions.GameHandler;
+import companions.GameCompanion;
 import companions.uno.UnoCard;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 
 public class Challenge extends Command {
 
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
 
-    public Challenge(GameHandler gameHandler){
+    public Challenge(GameCompanion gameCompanion){
         this.name = "challenge";
         this.category = Category.UNO;
-        this.gameHandler = gameHandler;
+        this.gameCompanion = gameCompanion;
         this.hidden = true;
         this.description = "uno.challenge.description";
     }
@@ -34,7 +34,7 @@ public class Challenge extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         Guild guild = e.getGuild();
-        UnoGame unoGame = gameHandler.getUnoGame(guild.getIdLong());
+        UnoGame unoGame = gameCompanion.getUnoGame(guild.getIdLong());
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())){
             ArrayList<UnoHand> hands = unoGame.getHands();
             MyResourceBundle language = Utils.getLanguage(guild.getIdLong());

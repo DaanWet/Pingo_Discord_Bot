@@ -2,7 +2,7 @@ package commands.casino.blackjack;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import companions.GameHandler;
+import companions.GameCompanion;
 import companions.cardgames.BlackJackGame;
 import data.handlers.CreditDataHandler;
 import data.handlers.SettingsDataHandler;
@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 public class BlackJack extends BCommand {
 
 
-    public BlackJack(GameHandler gameHandler){
-        super(gameHandler);
+    public BlackJack(GameCompanion gameCompanion){
+        super(gameCompanion);
         this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
         this.arguments = "<bet>";
@@ -41,7 +41,7 @@ public class BlackJack extends BCommand {
         User author = e.getAuthor();
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
-        if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong()))
+        if (gameCompanion.isUnoChannel(guildId, e.getChannel().getIdLong()))
             throw new MessageException(language.getString("bj.error.uno"));
 
         long playerId = author.getIdLong();
@@ -55,7 +55,7 @@ public class BlackJack extends BCommand {
             throw new MessageException(language.getString("credit.error.least"));
         if (dataHandler.getCredits(guildId, playerId) < bet)
             throw new MessageException(language.getString("credit.error.no_enough", bet));
-        BlackJackGame objg = gameHandler.getBlackJackGame(guildId, playerId);
+        BlackJackGame objg = gameCompanion.getBlackJackGame(guildId, playerId);
         if (objg != null)
             throw new MessageException(language.getString("blackjack.error.playing"));
 
@@ -65,7 +65,7 @@ public class BlackJack extends BCommand {
         String prefix = settingDH.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix, language);
         if (!bjg.hasEnded()){
-            gameHandler.putBlackJackGame(guildId, playerId, bjg);
+            gameCompanion.putBlackJackGame(guildId, playerId, bjg);
         } else {
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
             eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);

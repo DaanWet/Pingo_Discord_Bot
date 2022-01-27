@@ -4,7 +4,7 @@ import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.CustomBet;
-import companions.GameHandler;
+import companions.GameCompanion;
 import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,10 +18,10 @@ import java.util.ArrayList;
 
 public class Bet extends Command {
 
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
 
-    public Bet(GameHandler gameHandler){
-        this.gameHandler = gameHandler;
+    public Bet(GameCompanion gameCompanion){
+        this.gameCompanion = gameCompanion;
         this.name = "bet";
         this.arguments = "<bet id> <credits> <answer>";
         this.description = "bet.description";
@@ -39,7 +39,7 @@ public class Bet extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         MyResourceBundle language = getLanguage(e);
         int id = args.length == 0 ? -1 : Utils.getInt(args[0]);
-        ArrayList<CustomBet> customBet = gameHandler.getCustomBet(e.getGuild().getIdLong());
+        ArrayList<CustomBet> customBet = gameCompanion.getCustomBet(e.getGuild().getIdLong());
         if (id == -1 || customBet.size() < id)
             throw new MessageException(language.getString("bet.error.id"));
 

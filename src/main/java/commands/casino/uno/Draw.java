@@ -1,7 +1,7 @@
 package commands.casino.uno;
 
 import commands.Command;
-import companions.GameHandler;
+import companions.GameCompanion;
 import companions.uno.UnoCard;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
 
 public class Draw extends Command {
 
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
 
-    public Draw(GameHandler gameHandler){
+    public Draw(GameCompanion gameCompanion){
         this.name = "Draw";
         this.aliases = new String[]{"d"};
         this.category = Category.UNO;
-        this.gameHandler = gameHandler;
+        this.gameCompanion = gameCompanion;
         this.description = "uno.draw.description";
         this.hidden = true;
     }
@@ -35,7 +35,7 @@ public class Draw extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         Guild guild = e.getGuild();
-        UnoGame unoGame = gameHandler.getUnoGame(guild.getIdLong());
+        UnoGame unoGame = gameCompanion.getUnoGame(guild.getIdLong());
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())){
             int turn = unoGame.getTurn();
             ArrayList<UnoHand> hands = unoGame.getHands();

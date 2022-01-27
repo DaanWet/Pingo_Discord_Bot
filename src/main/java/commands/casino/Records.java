@@ -3,7 +3,8 @@ package commands.casino;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import companions.GameHandler;
+import companions.DataCompanion;
+import companions.GameCompanion;
 import companions.Record;
 import companions.paginators.RecordPaginator;
 import data.handlers.RecordDataHandler;
@@ -23,9 +24,9 @@ import java.util.Properties;
 public class Records extends Command {
 
     private final Properties properties;
-    private final GameHandler handler;
+    private final DataCompanion handler;
 
-    public Records(GameHandler handler){
+    public Records(DataCompanion handler){
         this.name = "records";
         this.category = Category.CASINO;
         this.description = "records.description";

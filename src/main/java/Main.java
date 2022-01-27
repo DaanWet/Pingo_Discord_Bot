@@ -65,7 +65,7 @@ public class Main {
         jda.addEventListener(new NicknameHandler());
         jda.addEventListener(new JoinListener());
         CommandHandler ch = ml.getCommandHandler();
-        jda.addEventListener(new ReactionListener(ch, github, ch.getGameHandler()));
+        jda.addEventListener(new ReactionListener(ch, github, ch.getGameHandler(), ch.getDataCompanion()));
 
 
     }

@@ -1,7 +1,7 @@
 package commands;
 
 import commands.settings.Setting;
-import companions.GameHandler;
+import companions.GameCompanion;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -22,14 +22,14 @@ import static listeners.CommandHandler.pathname;
 
 public class Help extends Command {
 
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
     private Collection<Command> commands;
 
-    public Help(GameHandler gameHandler){
+    public Help(GameCompanion gameCompanion){
         this.name = "help";
         this.aliases = new String[]{"commands", "command", "h"};
         this.description = "help.description";
-        this.gameHandler = gameHandler;
+        this.gameCompanion = gameCompanion;
     }
 
     public void setCommands(Map<String, Command> comm){
@@ -78,7 +78,7 @@ public class Help extends Command {
                     throw new MessageException(language.getString("help.error.command", args[0]));
                 }
             }
-        } else if (gameHandler.isUnoChannel(guildId, e.getChannel().getIdLong())){
+        } else if (gameCompanion.isUnoChannel(guildId, e.getChannel().getIdLong())){
             eb.setTitle(language.getString("help.uno"));
             StringBuilder sb = new StringBuilder();
             for (Command c : commands){

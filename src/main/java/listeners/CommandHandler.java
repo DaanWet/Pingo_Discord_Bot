@@ -22,7 +22,8 @@ import commands.settings.Settings;
 import commands.suggestion.EditSuggestion;
 import commands.suggestion.ListIssues;
 import commands.suggestion.Suggest;
-import companions.GameHandler;
+import companions.DataCompanion;
+import companions.GameCompanion;
 import companions.paginators.OpenExplorerData;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.Permission;
@@ -43,16 +44,18 @@ public class CommandHandler {
     public static String pathname;
     private final Random random;
     private final HashMap<String, Command> commands;
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
+    private final DataCompanion dataCompanion;
 
     public CommandHandler(GitHub gitHub){
         pathname = Utils.config.getProperty("pictures.path");
         random = new Random();
         CommandHandler commh = this;
-        gameHandler = new GameHandler();
+        gameCompanion = new GameCompanion();
+        dataCompanion = new DataCompanion();
         commands = new HashMap<>() {
             {
-                put("help", new Help(gameHandler));
+                put("help", new Help(gameCompanion));
                 put("add", new AddPicture());
                 put("fuckpingo", new FuckPingo());
                 put("delete", new DeletePicture(commh));
@@ -62,31 +65,31 @@ public class CommandHandler {
                 put("removeRA", new RemoveRoleAssign());
                 put("daily", new CollectEventCredits());
                 put("weekly", new Weekly());
-                put("balance", new ShowCredits(gameHandler));
-                put("blackjack", new BlackJack(gameHandler));
-                put("stand", new Stand(gameHandler));
-                put("hit", new Hit(gameHandler));
-                put("double", new DoubleDown(gameHandler));
-                put("split", new Split(gameHandler));
+                put("balance", new ShowCredits(dataCompanion));
+                put("blackjack", new BlackJack(gameCompanion));
+                put("stand", new Stand(gameCompanion));
+                put("hit", new Hit(gameCompanion));
+                put("double", new DoubleDown(gameCompanion));
+                put("split", new Split(gameCompanion));
                 put("suggest", new Suggest());
                 put("issues", new ListIssues(gitHub));
                 put("editI", new EditSuggestion());
                 put("adminAbuse", new AdminAbuse());
                 put("clean", new Clean());
-                put("records", new Records(gameHandler));
-                put("uno", new Uno(gameHandler));
-                put("play", new Play(gameHandler));
-                put("draw", new Draw(gameHandler));
-                put("challenge", new Challenge(gameHandler));
+                put("records", new Records(dataCompanion));
+                put("uno", new Uno(gameCompanion));
+                put("play", new Play(gameCompanion));
+                put("draw", new Draw(gameCompanion));
+                put("challenge", new Challenge(gameCompanion));
                 put("amongus", new AmongUs());
                 put("eval", new Eval());
                 put("teampicker", new TeamPicker());
                 put("poll", new Poll());
                 put("editRA", new EditRoleAssign());
                 put("settings", new Settings());
-                put("startbet", new StartBet(gameHandler));
-                put("bet", new Bet(gameHandler));
-                put("endbet", new EndBet(gameHandler));
+                put("startbet", new StartBet(gameCompanion));
+                put("bet", new Bet(gameCompanion));
+                put("endbet", new EndBet(gameCompanion));
             }
 
         };
@@ -97,8 +100,12 @@ public class CommandHandler {
         return ((DeletePicture) commands.get("delete")).getExplorerData(command);
     }
 
-    public GameHandler getGameHandler(){
-        return gameHandler;
+    public GameCompanion getGameHandler(){
+        return gameCompanion;
+    }
+
+    public DataCompanion getDataCompanion() {
+        return dataCompanion;
     }
 
     public void closeExplorer(String command, Message message){

@@ -4,7 +4,7 @@ import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.CustomBet;
-import companions.GameHandler;
+import companions.GameCompanion;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -14,10 +14,10 @@ import utils.Utils;
 
 public class StartBet extends Command {
 
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
 
-    public StartBet(GameHandler gameHandler){
-        this.gameHandler = gameHandler;
+    public StartBet(GameCompanion gameCompanion){
+        this.gameCompanion = gameCompanion;
         this.name = "startbet";
         this.aliases = new String[]{"sbet"};
         this.category = Category.CASINO;
@@ -42,7 +42,7 @@ public class StartBet extends Command {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
         eb.setTitle(Utils.concat(args, 0));
-        CustomBet bet = gameHandler.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
+        CustomBet bet = gameCompanion.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
         eb.setFooter(language.getString("start_bet.footer", bet.getID()));
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> bet.setIds(m.getChannel().getIdLong(), m.getIdLong()));
         e.getMessage().delete().queue();

@@ -2,7 +2,7 @@ package commands.casino.uno;
 
 import commands.Command;
 import commands.settings.Setting;
-import companions.GameHandler;
+import companions.GameCompanion;
 import companions.uno.UnoGame;
 import data.handlers.CreditDataHandler;
 import data.handlers.SettingsDataHandler;
@@ -17,22 +17,22 @@ import java.util.Properties;
 
 public class Uno extends Command {
 
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
 
-    public Uno(GameHandler gameHandler){
+    public Uno(GameCompanion gameCompanion){
         this.name = "uno";
         this.aliases = new String[]{"playuno"};
         this.category = Category.CASINO;
         this.arguments = "[<bet>]";
         this.description = "uno.description";
-        this.gameHandler = gameHandler;
+        this.gameCompanion = gameCompanion;
     }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
-        if (gameHandler.getUnoGame(e.getGuild().getIdLong()) != null){
+        if (gameCompanion.getUnoGame(e.getGuild().getIdLong()) != null){
             throw new MessageException(language.getString("uno.error.started"));
         }
         int bet = 0;
@@ -52,7 +52,7 @@ public class Uno extends Command {
         }
         settingDH.setCooldown(guildId, e.getAuthor().getIdLong(), Setting.UNO, LocalDateTime.now());
         UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
-        gameHandler.setUnoGame(guildId, unogame);
+        gameCompanion.setUnoGame(guildId, unogame);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(language.getString("uno.embed.title"));
         if (bet != 0)
