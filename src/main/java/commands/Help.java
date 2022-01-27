@@ -66,8 +66,8 @@ public class Help extends Command {
                     Command command = iterator.next();
                     if (command.isCommandFor(args[0])){
                         eb.setTitle(language.getString("help.command", StringUtils.capitalize(command.getName())));
-                        eb.setDescription(command.getDescription());
                         eb.addField(language.getString("help.usage"), String.format("%s%s %s", prefix, command.getName(), command.getArguments()), false);
+                        eb.setDescription(command.getDescription(language));
                         if (command.getAliases().length != 0){
                             eb.addField(language.getString("help.aliases"), String.join(", ", command.getAliases()), false);
                         }

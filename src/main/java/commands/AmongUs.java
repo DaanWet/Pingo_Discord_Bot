@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,9 +31,9 @@ public class AmongUs extends Command {
         for (Member m : vc.getMembers()){
             m.mute(mute).queue();
         }
-        e.getChannel().sendMessage(language.getString(mute ? "amongus.mute" : "amongus.unmute")).queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
+        e.getChannel().sendMessage(language.getString(mute ? "amongus.mute" : "amongus.unmute")).queue(m -> m.delete().queueAfter((int) Utils.config.get("timeout"), TimeUnit.SECONDS));
 
 
-        e.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+        e.getMessage().delete().queueAfter((int) Utils.config.get("timeout"), TimeUnit.SECONDS);
     }
 }

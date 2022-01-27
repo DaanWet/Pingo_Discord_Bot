@@ -3,7 +3,6 @@ package companions;
 import companions.paginators.EmbedPaginator;
 import utils.QueueMap;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataCompanion {
@@ -11,7 +10,7 @@ public class DataCompanion {
     private final HashMap<Long, QueueMap<Long, EmbedPaginator>> embedPaginatorMap;
 
 
-    public DataCompanion() {
+    public DataCompanion(){
         embedPaginatorMap = new HashMap<>();
     }
 
@@ -24,9 +23,6 @@ public class DataCompanion {
         l.put(messageId, embedPaginator);
         embedPaginatorMap.put(guildId, l);
     }
-
-
-
 
 
 }

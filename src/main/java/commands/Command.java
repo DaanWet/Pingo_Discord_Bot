@@ -107,7 +107,7 @@ public abstract class Command {
         return description;
     }
 
-    public String getDescription(ResourceBundle language){
+    public String getDescription(MyResourceBundle language){
         return language.getString(description);
     }
 

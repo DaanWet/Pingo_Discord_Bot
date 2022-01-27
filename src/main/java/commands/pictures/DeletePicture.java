@@ -70,7 +70,7 @@ public class DeletePicture extends Command {
             m.addReaction(config.getProperty("emoji.trash")).queue();
             m.addReaction(config.getProperty("emoji.next")).queue();
             m.addReaction(config.getProperty("emoji.cancel")).queue();
-            autoClosers.put(args[0], deleteMessage(args[0], m).queueAfter(10, TimeUnit.MINUTES));// Should this value be added to properties?
+            autoClosers.put(args[0], deleteMessage(args[0], m).queueAfter((int) config.get("timeout"), TimeUnit.MINUTES));
         });
 
 

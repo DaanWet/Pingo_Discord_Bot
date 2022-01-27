@@ -53,7 +53,7 @@ public class Bet extends Command {
 
         long userId = e.getAuthor().getIdLong();
         int bet = args.length == 1 ? 0 : Utils.getInt(args[1]);
-        if (bet < 10) // Should this value be added to properties?
+        if (bet < 10)
             throw new MessageException(language.getString("credit.error.least"));
 
         if (new CreditDataHandler().getCredits(e.getGuild().getIdLong(), userId) < bet)

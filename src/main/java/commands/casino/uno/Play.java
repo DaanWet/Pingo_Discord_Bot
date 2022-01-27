@@ -17,6 +17,7 @@ import utils.Utils;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,7 @@ public class Play extends Command {
             unoGame.playCard(card);
             Color color = guild.getSelfMember().getColor();
             int newturn = unoGame.getTurn();
+            Properties config = Utils.config;
             for (int i = 0; i < hands.size(); i++){
                 UnoHand hand = hands.get(i);
                 long player = hand.getPlayerId();
@@ -75,7 +77,7 @@ public class Play extends Command {
                             EmbedBuilder eb2 = new EmbedBuilder();
                             int size = hands.size() - 1;
                             int bet = unoGame.getBet();
-                            int credits = bet == 0 ? 200 * size : bet * size; // Should this 200 value be added to properties?
+                            int credits = bet == 0 ? (int) config.get("uno.win") * size : bet * size;
                             eb2.setTitle(language.getString("uno.win", e.getMember().getEffectiveName(), card, credits));
                             if (bet != 0){
                                 eb2.setDescription(language.getString("uno.lost", bet));
@@ -84,7 +86,7 @@ public class Play extends Command {
                             if (bet != 0) dataHandler.addCredits(e.getGuild().getIdLong(), player, -1 * credits);
                             eb2.setColor(color);
                             channel.sendMessageEmbeds(eb2.build()).queue();
-                            channel.delete().queueAfter(1, TimeUnit.MINUTES);
+                            channel.delete().queueAfter((int) config.get("uno.timeout"), TimeUnit.MINUTES);
                         } else if (newturn == finalI){
                             message.editMessageEmbeds(eb.build()).queue();
                             EmbedBuilder eb2 = new EmbedBuilder();
@@ -119,13 +121,13 @@ public class Play extends Command {
                             eb.setDescription(language.getString("uno.win.short", hand.getPlayerName(), credits));
                             m.editMessageEmbeds(eb.build()).queue();
                         });
-                        channel.delete().queueAfter(1, TimeUnit.MINUTES); // Should this value be added to properties?
+                        channel.delete().queueAfter((int) config.get("uno.timeout"), TimeUnit.MINUTES);
 
                     }
                 }
             }
             if (unoGame.isFinished()){
-                guild.getCategoryById(unoGame.getCategory()).delete().queueAfter(65, TimeUnit.SECONDS); // Should this value be added to properties?
+                guild.getCategoryById(unoGame.getCategory()).delete().queueAfter((int) config.get("uno.timeout") * 60 + 5, TimeUnit.SECONDS);
                 gameCompanion.removeUnoGame(guild.getIdLong());
             }
         }
