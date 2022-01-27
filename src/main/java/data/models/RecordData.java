@@ -1,15 +1,17 @@
 package data.models;
 
+import companions.Record;
+
 public class RecordData {
 
     private long userId;
-    private String record;
+    private Record record;
     private double value;
     private String link;
 
     public RecordData(){}
 
-    public RecordData(long userId, String record, double value, String link){
+    public RecordData(long userId, Record record, double value, String link){
         this.userId = userId;
         this.record = record;
         this.value = value;
@@ -40,11 +42,11 @@ public class RecordData {
         this.userId = userId;
     }
 
-    public String getRecord(){
+    public Record getRecord(){
         return record;
     }
 
-    public void setRecord(String record){
+    public void setRecord(Record record){
         this.record = record;
     }
 }

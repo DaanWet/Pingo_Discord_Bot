@@ -1,5 +1,6 @@
 package companions.paginators;
 
+import companions.Record;
 import data.handlers.RecordDataHandler;
 import data.models.RecordData;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -11,10 +12,10 @@ import java.util.ArrayList;
 
 public class RecordPaginator extends EmbedPaginator {
 
-    private final String record;
+    private final Record record;
     private final Long guildId;
 
-    public RecordPaginator(String record, Long guildId){
+    public RecordPaginator(Record record, Long guildId){
         this.record = record;
         this.guildId = guildId;
     }
@@ -24,10 +25,9 @@ public class RecordPaginator extends EmbedPaginator {
     public MessageEmbed createEmbed(){
         RecordDataHandler dataHandler = new RecordDataHandler();
         EmbedBuilder eb = new EmbedBuilder();
-        boolean isInt = dataHandler.isInt(record);
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords(record) : dataHandler.getRecords(guildId, record);
         MyResourceBundle language = Utils.getLanguage(guildId);
-        eb.setTitle(language.getString(guildId == null ? "record.leaderboard.global" : "record.leaderboard.title", language.getString(record.toLowerCase())));
+        eb.setTitle(language.getString(guildId == null ? "record.leaderboard.global" : "record.leaderboard.title", record.getDisplay(language)));
         StringBuilder sb = new StringBuilder();
         int size = records.size();
         int maxpage = ((size - 1) / 10) + 1;
@@ -41,7 +41,7 @@ public class RecordPaginator extends EmbedPaginator {
                     .append("<@!")
                     .append(records.get(i).getUserId())
                     .append(">  **: ")
-                    .append(isInt ? (int) v.getValue() : String.format("%.2f%s", v.getValue() * 100, "%"))
+                    .append(record.isInt() ? (int) v.getValue() : String.format("%.2f%s", v.getValue() * 100, "%"))
                     .append("** ");
             if (v.getLink() != null){
                 sb.append(" [jump](").append(v.getLink()).append(")");

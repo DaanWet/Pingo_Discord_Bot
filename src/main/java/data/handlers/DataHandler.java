@@ -1,10 +1,8 @@
 package data.handlers;
 
-import javax.swing.*;
 import java.util.Properties;
 
 public class DataHandler {
-
 
 
     protected static String JDBC_URL;
@@ -48,8 +46,6 @@ public class DataHandler {
     public static void setJdbcUrl(String jdbcUrl){
         JDBC_URL = jdbcUrl;
     }
-
-
 
 
 }

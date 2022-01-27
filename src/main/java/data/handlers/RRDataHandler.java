@@ -1,7 +1,6 @@
 package data.handlers;
 
 import commands.roles.RoleCommand;
-import data.handlers.DataHandler;
 import data.models.RoleAssignData;
 import data.models.RoleAssignRole;
 
@@ -9,8 +8,6 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class RRDataHandler extends DataHandler {
-
-
 
 
     public RRDataHandler(){

@@ -2,7 +2,6 @@ package commands.roles;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import data.handlers.GeneralDataHandler;
 import data.handlers.RRDataHandler;
 import data.models.RoleAssignData;
 import data.models.RoleAssignRole;

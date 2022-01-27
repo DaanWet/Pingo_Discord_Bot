@@ -1,5 +1,5 @@
-import data.handlers.GeneralDataHandler;
 import data.handlers.DataHandler;
+import data.handlers.GeneralDataHandler;
 import listeners.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;

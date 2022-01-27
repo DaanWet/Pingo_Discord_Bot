@@ -1,6 +1,8 @@
 package data.handlers;
 
 
+import companions.Record;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -111,7 +113,7 @@ public class CreditDataHandler extends DataHandler {
             stm.setInt(6, credits);
             stm.setInt(10, creds + credits);
             stm.setInt(11, creds + credits);
-            stm.setString(9, "highest_credits");
+            stm.setString(9, Record.CREDITS.getName());
             stm.executeUpdate();
             stmnt2.setLong(1, guildId);
             stmnt2.setLong(2, userId);

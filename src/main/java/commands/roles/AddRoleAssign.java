@@ -36,7 +36,7 @@ public class AddRoleAssign extends RoleCommand {
         RRDataHandler dataHandler = new RRDataHandler();
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
-        switch(args.length){
+        switch (args.length){
             case 0 -> throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());
             case 1 -> throw new MessageException(language.getString("roleassign.error.no_emoji") + "\n" + getUsage());
             case 2 -> throw new MessageException(language.getString("roleassign.error.no_role") + "\n" + getUsage());
