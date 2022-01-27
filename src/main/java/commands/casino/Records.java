@@ -4,6 +4,7 @@ import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.GameHandler;
+import companions.Record;
 import companions.paginators.RecordPaginator;
 import data.handlers.RecordDataHandler;
 import data.models.RecordData;
@@ -47,7 +48,6 @@ public class Records extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         RecordDataHandler dataHandler = new RecordDataHandler();
         Guild guild = e.getGuild();
-        ArrayList<String> recordTypes = dataHandler.getRecordTypes();
         MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
         if (args.length == 0){
             e.getChannel().sendMessageEmbeds(getRecords(dataHandler, language, guild.getIdLong()).build()).queue();
@@ -63,8 +63,8 @@ public class Records extends Command {
             } else if (args[0].equalsIgnoreCase("list")){
                 eb.setTitle(language.getString("records.list"));
                 StringBuilder sb = new StringBuilder();
-                for (String record : recordTypes){
-                    sb.append(dot).append(" ").append(record)/*.append(": ").append(properties.getProperty(record))*/.append("\n");
+                for (Record record : Record.values()){
+                    sb.append(dot).append(" ").append(record.getName()).append(": ").append(record.getDisplay(language)).append("\n");
                 }
                 eb.setDescription(sb.toString());
                 e.getChannel().sendMessageEmbeds(eb.build()).queue();
@@ -80,21 +80,18 @@ public class Records extends Command {
                 target = guild.getMembersByName(args[0], true).get(0);
             }
 
-            if (recordTypes.contains(args[0].toLowerCase())){
-                RecordPaginator recordPaginator = new RecordPaginator(args[0], e.getGuild().getIdLong());
+            if (Record.getRecord(args[0].toLowerCase()).isPresent()){
+                RecordPaginator recordPaginator = new RecordPaginator(Record.getRecord(args[0].toLowerCase()).get(), e.getGuild().getIdLong());
                 recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
             } else if (target != null){
                 ArrayList<RecordData> records = dataHandler.getRecords(e.getGuild().getIdLong(), target.getIdLong());
                 eb.setTitle(language.getString("records.person", target.getUser().getName()));
                 StringBuilder sb = new StringBuilder();
                 for (RecordData record : records){
+                    sb.append(dot).append(" ").append(record.getRecord().getDisplay(language)).append(": **");
 
-                    sb.append(dot).append(" ").append(properties.getProperty(record.getRecord()))
-                            .append(": **");
-
-                    boolean isInt = dataHandler.isInt(record.getRecord());
                     // Formats the blackjack winrate into something more human readable
-                    sb.append(isInt ? (int) record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
+                    sb.append(record.getRecord().isInt() ? (int) record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
 
 
                     sb.append("** ");
@@ -111,8 +108,8 @@ public class Records extends Command {
             } else {
                 throw new MessageException(language.getString("records.error.valid", args[0]));
             }
-        } else if (args.length == 2 && recordTypes.contains(args[0].toLowerCase()) && args[1].equalsIgnoreCase("global")){
-            RecordPaginator recordPaginator = new RecordPaginator(args[0], null);
+        } else if (args.length == 2 && Record.getRecord(args[0].toLowerCase()).isPresent() && args[1].equalsIgnoreCase("global")){
+            RecordPaginator recordPaginator = new RecordPaginator(Record.getRecord(args[0].toLowerCase()).get(), null);
             recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
         } else {
             throw new MessageException(language.getString("records.error.args", getUsage()));
@@ -126,11 +123,11 @@ public class Records extends Command {
         StringBuilder sb = new StringBuilder();
         String dot = Utils.config.getProperty("emoji.list.dot");
         for (RecordData record : records){
-            sb.append(dot).append(" ").append(properties.getProperty(record.getRecord()))
+            sb.append(dot).append(" ").append(record.getRecord().getDisplay(language))
                     .append(": **");
-            boolean isInt = dataHandler.isInt(record.getRecord());
+
             // Formats the blackjack winrate into something more human readable
-            sb.append(isInt ? (int) record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
+            sb.append(record.getRecord().isInt() ? (int) record.getValue() : String.format("%.2f%s", record.getValue() * 100, "%"));
 
             sb.append("** by <@!")
                     .append(record.getUserId()).append(">");

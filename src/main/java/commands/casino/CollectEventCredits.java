@@ -98,7 +98,7 @@ public class CollectEventCredits extends Command {
             m.editMessageEmbeds(eb.setDescription(language.getString(eDescription, ROLL, ROLL, emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(7, TimeUnit.SECONDS);
             m.editMessageEmbeds(eb.setDescription(language.getString(eDescription, ROLL, emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(8, TimeUnit.SECONDS);
             m.editMessageEmbeds(eb.setTitle(language.getString("daily.event.collected"))
-                                  .setDescription(language.getString("daily.event.fell", emoji[first], emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(9, TimeUnit.SECONDS, me -> {
+                                        .setDescription(language.getString("daily.event.fell", emoji[first], emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(9, TimeUnit.SECONDS, me -> {
                 int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, value);
                 dataHandler.setLatestCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
                 me.editMessageEmbeds(new EmbedBuilder(me.getEmbeds().get(0)).appendDescription(language.getString("daily.event.balance", creds)).build()).queue();

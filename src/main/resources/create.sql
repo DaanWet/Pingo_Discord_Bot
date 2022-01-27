@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS Record
 (
+    ID INT,
     Type  VARCHAR(50) NOT NULL PRIMARY KEY,
     IsInt BOOLEAN DEFAULT TRUE
 );
@@ -11,6 +12,7 @@ CREATE TABLE IF NOT EXISTS Member
     LastDaily  TIMESTAMP,
     LastWeekly TIMESTAMP,
     Experience INT DEFAULT 0,
+    CurrentStreak  INT DEFAULT 0,
     PRIMARY KEY (UserId, GuildId)
 );
 CREATE TABLE IF NOT EXISTS RoleAssign
@@ -18,8 +20,9 @@ CREATE TABLE IF NOT EXISTS RoleAssign
     Name      VARCHAR(255) NOT NULL,
     GuildId   BIGINT       NOT NULL,
     ChannelId BIGINT,
-    MessageId BIGINT
-), Sorting VARCHAR DEFAULT 'NONE', Compacting VARCHAR(20) DEFAULT 'NORMAL', Title VARCHAR(255), PRIMARY KEY(Name, GuildId));
+    MessageId BIGINT,
+    Sorting VARCHAR(255) DEFAULT 'NONE', Compacting VARCHAR(20) DEFAULT 'NORMAL', Title VARCHAR(255), PRIMARY KEY(Name, GuildId)
+);
 CREATE TABLE IF NOT EXISTS Role
 (
     RoleId  BIGINT       NOT NULL,
@@ -68,13 +71,3 @@ CREATE TABLE IF NOT EXISTS Cooldown
     PRIMARY KEY (GuildId, UserId, Setting),
     FOREIGN KEY (Setting) REFERENCES Setting (ID)
 );
-INSERT IGNORE INTO Record
-VALUES ('highest_credits', TRUE);
-INSERT IGNORE INTO Record
-VALUES ('biggest_bj_win', TRUE);
-INSERT IGNORE INTO Record
-VALUES ('biggest_bj_loss', TRUE);
-INSERT IGNORE INTO Record
-VALUES ('bj_win_rate', FALSE);
-INSERT IGNORE INTO Record
-VALUES ('bj_games_played', TRUE);

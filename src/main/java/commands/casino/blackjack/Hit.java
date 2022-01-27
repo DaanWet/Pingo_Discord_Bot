@@ -3,7 +3,6 @@ package commands.casino.blackjack;
 import companions.GameHandler;
 import companions.cardgames.BlackJackGame;
 import data.handlers.CreditDataHandler;
-import data.handlers.GeneralDataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.Utils;
 

@@ -1,20 +1,17 @@
 package data.handlers;
 
 
-import com.mysql.cj.exceptions.WrongArgumentException;
 import commands.settings.Setting;
-import data.handlers.DataHandler;
-import data.models.RecordData;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.hsqldb.cmdline.SqlFile;
+import org.hsqldb.cmdline.SqlToolError;
 import org.sk.PrettyTable;
-import utils.Utils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class GeneralDataHandler extends DataHandler {
@@ -23,25 +20,15 @@ public class GeneralDataHandler extends DataHandler {
         super();
     }
 
-    public void createDatabase() throws SQLException{
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement setuptable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS Record (ID INT, Name VARCHAR(50) NOT NULL PRIMARY KEY, IsInt BOOLEAN DEFAULT TRUE);" +
-                                                                          "CREATE TABLE IF NOT EXISTS Member (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Credits INT DEFAULT 0, LastDaily TIMESTAMP, LastWeekly TIMESTAMP, Experience INT DEFAULT 0, CurrentStreak  INT DEFAULT 0, PRIMARY KEY(UserId, GuildId)); " +
-                                                                          "CREATE TABLE IF NOT EXISTS RoleAssign (Name VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, ChannelId BIGINT, MessageId BIGINT, Sorting VARCHAR(20) DEFAULT 'NONE', Compacting VARCHAR(20) DEFAULT 'NORMAL', Title VARCHAR(255), PRIMARY KEY(Name, GuildId));" +
-                                                                          "CREATE TABLE IF NOT EXISTS Role (RoleId BIGINT NOT NULL, Name VARCHAR(255) NOT NULL, Emoji VARCHAR(255) NOT NULL, Type VARCHAR(255) NOT NULL, GuildId BIGINT NOT NULL, FOREIGN KEY (Type, GuildId) REFERENCES RoleAssign(Name, GuildId), PRIMARY KEY (Emoji, Type, GuildId));" +
-                                                                          "CREATE TABLE IF NOT EXISTS UserRecord (UserId BIGINT NOT NULL, GuildId BIGINT NOT NULL, Name VARCHAR(50) NOT NULL, Link VARCHAR(255), Value DOUBLE NOT NULL, PRIMARY KEY(UserId, GuildId, Name), FOREIGN KEY(UserId, GuildId) REFERENCES Member(UserId, GuildId), FOREIGN KEY (Name) REFERENCES Record(Name));" +
-                                                                          "CREATE TABLE IF NOT EXISTS Setting (ID INT AUTO_INCREMENT PRIMARY KEY,  Name VARCHAR(50) NOT NULL, ValueType VARCHAR(10) NOT NULL, Type VARCHAR(50), Multiple BOOLEAN NOT NULL,  UNIQUE (Name, Type));" +
-                                                                          "CREATE TABLE IF NOT EXISTS GuildSetting (GuildId BIGINT NOT NULL, ID INT NOT NULL, Value VARCHAR(255) NOT NULL, Type VARCHAR(50), FOREIGN KEY(ID) REFERENCES Setting(ID), PRIMARY KEY(GuildId, ID, Value));" +
-                                                                          "CREATE TABLE IF NOT EXISTS Cooldown (GuildId BIGINT NOT NULL, UserId BIGINT NOT NULL, Setting INT NOT NULL, Time TIMESTAMP, PRIMARY KEY (GuildId, UserId, Setting), FOREIGN KEY (Setting) REFERENCES Setting(ID));" +
-                                                                          "INSERT IGNORE INTO Record VALUES (1, 'highest_credits', TRUE) ON DUPLICATE KEY UPDATE ID = 1;" +
-                                                                          "INSERT IGNORE INTO Record VALUES (4, 'biggest_bj_win', TRUE) ON DUPLICATE KEY UPDATE ID = 4;" +
-                                                                          "INSERT IGNORE INTO Record VALUES (5, 'biggest_bj_loss', TRUE) ON DUPLICATE KEY UPDATE ID = 5;" +
-                                                                          "INSERT IGNORE INTO Record VALUES (3, 'bj_win_rate', FALSE) ON DUPLICATE KEY UPDATE ID = 2;" +
-                                                                          "INSERT IGNORE INTO Record VALUES (2, 'bj_games_played', TRUE) ON DUPLICATE KEY UPDATE ID = 3;" +
-                                                                          "INSERT IGNORE INTO Record VALUES (6, 'bj_win_streak', TRUE) ON DUPLICATE KEY UPDATE ID = 6;" +
-                                                                          "INSERT IGNORE INTO Record VALUES (7, 'bj_loss_streak', TRUE) ON DUPLICATE KEY UPDATE ID = 7;"
-             )) {
-            setuptable.executeUpdate();
+    public void createDatabase() throws SQLException, IOException, SqlToolError{
+
+        try (InputStream is = getClass().getResourceAsStream("create.sql");
+             Connection conn = DriverManager.getConnection(JDBC_URL, properties)) {
+            SqlFile sqlFile = new SqlFile(new InputStreamReader(is), "init", System.out, "UTF-8", false, new File("."));
+            sqlFile.setConnection(conn);
+            sqlFile.execute();
+
+
             for (Setting s : Setting.values()){
                 PreparedStatement stm = conn.prepareStatement("INSERT IGNORE INTO Setting(Name, ValueType, Type, Multiple) VALUES(?, ?, ?, ?)");
                 stm.setString(1, s.name());
@@ -74,6 +61,7 @@ public class GeneralDataHandler extends DataHandler {
                     }
                 }
             }
+            //TODO: input record
         }
     }
 

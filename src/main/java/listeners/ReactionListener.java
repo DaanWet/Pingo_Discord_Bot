@@ -304,10 +304,10 @@ public class ReactionListener extends ListenerAdapter {
                                                 .addMemberPermissionOverride(hand.getPlayerId(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                                 .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Collections.singletonList(Permission.VIEW_CHANNEL), Collections.emptyList())
                                                 .addRolePermissionOverride(guild.getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VIEW_CHANNEL)).setTopic(help).queue(channel ->
-                                                    channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").setEmbeds(unoGame.createEmbed(hand.getPlayerId(), language).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
-                                                        hand.setChannelId(channel.getIdLong());
-                                                        hand.setMessageId(mes.getIdLong());
-                                                    })
+                                                                                                                                                                                                        channel.sendFile(ImageHandler.getCardsImage(hand.getCards()), "hand.png").setEmbeds(unoGame.createEmbed(hand.getPlayerId(), language).setColor(guild.getSelfMember().getColor()).build()).queue(mes -> {
+                                                                                                                                                                                                            hand.setChannelId(channel.getIdLong());
+                                                                                                                                                                                                            hand.setMessageId(mes.getIdLong());
+                                                                                                                                                                                                        })
                                                 );
                                     }
                                 });
