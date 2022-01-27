@@ -2,7 +2,8 @@ package listeners;
 
 import org.apache.log4j.MDC;
 import commands.settings.Setting;
-import companions.GameHandler;
+import companions.DataCompanion;
+import companions.GameCompanion;
 import companions.paginators.EmbedPaginator;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
@@ -36,12 +37,14 @@ public class ReactionListener extends ListenerAdapter {
     private final CommandHandler commandHandler;
     private final GitHub gitHub;
     private final Random random = new Random();
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
+    private final DataCompanion dataCompanion;
 
-    public ReactionListener(CommandHandler commandHandler, GitHub gitHub, GameHandler gameHandler){
+    public ReactionListener(CommandHandler commandHandler, GitHub gitHub, GameCompanion gameCompanion, DataCompanion dataCompanion){
         this.commandHandler = commandHandler;
         this.gitHub = gitHub;
-        this.gameHandler = gameHandler;
+        this.gameCompanion = gameCompanion;
+        this.dataCompanion = dataCompanion;
     }
 
     @Override
@@ -71,7 +74,7 @@ public class ReactionListener extends ListenerAdapter {
                     e.getGuild().getDefaultChannel().sendMessage(language.getString("roleassign.error.perms.short")).queue();
             }
             return;
-        } else if (gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).contains(e.getMessageIdLong())){
+        } else if (dataCompanion.getEmbedPaginatorMap(e.getGuild().getIdLong()).contains(e.getMessageIdLong())){
             handlePaginatorReaction(e);
             return;
         }
@@ -110,7 +113,7 @@ public class ReactionListener extends ListenerAdapter {
     }
 
     public void handlePaginatorReaction(GuildMessageReactionAddEvent e){
-        EmbedPaginator paginator = gameHandler.getEmbedPaginatorMap(e.getGuild().getIdLong()).get(e.getMessageIdLong());
+        EmbedPaginator paginator = dataCompanion.getEmbedPaginatorMap(e.getGuild().getIdLong()).get(e.getMessageIdLong());
         Properties config = Utils.config;
         String emoji = e.getReactionEmote().getEmoji();
 
@@ -287,7 +290,7 @@ public class ReactionListener extends ListenerAdapter {
 
     public void handleUnoReaction(Member member, Message message, MessageReaction.ReactionEmote emoji){
         Guild guild = message.getGuild();
-        UnoGame unoGame = gameHandler.getUnoGame(guild.getIdLong());
+        UnoGame unoGame = gameCompanion.getUnoGame(guild.getIdLong());
         if (emoji.isEmoji() && unoGame != null && message.getIdLong() == unoGame.getMessageID()){
             ArrayList<UnoHand> hands = unoGame.getHands();
             MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
@@ -333,7 +336,7 @@ public class ReactionListener extends ListenerAdapter {
                     EmbedBuilder eb = new EmbedBuilder(me);
                     eb.setTitle(language.getString("uno.embed.cancelled"));
                     message.editMessageEmbeds(eb.build()).queue();
-                    gameHandler.removeUnoGame(guild.getIdLong());
+                    gameCompanion.removeUnoGame(guild.getIdLong());
                 }
             } else if (config.getProperty("emoji.uno.join").equals(emojiEmoji)){
                 if (unoGame.getTurn() == -1 && !hands.stream().map(UnoHand::getPlayerId).collect(Collectors.toList()).contains(member.getIdLong())){

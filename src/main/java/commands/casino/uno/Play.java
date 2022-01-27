@@ -1,7 +1,7 @@
 package commands.casino.uno;
 
 import commands.Command;
-import companions.GameHandler;
+import companions.GameCompanion;
 import companions.uno.UnoCard;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
 
 public class Play extends Command {
 
-    private final GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
 
-    public Play(GameHandler gameHandler){
+    public Play(GameCompanion gameCompanion){
         this.name = "play";
         this.aliases = new String[]{"p"};
         this.category = Category.UNO;
         this.arguments = "<color><value>";
-        this.gameHandler = gameHandler;
+        this.gameCompanion = gameCompanion;
         this.description = "uno.play.description";
         this.hidden = true;
     }
@@ -37,7 +37,7 @@ public class Play extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        UnoGame unoGame = gameHandler.getUnoGame(e.getGuild().getIdLong());
+        UnoGame unoGame = gameCompanion.getUnoGame(e.getGuild().getIdLong());
         if (unoGame != null && unoGame.getHands().stream().map(UnoHand::getChannelId).collect(Collectors.toList()).contains(e.getChannel().getIdLong())){
             int turn = unoGame.getTurn();
             ArrayList<UnoHand> hands = unoGame.getHands();
@@ -126,7 +126,7 @@ public class Play extends Command {
             }
             if (unoGame.isFinished()){
                 guild.getCategoryById(unoGame.getCategory()).delete().queueAfter(65, TimeUnit.SECONDS); // Should this value be added to properties?
-                gameHandler.removeUnoGame(guild.getIdLong());
+                gameCompanion.removeUnoGame(guild.getIdLong());
             }
         }
     }

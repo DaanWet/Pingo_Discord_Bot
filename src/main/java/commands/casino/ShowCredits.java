@@ -3,7 +3,8 @@ package commands.casino;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import companions.GameHandler;
+import companions.DataCompanion;
+import companions.GameCompanion;
 import companions.paginators.BalancePaginator;
 import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.entities.Member;
@@ -14,9 +15,9 @@ import utils.Utils;
 
 public class ShowCredits extends Command {
 
-    private final GameHandler handler;
+    private final DataCompanion handler;
 
-    public ShowCredits(GameHandler handler){
+    public ShowCredits(DataCompanion handler){
         this.name = "balance";
         this.aliases = new String[]{"bal", "credits", "ShowCredits"};
         this.category = Category.CASINO;

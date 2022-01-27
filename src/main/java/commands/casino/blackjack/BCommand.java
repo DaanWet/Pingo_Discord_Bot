@@ -2,7 +2,7 @@ package commands.casino.blackjack;
 
 import commands.Command;
 import commands.settings.Setting;
-import companions.GameHandler;
+import companions.GameCompanion;
 import companions.Record;
 import companions.cardgames.BlackJackGame;
 import data.handlers.CreditDataHandler;
@@ -15,10 +15,10 @@ import utils.MyResourceBundle;
 
 public abstract class BCommand extends Command {
 
-    protected final GameHandler gameHandler;
+    protected final GameCompanion gameCompanion;
 
-    public BCommand(GameHandler gameHandler){
-        this.gameHandler = gameHandler;
+    public BCommand(GameCompanion gameCompanion){
+        this.gameCompanion = gameCompanion;
         this.category = Category.CASINO;
         this.hidden = true;
     }
@@ -27,7 +27,7 @@ public abstract class BCommand extends Command {
         long guildId = e.getGuild().getIdLong();
         long id = e.getMessageIdLong();
         if (bjg.hasEnded())
-            gameHandler.removeBlackJackGame(guildId, id);
+            gameCompanion.removeBlackJackGame(guildId, id);
         e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
             String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
             EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName(), prefix, language);
