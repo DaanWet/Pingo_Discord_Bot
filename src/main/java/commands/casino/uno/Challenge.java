@@ -76,7 +76,6 @@ public class Challenge extends Command {
             playedChannel.sendMessageEmbeds(eb2.build()).queue();
             EmbedBuilder eb = unoGame.createEmbed(skippedHand.getPlayerId(), language);
             eb.setColor(color);
-            // Should "hand.png" value be added to properties?
             skippedchannel.sendFile(ImageHandler.getCardsImage(skippedHand.getCards()), "hand.png").setEmbeds(eb.build()).queue(newmessage -> skippedHand.setMessageId(newmessage.getIdLong()));
             eb = unoGame.createEmbed(playedHand.getPlayerId(), language);
             playedChannel.sendFile(ImageHandler.getCardsImage(playedHand.getCards()), "hand.png").setEmbeds(eb.build()).queue(newmessage -> playedHand.setMessageId(newmessage.getIdLong()));

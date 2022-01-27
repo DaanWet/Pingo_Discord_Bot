@@ -24,7 +24,6 @@ import commands.suggestion.ListIssues;
 import commands.suggestion.Suggest;
 import companions.DataCompanion;
 import companions.GameCompanion;
-import companions.paginators.OpenExplorerData;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -58,7 +57,7 @@ public class CommandHandler {
                 put("help", new Help(gameCompanion));
                 put("add", new AddPicture());
                 put("fuckpingo", new FuckPingo());
-                put("delete", new DeletePicture(commh));
+                put("delete", new DeletePicture(commh, dataCompanion));
                 put("nickname", new Nickname());
                 put("roleassign", new RoleAssign());
                 put("addRA", new AddRoleAssign());
@@ -96,9 +95,6 @@ public class CommandHandler {
         ((Help) commands.get("help")).setCommands(commands);
     }
 
-    public OpenExplorerData getExplorerData(String command){
-        return ((DeletePicture) commands.get("delete")).getExplorerData(command);
-    }
 
     public GameCompanion getGameHandler(){
         return gameCompanion;
@@ -106,10 +102,6 @@ public class CommandHandler {
 
     public DataCompanion getDataCompanion(){
         return dataCompanion;
-    }
-
-    public void closeExplorer(String command, Message message){
-        ((DeletePicture) commands.get("delete")).closeExplorer(command, message);
     }
 
     public Set<String> getPcommands(){

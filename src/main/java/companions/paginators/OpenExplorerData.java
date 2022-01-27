@@ -6,28 +6,44 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 public class OpenExplorerData {
 
-    private final String playerId;
-    private final String channelId;
-    private final String messageId;
+    private final long playerId;
+    private final long channelId;
+    private final long messageId;
     private final Guild g;
+    private final String command;
+    private final int page;
 
-    public OpenExplorerData(String playerId, String channelId, String messageId, Guild g){
+    public OpenExplorerData(long playerId, long channelId, long messageId, Guild g, String command){
         this.channelId = channelId;
         this.playerId = playerId;
         this.messageId = messageId;
         this.g = g;
+        this.command = command;
+        page = 0;
     }
 
-    public String getPlayerId(){
+    public long getPlayerId(){
         return playerId;
     }
 
-    public String getChannelId(){
+    public long getChannelId(){
         return channelId;
     }
 
-    public String getMessageId(){
+    public long getMessageId(){
         return messageId;
+    }
+
+    public long getGuildId(){
+        return g.getIdLong();
+    }
+
+    public String getCommand(){
+        return command;
+    }
+
+    public int getPage(){
+        return page;
     }
 
     public RestAction<Message> getMessage(){

@@ -4,6 +4,7 @@ import commands.settings.Setting;
 import companions.DataCompanion;
 import companions.GameCompanion;
 import companions.paginators.EmbedPaginator;
+import companions.paginators.OpenExplorerData;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
 import data.ImageHandler;
@@ -72,34 +73,28 @@ public class ReactionListener extends ListenerAdapter {
             handlePaginatorReaction(e);
             return;
         }
-        //TODO: Rework this
-        e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
-            if (m.getAuthor().isBot() && !m.getEmbeds().isEmpty()){
-                MessageEmbed me = m.getEmbeds().get(0);
-                if (me.getTitle() != null){
-                    if (me.getTitle().contains("Delete pictures from ")){
-                        handleDeleteExplorerReaction(e, m, me);
-                    } else if (me.getTitle().equals(language.getString("uno.embed.title"))){
-                        handleUnoReaction(e.getMember(), m, e.getReactionEmote());
-                    }
-                }
-            }
-        });
 
+        Optional<OpenExplorerData> explorerData = dataCompanion.getExplorerData(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
+        if (explorerData.isPresent()){
+            handleExplorerReaction(e, explorerData.get());
+            return;
+        }
+        UnoGame unoGame = gameCompanion.getUnoGame(e.getGuild().getIdLong());
+        if (unoGame != null && unoGame.getMessageID() == e.getMessageIdLong() && unoGame.getChannelID() == e.getChannel().getIdLong()){
+            e.retrieveMessage().queue(m -> handleUnoReaction(e.getMember(), m, unoGame, e.getReactionEmote()));
+        }
     }
 
     @Override
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e){
         e.retrieveMember().queue(u -> {
-            if (!u.getUser().isBot()){
-                String roleCat = new RRDataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
-                if (roleCat != null){
-                    try {
-                        handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), false);
-                    } catch (HierarchyException exc){
-                        if (e.getGuild().getDefaultChannel() != null)
-                            e.getGuild().getDefaultChannel().sendMessage(Utils.getLanguage(e.getGuild().getIdLong()).getString("roleassign.error.perms.short")).queue();
-                    }
+            String roleCat = new RRDataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
+            if (roleCat != null){
+                try {
+                    handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), false);
+                } catch (HierarchyException exc){
+                    if (e.getGuild().getDefaultChannel() != null)
+                        e.getGuild().getDefaultChannel().sendMessage(Utils.getLanguage(e.getGuild().getIdLong()).getString("roleassign.error.perms.short")).queue();
                 }
             }
         });
@@ -217,56 +212,60 @@ public class ReactionListener extends ListenerAdapter {
         });
     }
 
-    public void handleDeleteExplorerReaction(GuildMessageReactionAddEvent e, Message m, MessageEmbed me){
-        User user = e.getUser();
-        EmbedBuilder eb = new EmbedBuilder(me);
-        int n = Integer.parseInt(me.getDescription().substring(0, me.getDescription().indexOf('.')));
-        String command = me.getTitle().substring(me.getTitle().lastIndexOf(' ') + 1);
-        String emoji = e.getReactionEmote().getEmoji();
+    public void handleExplorerReaction(GuildMessageReactionAddEvent e, OpenExplorerData explorerData){
+        e.retrieveMessage().queue(m -> {
+            MessageEmbed me = m.getEmbeds().get(0);
+            User user = e.getUser();
+            EmbedBuilder eb = new EmbedBuilder(me);
+            int n = explorerData.getPage();
+            String emoji = e.getReactionEmote().getEmoji();
+            String command = explorerData.getCommand();
 
-        if (commandHandler.getExplorerData(command).getPlayerId().equals(e.getUserId()) || emoji.equals("❌")){
-            File dir = new File(String.format("%s/%s", pathname, command));
-            int max = dir.listFiles().length;
-            Properties config = Utils.config;
+            if (explorerData.getPlayerId() == e.getUserIdLong() || emoji.equals("❌")){
+                File dir = new File(String.format("%s/%s", pathname, explorerData));
+                int max = dir.listFiles().length;
+                Properties config = Utils.config;
 
 
-            if (config.getProperty("emoji.previous").equals(emoji)){
-                m.removeReaction(emoji, user).queue();
-                if (n != 0){
-                    n--;
-                    eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
-                    eb.setDescription(String.format("%d.jpg", n));
-                    m.editMessageEmbeds(eb.build()).queue();
-                }
-            } else if (config.getProperty("emoji.trash").equals(emoji)){//remove image
-
-                File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
-                foto.delete();
-                for (int i = n + 1; i < max; i++){
-                    foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
-                    foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
-                }
-                eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
-                m.editMessageEmbeds(eb.build()).queue();
-                if (dir.listFiles().length == 0){
-                    dir.delete();
-                    commandHandler.closeExplorer(command, m);
-                } else {
+                if (config.getProperty("emoji.previous").equals(emoji)){
                     m.removeReaction(emoji, user).queue();
-                }
-            } else if (config.getProperty("emoji.next").equals(emoji)){
-                m.removeReaction(emoji, user).queue();
-                if (n != max - 1){
-                    n++;
-                    eb.setImage(String.format("%S/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
-                    eb.setDescription(String.format("%d.jpg", n));
-                    m.editMessageEmbeds(eb.build()).queue();
+                    if (n != 0){
+                        n--;
+                        eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
+                        eb.setDescription(String.format("%d.jpg", n));
+                        m.editMessageEmbeds(eb.build()).queue();
+                    }
+                } else if (config.getProperty("emoji.trash").equals(emoji)){//remove image
 
+                    File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
+                    foto.delete();
+                    for (int i = n + 1; i < max; i++){
+                        foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
+                        foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
+                    }
+                    eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
+                    m.editMessageEmbeds(eb.build()).queue();
+                    if (dir.listFiles().length == 0){
+                        dir.delete();
+                        dataCompanion.closeExplorer(command, m);
+                    } else {
+                        m.removeReaction(emoji, user).queue();
+                    }
+                } else if (config.getProperty("emoji.next").equals(emoji)){
+                    m.removeReaction(emoji, user).queue();
+                    if (n != max - 1){
+                        n++;
+                        eb.setImage(String.format("%S/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
+                        eb.setDescription(String.format("%d.jpg", n));
+                        m.editMessageEmbeds(eb.build()).queue();
+
+                    }
+                } else if (config.getProperty("emoji.cancel").equals(emoji)){
+                    dataCompanion.closeExplorer(command, m);
                 }
-            } else if (config.getProperty("emoji.cancel").equals(emoji)){
-                commandHandler.closeExplorer(command, m);
             }
-        }
+        });
+
     }
 
     public void handleRoleReaction(String emote, Guild g, String category, Member m, boolean add){
@@ -282,9 +281,8 @@ public class ReactionListener extends ListenerAdapter {
         }
     }
 
-    public void handleUnoReaction(Member member, Message message, MessageReaction.ReactionEmote emoji){
+    public void handleUnoReaction(Member member, Message message, UnoGame unoGame, MessageReaction.ReactionEmote emoji){
         Guild guild = message.getGuild();
-        UnoGame unoGame = gameCompanion.getUnoGame(guild.getIdLong());
         if (emoji.isEmoji() && unoGame != null && message.getIdLong() == unoGame.getMessageID()){
             ArrayList<UnoHand> hands = unoGame.getHands();
             MyResourceBundle language = Utils.getLanguage(guild.getIdLong());

@@ -12,7 +12,6 @@ import utils.Utils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public abstract class Command {
 
@@ -113,7 +112,6 @@ public abstract class Command {
 
 
     public String getName(){
-        //if (name == null) throw new ExecutionControl.NotImplementedException("Command should have a name");
         return name;
     }
 
@@ -148,7 +146,6 @@ public abstract class Command {
         }
         int ctr = 0;
         while (ctr < aliases.length && !s.equalsIgnoreCase(aliases[ctr])){
-            //System.out.println(String.format("%s: %s", s, aliases[ctr]));
             ctr++;
         }
 
