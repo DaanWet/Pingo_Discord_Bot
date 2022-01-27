@@ -22,7 +22,7 @@ public class GeneralDataHandler extends DataHandler {
 
     public void createDatabase() throws SQLException, IOException, SqlToolError{
 
-        try (InputStream is = getClass().getResourceAsStream("create.sql");
+        try (InputStream is = GeneralDataHandler.class.getClassLoader().getResourceAsStream("create.sql");
              Connection conn = DriverManager.getConnection(JDBC_URL, properties)) {
             SqlFile sqlFile = new SqlFile(new InputStreamReader(is), "init", System.out, "UTF-8", false, new File("."));
             sqlFile.setConnection(conn);

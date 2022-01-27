@@ -61,7 +61,7 @@ public class RemoveRoleAssign extends RoleCommand {
                         mr.clearReactions().queue();
                     }
                 }
-                e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
+                e.getMessage().delete().queueAfter((int) Utils.config.get("timeout"), TimeUnit.SECONDS);
             });
         }
 

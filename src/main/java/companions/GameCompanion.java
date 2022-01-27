@@ -2,10 +2,8 @@ package companions;
 
 
 import companions.cardgames.BlackJackGame;
-import companions.paginators.EmbedPaginator;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
-import utils.QueueMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +15,7 @@ public class GameCompanion {
     private final HashMap<Long, UnoGame> unoGames;
 
     private final HashMap<Long, ArrayList<CustomBet>> customBetMap;
-    
+
 
     public GameCompanion(){
         blackJackGames = new HashMap<>();

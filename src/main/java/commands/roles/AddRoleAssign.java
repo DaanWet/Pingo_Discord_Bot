@@ -69,7 +69,7 @@ public class AddRoleAssign extends RoleCommand {
         }
 
         e.getMessage().addReaction(config.getProperty("emoji.checkmark")).queue();
-        e.getMessage().delete().queueAfter(15, TimeUnit.SECONDS); // Should this value be added to properties?
+        e.getMessage().delete().queueAfter((int) config.get("timeout"), TimeUnit.SECONDS);
         RoleAssignData data = dataHandler.getRoleAssignData(e.getGuild().getIdLong(), args[0]);
         String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");
         if (data.getMessageId() != null){

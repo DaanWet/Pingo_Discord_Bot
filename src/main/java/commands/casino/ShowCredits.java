@@ -4,7 +4,6 @@ import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.DataCompanion;
-import companions.GameCompanion;
 import companions.paginators.BalancePaginator;
 import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.entities.Member;

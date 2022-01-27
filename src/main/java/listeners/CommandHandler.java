@@ -104,7 +104,7 @@ public class CommandHandler {
         return gameCompanion;
     }
 
-    public DataCompanion getDataCompanion() {
+    public DataCompanion getDataCompanion(){
         return dataCompanion;
     }
 

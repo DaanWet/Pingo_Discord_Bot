@@ -61,7 +61,7 @@ public class Suggest extends Command {
             m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
             m.addReaction(config.getProperty("emoji.red_tick")).queue();
         });
-        e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+        e.getMessage().delete().queueAfter((int) config.get("timeout"), TimeUnit.SECONDS);
 
 
     }

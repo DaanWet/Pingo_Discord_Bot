@@ -87,15 +87,12 @@ public class UnoCard {
             }
         }
         for (Value v : Value.values()){
-            if (card.contains(v.getName().toLowerCase())){
-                if (!((v == Value.FOUR || v == Value.TWO) && (card.contains(Value.PLUSTWO.getName().toLowerCase()) || card.contains(Value.PLUSFOUR.getName().toLowerCase())))){
-                    if (value != null){
-                        return null;
-                    }
-                    card = card.replaceFirst(v.getName().toLowerCase(), "");
-                    value = v;
+            if (card.contains(v.getName().toLowerCase()) && !((v == Value.FOUR || v == Value.TWO) && (card.contains(Value.PLUSTWO.getName().toLowerCase()) || card.contains(Value.PLUSFOUR.getName().toLowerCase())))){
+                if (value != null){
+                    return null;
                 }
-
+                card = card.replaceFirst(v.getName().toLowerCase(), "");
+                value = v;
             }
         }
         for (Color c : Color.values()){

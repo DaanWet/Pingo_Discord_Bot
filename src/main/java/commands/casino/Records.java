@@ -4,7 +4,6 @@ import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.DataCompanion;
-import companions.GameCompanion;
 import companions.Record;
 import companions.paginators.RecordPaginator;
 import data.handlers.RecordDataHandler;
@@ -31,12 +30,7 @@ public class Records extends Command {
         this.category = Category.CASINO;
         this.description = "records.description";
         this.arguments = "[<member>|<record>|me|list|global]\n<record> global";
-        properties = new Properties();
-        try {
-            properties.load(Records.class.getClassLoader().getResourceAsStream("strings.properties"));
-        } catch (IOException ioException){
-            ioException.printStackTrace();
-        }
+        properties = Utils.config;
         this.handler = handler;
     }
 
