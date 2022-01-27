@@ -16,7 +16,6 @@ import utils.MessageException;
 import utils.MyResourceBundle;
 import utils.Utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 

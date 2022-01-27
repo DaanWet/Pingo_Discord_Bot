@@ -83,7 +83,7 @@ public class Card {
     }
 
     public String toString(){
-        return String.format("%s ???????? of %s", value.displayName, face.displayName); // Is this ever used?
+        return String.format("%s of %s", value.displayName, face.displayName);
     }
 
     public String getEmoticon(){

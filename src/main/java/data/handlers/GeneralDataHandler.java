@@ -61,7 +61,6 @@ public class GeneralDataHandler extends DataHandler {
                     }
                 }
             }
-            //TODO: input record
         }
     }
 
