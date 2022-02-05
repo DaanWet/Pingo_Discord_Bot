@@ -35,7 +35,7 @@ public class DeletePicture extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (e.getGuild().getIdLong() != 203572340280262657L) return;
         if (args.length != 1 || !commandHandler.getPcommands().contains(args[0].toLowerCase()))
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(e.getGuild().getIdLong()));
         MyResourceBundle language = getLanguage(e);
         if (dataCompanion.getExplorerData(args[0]) == null)
             throw new MessageException(language.getString("picture.delete.error"));

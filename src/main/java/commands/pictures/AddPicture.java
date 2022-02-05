@@ -30,7 +30,7 @@ public class AddPicture extends Command {
         Message message = e.getMessage();
         String[] words = message.getContentRaw().split(" ");
         if (words.length != 2 || message.getAttachments().isEmpty())
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(e.getGuild().getIdLong()));
         try {
             String path = String.format("%s/%s", pathname, words[1].toLowerCase());
 

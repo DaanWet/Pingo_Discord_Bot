@@ -2,6 +2,7 @@ package commands;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import commands.settings.Settings;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
@@ -136,8 +137,10 @@ public abstract class Command {
         return priveligedGuild;
     }
 
-    public String getUsage(){
-        return String.format("Usage: !%s %s\n%s", name, arguments, description == null ? "" : description);
+    public String getUsage(long guildId){
+        MyResourceBundle language = Utils.getLanguage(guildId);
+        String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
+        return language.getString("command.usage", prefix, name, arguments, description == null ? "" : getDescription(language));
     }
 
     public boolean isCommandFor(String s){

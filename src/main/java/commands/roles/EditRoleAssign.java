@@ -30,13 +30,13 @@ public class EditRoleAssign extends RoleCommand {
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
         if (args.length == 0)
-            throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.no_category"));
         if (args.length == 1)
-            throw new MessageException(language.getString("roleassign.edit.error.mode") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.edit.error.mode"));
         if (args.length == 2)
             throw new MessageException(language.getString("roleassign.edit.error.value"));
         if (!dh.getRoleCategories(guildId).contains(args[0]))
-            throw new MessageException(language.getString("roleassign.error.category") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.category"));
 
         if (args[1].equalsIgnoreCase("sort")){
             RoleAssignData data = dh.getRoleAssignData(guildId, args[0]);
@@ -106,7 +106,7 @@ public class EditRoleAssign extends RoleCommand {
             editEmbed(data, e.getGuild(), args[0], dh, language);
 
         } else {
-            throw new MessageException(language.getString("roleassign.error.emoji", args[1]) + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.emoji", args[1]));
         }
 
     }

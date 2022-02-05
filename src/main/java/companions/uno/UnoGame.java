@@ -4,9 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import utils.MyResourceBundle;
 import utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 import static java.lang.Math.min;
 
@@ -15,8 +13,8 @@ public class UnoGame {
     private final String PATH;
 
     private final ArrayList<UnoHand> hands;
-    private final ArrayList<UnoCard> trekstapel;
-    private final ArrayList<UnoCard> aflegstapel;
+    private final ArrayList<UnoCard> drawPile;
+    private final ArrayList<UnoCard> discardPile;
     private final Random random = new Random();
     private final int bet;
     private final long channelID;
@@ -29,17 +27,17 @@ public class UnoGame {
 
     public UnoGame(int bet, long starter, long channelID){
         PATH = Utils.config.getProperty("uno.url");
-        trekstapel = new ArrayList<>();
+        drawPile = new ArrayList<>();
         for (UnoCard.Value value : UnoCard.Value.values()){
             for (UnoCard.Color color : UnoCard.Color.values()){
-                trekstapel.add(new UnoCard(color, value));
+                drawPile.add(new UnoCard(color, value));
                 if (value != UnoCard.Value.ZERO && value != UnoCard.Value.PLUSFOUR && value != UnoCard.Value.WILD){
-                    trekstapel.add(new UnoCard(color, value));
+                    drawPile.add(new UnoCard(color, value));
                 }
             }
         }
-        Collections.shuffle(trekstapel);
-        aflegstapel = new ArrayList<>();
+        Collections.shuffle(drawPile);
+        discardPile = new ArrayList<>();
         turn = -1;
         this.bet = bet;
         clockwise = true;
@@ -52,20 +50,20 @@ public class UnoGame {
     public void addPlayer(long id, String name){
         UnoHand hand = new UnoHand(id, name);
         for (int i = 0; i < 7; i++){
-            hand.addCard(trekstapel.remove(0), false);
+            hand.addCard(drawPile.remove(0), false);
         }
         hands.add(hand);
     }
 
     public int start(){
         if (hands.size() >= 2){
-            UnoCard beginCard = trekstapel.remove(0);
+            UnoCard beginCard = drawPile.remove(0);
             if (beginCard.getValue() == UnoCard.Value.PLUSFOUR || beginCard.getValue() == UnoCard.Value.WILD){
-                trekstapel.add(beginCard);
-                Collections.shuffle(trekstapel);
+                drawPile.add(beginCard);
+                Collections.shuffle(drawPile);
                 return start();
             }
-            aflegstapel.add(beginCard);
+            discardPile.add(beginCard);
             turn = random.nextInt(hands.size());
         }
         return turn;
@@ -76,16 +74,14 @@ public class UnoGame {
     }
 
     public boolean canPlayDrawFour(int turn){
-        UnoCard topcard = aflegstapel.get(aflegstapel.size() - 2);
+        UnoCard topcard = discardPile.get(discardPile.size() - 2);
         boolean canPlay = true;
-        int i = 0;
-        ArrayList<UnoCard> cards = hands.get(turn).getCards();
-        while (canPlay && i < cards.size()){
-            UnoCard card = cards.get(i);
+        Iterator<UnoCard> iterator = hands.get(turn).getCards().iterator();
+        while(canPlay && iterator.hasNext()){
+            UnoCard card = iterator.next();
             if (card.getColor() == topcard.getColor() && card.getValue() != UnoCard.Value.PLUSFOUR && card.getValue() != UnoCard.Value.WILD){
                 canPlay = false;
             }
-            i++;
         }
         return canPlay;
     }
@@ -96,7 +92,7 @@ public class UnoGame {
         }
         UnoHand hand = hands.get(turn);
         hand.endTurn(card);
-        aflegstapel.add(card);
+        discardPile.add(card);
         if (hand.getCards().size() == 0){
             finished = true;
             return true;
@@ -110,18 +106,18 @@ public class UnoGame {
             case PLUSTWO -> {
                 nextTurn(false);
                 hand = hands.get(turn);
-                if (trekstapel.size() == 0) reshuffle();
-                hand.addCard(trekstapel.remove(0), false);
-                if (trekstapel.size() == 0) reshuffle();
-                hand.addCard(trekstapel.remove(0), false);
+                if (drawPile.size() == 0) reshuffle();
+                hand.addCard(drawPile.remove(0), false);
+                if (drawPile.size() == 0) reshuffle();
+                hand.addCard(drawPile.remove(0), false);
                 nextTurn(false);
             }
             case PLUSFOUR -> {
                 nextTurn(false);
                 hand = hands.get(turn);
                 for (int i = 0; i < 4; i++){
-                    if (trekstapel.size() == 0) reshuffle();
-                    hand.addCard(trekstapel.remove(0), false);
+                    if (drawPile.size() == 0) reshuffle();
+                    hand.addCard(drawPile.remove(0), false);
                 }
                 nextTurn(false);
             }
@@ -132,8 +128,8 @@ public class UnoGame {
     }
 
     public UnoCard getNextCard(){
-        if (trekstapel.size() == 0) reshuffle();
-        return trekstapel.remove(0);
+        if (drawPile.size() == 0) reshuffle();
+        return drawPile.remove(0);
     }
 
     public UnoCard drawCard(){
@@ -154,11 +150,11 @@ public class UnoGame {
     }
 
     public void reshuffle(){
-        UnoCard topcard = aflegstapel.remove(aflegstapel.size() - 1);
-        trekstapel.addAll(aflegstapel);
-        aflegstapel.clear();
-        aflegstapel.add(topcard);
-        Collections.shuffle(trekstapel);
+        UnoCard topcard = discardPile.remove(discardPile.size() - 1);
+        drawPile.addAll(discardPile);
+        discardPile.clear();
+        discardPile.add(topcard);
+        Collections.shuffle(drawPile);
     }
 
     public long getStarter(){
@@ -186,7 +182,7 @@ public class UnoGame {
     }
 
     public UnoCard getTopCard(){
-        return aflegstapel.get(aflegstapel.size() - 1);
+        return discardPile.get(discardPile.size() - 1);
     }
 
     public int getTurn(){
@@ -205,19 +201,13 @@ public class UnoGame {
         return hands;
     }
 
-    public ArrayList<UnoCard> getTrekstapel(){
-        return trekstapel;
+    public ArrayList<UnoCard> getDrawPile(){
+        return drawPile;
     }
 
-    public UnoHand getPlayerHand(long id){
-        UnoHand hand = null;
-        int i = 0;
-        while (hand == null && i < hands.size()){
-            if (hands.get(i).getPlayerId() == id)
-                hand = hands.get(i);
-            i++;
-        }
-        return hand;
+    public Optional<UnoHand> getPlayerHand(long id){
+        return hands.stream().filter(h -> h.getPlayerId() == id).findFirst();
+
     }
 
 
@@ -230,7 +220,7 @@ public class UnoGame {
             eb.setTitle(language.getString("uno.his_turn", hand.getPlayerName()));
         }
         StringBuilder sb = new StringBuilder();
-        for (UnoCard c : getPlayerHand(player).getCards()){
+        for (UnoCard c : getPlayerHand(player).get().getCards()){
             if (c.getValue() == UnoCard.Value.WILD || c.getValue() == UnoCard.Value.PLUSFOUR){
                 sb.append(c.getValue().getName()).append(", ");
             } else {

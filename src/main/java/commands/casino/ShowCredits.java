@@ -41,7 +41,7 @@ public class ShowCredits extends Command {
             BalancePaginator paginator = new BalancePaginator(global, e.getGuild().getIdLong());
             paginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), paginator));
         } else {
-            throw new MessageException(this.getUsage());
+            throw new MessageException(this.getUsage(e.getGuild().getIdLong()));
         }
     }
 }

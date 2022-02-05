@@ -39,7 +39,7 @@ public class CollectEventCredits extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length != 0)
-            throw new MessageException(this.getUsage());
+            throw new MessageException(this.getUsage(e.getGuild().getIdLong()));
         long id = e.getAuthor().getIdLong();
         CreditDataHandler dataHandler = new CreditDataHandler();
         LocalDateTime latestcollect = dataHandler.getLatestCollect(e.getGuild().getIdLong(), id);

@@ -22,8 +22,9 @@ public class Suggest extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        long guildId = e.getGuild().getIdLong();
         if (args.length < 4)
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(guildId));
         String repo = null;
         if (args[0].equalsIgnoreCase("bot")){
             repo = "repo.bot";
@@ -47,7 +48,7 @@ public class Suggest extends Command {
         // If no description is given send error
         MyResourceBundle language = getLanguage(e);
         if (t)
-            throw new MessageException(language.getString("suggestion.error") + "\n" + getUsage());
+            throw new MessageException(language.getString("suggestion.error"));
 
         EmbedBuilder eb = new EmbedBuilder();
         Properties config = Utils.config;

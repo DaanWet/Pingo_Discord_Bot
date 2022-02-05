@@ -24,8 +24,9 @@ public class ListIssues extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        long guildId = e.getGuild().getIdLong();
         if (args.length == 0 || args.length > 2)
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(guildId));
 
         GHRepository repo;
         if (args[0].equalsIgnoreCase("bot")){
@@ -33,7 +34,7 @@ public class ListIssues extends Command {
         } else if (args[0].equalsIgnoreCase("plugin")){
             repo = gitHub.getRepository(Utils.config.getProperty("repo.plugin"));
         } else {
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(guildId));
         }
 
 
@@ -54,7 +55,7 @@ public class ListIssues extends Command {
                 sb.append(dot).append(label.getName()).append("\n");
             }
         } else {
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(guildId));
         }
         eb.setFooter(repo.getHtmlUrl().toString());
         eb.setDescription(sb.toString());

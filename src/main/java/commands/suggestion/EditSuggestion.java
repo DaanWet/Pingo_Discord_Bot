@@ -21,17 +21,18 @@ public class EditSuggestion extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        long guildId = e.getGuild().getIdLong();
         if (args.length < 3)
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(guildId));
 
         Long messageid = Utils.isLong(args[0]);
 
 
         if (messageid == null)
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(guildId));
 
         if (!args[1].matches("(?i)-[rdtl]"))
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(guildId));
 
         String edit = Utils.concat(args, 2);
         MyResourceBundle language = getLanguage(e);
