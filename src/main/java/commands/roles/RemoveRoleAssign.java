@@ -35,13 +35,13 @@ public class RemoveRoleAssign extends RoleCommand {
         RRDataHandler dataHandler = new RRDataHandler();
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length == 0)
-            throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.no_category"));
         if (args.length == 1)
-            throw new MessageException(language.getString("roleassign.remove.error.emoji") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.remove.error.emoji"));
         if (args.length > 2 || !dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0]))
-            throw new MessageException(language.getString("roleassign.error.category") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.category") );
         if (!hasEmoji(e.getMessage(), args[1]))
-            throw new MessageException(language.getString("roleassign.edit.error.emoji", args[1]) + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.edit.error.emoji", args[1]));
 
         long guildId = e.getGuild().getIdLong();
         String emote = args[1].replaceFirst("<", "").replaceFirst(">$", "");

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum Record {
-    CREDITS("highes_credits", 1, true),
+    CREDITS("highest_credits", 1, true),
     WIN("biggest_bj_win", 4, true),
     LOSS("biggest_bj_loss", 5, true),
     WIN_RATE("bj_win_rate", 3, false),

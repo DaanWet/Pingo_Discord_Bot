@@ -31,7 +31,7 @@ public class RoleAssign extends RoleCommand {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         if (args.length == 0 || args.length > 2)
-            throw new MessageException(getUsage(), 10);
+            throw new MessageException(getUsage(e.getGuild().getIdLong()), 10);
 
         RRDataHandler dataHandler = new RRDataHandler();
         ArrayList<RoleAssignRole> roles = dataHandler.getRoles(e.getGuild().getIdLong(), args[0]);

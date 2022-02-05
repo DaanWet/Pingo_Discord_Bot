@@ -106,7 +106,7 @@ public class Records extends Command {
             RecordPaginator recordPaginator = new RecordPaginator(Record.getRecord(args[0].toLowerCase()).get(), null);
             recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
         } else {
-            throw new MessageException(language.getString("records.error.args", getUsage()));
+            throw new MessageException(language.getString("records.error.args", getUsage(guild.getIdLong())));
         }
     }
 

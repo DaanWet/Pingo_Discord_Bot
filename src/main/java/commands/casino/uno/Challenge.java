@@ -62,8 +62,8 @@ public class Challenge extends Command {
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < 4; i++){
-                    unoGame.getTrekstapel().add(skippedHand.getCards().remove(skippedHand.getCards().size() - 1));
-                    UnoCard card = unoGame.getTrekstapel().remove(0);
+                    unoGame.getDrawPile().add(skippedHand.getCards().remove(skippedHand.getCards().size() - 1));
+                    UnoCard card = unoGame.getDrawPile().remove(0);
                     playedHand.addCard(card, false);
                     sb.append(card.toString()).append(", ");
                 }

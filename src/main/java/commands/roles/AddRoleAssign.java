@@ -37,22 +37,22 @@ public class AddRoleAssign extends RoleCommand {
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
         switch (args.length){
-            case 0 -> throw new MessageException(language.getString("roleassign.error.no_category") + "\n" + getUsage());
-            case 1 -> throw new MessageException(language.getString("roleassign.error.no_emoji") + "\n" + getUsage());
-            case 2 -> throw new MessageException(language.getString("roleassign.error.no_role") + "\n" + getUsage());
-            case 3 -> throw new MessageException(language.getString("roleassign.error.no_name") + "\n" + getUsage());
+            case 0 -> throw new MessageException(language.getString("roleassign.error.no_category"));
+            case 1 -> throw new MessageException(language.getString("roleassign.error.no_emoji"));
+            case 2 -> throw new MessageException(language.getString("roleassign.error.no_role"));
+            case 3 -> throw new MessageException(language.getString("roleassign.error.no_name"));
         }
 
         if (!dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0]))
-            throw new MessageException(language.getString("roleassign.error.category") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.category"));
 
         if (!hasEmoji(e.getMessage(), args[1]))
-            throw new MessageException(language.getString("roleassign.error.emoji", args[1]) + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.emoji", args[1]) );
         Role role;
         try {
             role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);
         } catch (Exception exc){
-            throw new MessageException(language.getString("roleassign.error.role") + "\n" + getUsage());
+            throw new MessageException(language.getString("roleassign.error.role"));
         }
         int pos = role.getPosition();
         Properties config = Utils.config;

@@ -29,19 +29,19 @@ public class Weekly extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length != 0)
-            throw new MessageException(this.getUsage());
+            throw new MessageException(this.getUsage( e.getGuild().getIdLong()));
 
         CreditDataHandler dataHandler = new CreditDataHandler();
         long id = e.getAuthor().getIdLong();
         LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
-        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (latestcollect != null && !LocalDateTime.now().minusDays(7).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(7);
-            LocalDateTime temp = LocalDateTime.now();
-            long days = temp.until(till, ChronoUnit.DAYS);
-            long hours = temp.plusDays(days).until(till, ChronoUnit.HOURS);
-            long minutes = temp.plusDays(days).plusHours(hours).until(till, ChronoUnit.MINUTES);
+            LocalDateTime now = LocalDateTime.now();
+            long days = now.until(till, ChronoUnit.DAYS);
+            long hours = now.plusDays(days).until(till, ChronoUnit.HOURS);
+            long minutes = now.plusDays(days).plusHours(hours).until(till, ChronoUnit.MINUTES);
             throw new MessageException(language.getString("weekly.wait", hours, minutes));
         }
         int weekly = (int) Utils.config.get("weekly");

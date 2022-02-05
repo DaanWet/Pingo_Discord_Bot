@@ -136,12 +136,7 @@ public class ReactionListener extends ListenerAdapter {
             e.retrieveMessage().queue(m -> {
                 if (m.getEmbeds().size() == 1){
                     e.getReaction().retrieveUsers().queue(users -> {
-                        boolean added = false;
-                        for (User user : users){
-                            if (user.isBot() && user.getIdLong() == 589027434611867668L){
-                                added = true;
-                            }
-                        }
+                        boolean added = users.stream().anyMatch(u -> u.isBot() && u.getIdLong() == 589027434611867668L);
                         if (!added){
                             try {
                                 MessageEmbed me = m.getEmbeds().get(0);
@@ -245,11 +240,11 @@ public class ReactionListener extends ListenerAdapter {
                     }
                 } else if (config.getProperty("emoji.trash").equals(emoji)){//remove image
 
-                    File foto = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
-                    foto.delete();
+                    File photo = new File(String.format("%s/%s/%d.jpg", pathname, command, n));
+                    photo.delete();
                     for (int i = n + 1; i < max; i++){
-                        foto = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
-                        foto.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
+                        photo = new File(String.format("%s/%s/%d.jpg", pathname, command, i));
+                        photo.renameTo(new File(String.format("%s/%s/%d.jpg", pathname, command, i - 1)));
                     }
                     eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), command, n, random.nextInt(), random.nextInt()));
                     m.editMessageEmbeds(eb.build()).queue();

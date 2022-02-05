@@ -25,7 +25,7 @@ public class TeamPicker extends Command {
         int ateams = 2;
         int playerspt = 0;
         if (args.length < 2)
-            throw new MessageException(getUsage());
+            throw new MessageException(getUsage(e.getGuild().getIdLong()));
 
 
         int offset = 0;

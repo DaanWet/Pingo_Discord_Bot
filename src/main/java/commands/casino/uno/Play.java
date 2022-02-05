@@ -51,7 +51,7 @@ public class Play extends Command {
                 throw new MessageException(language.getString("uno.turn"));
 
             if (args.length == 0)
-                throw new MessageException(getUsage());
+                throw new MessageException(getUsage(guild.getIdLong()));
 
             UnoCard card = UnoCard.fromString(args[0]);
             if (card == null || !unoGame.canPlay(card))
@@ -68,7 +68,7 @@ public class Play extends Command {
                 TextChannel channel = guild.getTextChannelById(hand.getChannelId());
                 CreditDataHandler dataHandler = new CreditDataHandler();
                 if (player != e.getMember().getIdLong()){
-                    int finalI = i;
+                    final int finalI = i; // values inside message Consumer lambdas need to be final, so we need to construct a final variant of i
                     channel.retrieveMessageById(hand.getMessageId()).queue(message -> {
                         EmbedBuilder eb = unoGame.createEmbed(player, language);
                         eb.setColor(color);
