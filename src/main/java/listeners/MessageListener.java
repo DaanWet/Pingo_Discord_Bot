@@ -45,11 +45,11 @@ public class MessageListener extends ListenerAdapter {
         Message message = e.getMessage();
         Guild guild = e.getGuild();
 
-
+        Properties config = Utils.config;
         // Minecraft update
         if (e.isWebhookMessage() || author.isBot()){
-            if (channel.getIdLong() == 686645470835245079L && (!message.getContentRaw().startsWith("**Minecraft - Beta"))){
-                guild.getTextChannelById(685146958997749801L).sendMessage(message).queue();
+            if (channel.getIdLong() == (long) config.get("special.mc") && (!message.getContentRaw().startsWith("**Minecraft - Beta"))){
+                guild.getTextChannelById((long) config.get("special.mc2")).sendMessage(message).queue();
             }
         } else if (!author.isBot()){
             //Text to speech mute
@@ -57,14 +57,14 @@ public class MessageListener extends ListenerAdapter {
                 message.delete().complete();
                 MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
                 channel.sendMessage(language.getString("tts.muted", e.getMember().getAsMention())).queue();
-                Role role = guild.getRoleById(598551156867858442L);
+                Role role = guild.getRoleById((long) config.get("special.muted"));
                 List<Role> roles = e.getMember().getRoles();
                 guild.modifyMemberRoles(e.getMember(), role).queue(em -> guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES));
             }
 
             String contentRaw = e.getMessage().getContentRaw();
             // Codex submissions
-            if (channel.getIdLong() == 664230911935512586L){
+            if (channel.getIdLong() == (long) config.get("special.codex")){
                 message.delete().queue();
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
             } // Check for commands
@@ -94,11 +94,7 @@ public class MessageListener extends ListenerAdapter {
                     e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
                 }
                 MDC.clear();
-            } else if (e.getGuild().getIdLong() == 712013079629660171L){
-                message.delete().queue();
-                e.getJDA().getGuildById(203572340280262657L).getTextChannelById(203572340280262657L).sendMessage(message.getContentRaw()).queue();
             }
-
         }
 
     }

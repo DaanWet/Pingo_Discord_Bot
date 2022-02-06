@@ -1,5 +1,7 @@
 package companions.uno;
 
+import commands.settings.Setting;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import utils.MyResourceBundle;
 import utils.Utils;
@@ -17,6 +19,7 @@ public class UnoGame {
     private final ArrayList<UnoCard> discardPile;
     private final Random random = new Random();
     private final int bet;
+    private final long guildId;
     private final long channelID;
     private final long starter;
     private int turn;
@@ -25,7 +28,7 @@ public class UnoGame {
     private long messageID;
     private long category;
 
-    public UnoGame(int bet, long starter, long channelID){
+    public UnoGame(int bet, long starter, long guildId, long channelID){
         PATH = Utils.config.getProperty("uno.url");
         drawPile = new ArrayList<>();
         for (UnoCard.Value value : UnoCard.Value.values()){
@@ -44,12 +47,14 @@ public class UnoGame {
         finished = false;
         this.starter = starter;
         this.channelID = channelID;
+        this.guildId = guildId;
         hands = new ArrayList<>();
     }
 
     public void addPlayer(long id, String name){
         UnoHand hand = new UnoHand(id, name);
-        for (int i = 0; i < 7; i++){
+        int cards = new SettingsDataHandler().getIntSetting(guildId, Setting.START_CARDS).get(0);
+        for (int i = 0; i < cards; i++){
             hand.addCard(drawPile.remove(0), false);
         }
         hands.add(hand);
@@ -77,7 +82,7 @@ public class UnoGame {
         UnoCard topcard = discardPile.get(discardPile.size() - 2);
         boolean canPlay = true;
         Iterator<UnoCard> iterator = hands.get(turn).getCards().iterator();
-        while(canPlay && iterator.hasNext()){
+        while (canPlay && iterator.hasNext()){
             UnoCard card = iterator.next();
             if (card.getColor() == topcard.getColor() && card.getValue() != UnoCard.Value.PLUSFOUR && card.getValue() != UnoCard.Value.WILD){
                 canPlay = false;

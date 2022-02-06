@@ -2,7 +2,6 @@ package commands;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import commands.settings.Settings;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;

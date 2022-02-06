@@ -51,11 +51,11 @@ public class ReactionListener extends ListenerAdapter {
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e){
         User user = e.getUser();
         if (user.isBot()) return;
-
-        if (e.getChannel().getIdLong() == 664230911935512586L){
+        Properties config = Utils.config;
+        if (e.getChannel().getIdLong() == (long) config.get("special.codex")){
             handleSuggestionReaction(e);
             return;
-        } else if (e.getChannel().getIdLong() == 747228850353733739L){
+        } else if (e.getChannel().getIdLong() == (long) config.get("special.suggestion")){
             handleBotSuggestion(e);
             return;
         }
@@ -124,11 +124,12 @@ public class ReactionListener extends ListenerAdapter {
 
 
     public void handleBotSuggestion(GuildMessageReactionAddEvent e){
-        if (e.getMember().getIdLong() == 223837254118801408L && e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals("✅")){
+        Properties config = Utils.config;
+        if (e.getMember().getIdLong() == (long) config.get("special.owner") && e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals(config.getProperty("emoji.checkmark"))){
             e.retrieveMessage().queue(m -> {
                 if (m.getEmbeds().size() == 1){
                     e.getReaction().retrieveUsers().queue(users -> {
-                        boolean added = users.stream().anyMatch(u -> u.isBot() && u.getIdLong() == 589027434611867668L);
+                        boolean added = users.stream().anyMatch(u -> u.isBot() && u.getIdLong() == (long) config.get("special.bot"));
                         if (!added){
                             try {
                                 MessageEmbed me = m.getEmbeds().get(0);
@@ -144,7 +145,7 @@ public class ReactionListener extends ListenerAdapter {
                                         }
                                     }
                                     issue.create();
-                                    m.addReaction(Utils.config.getProperty("emoji.checkmark")).queue();
+                                    m.addReaction(config.getProperty("emoji.checkmark")).queue();
                                 }
                             } catch (IOException | NullPointerException ioException){
                                 e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", ioException.getMessage())).queue();
@@ -216,10 +217,10 @@ public class ReactionListener extends ListenerAdapter {
             String emoji = e.getReactionEmote().getEmoji();
             String command = explorerData.getCommand();
 
-            if (explorerData.getPlayerId() == e.getUserIdLong() || emoji.equals("❌")){
+            Properties config = Utils.config;
+            if (explorerData.getPlayerId() == e.getUserIdLong() || emoji.equals(config.getProperty("emoji.cancel"))){
                 File dir = new File(String.format("%s/%s", pathname, explorerData));
                 int max = dir.listFiles().length;
-                Properties config = Utils.config;
 
 
                 if (config.getProperty("emoji.previous").equals(emoji)){

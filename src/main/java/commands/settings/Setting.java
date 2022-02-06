@@ -20,7 +20,8 @@ public enum Setting {
     PREFIX("prefix", Type.GENERAL, ValueType.STRING, false, "!", List.of(), "", ""),
     LANGUAGE("language", Type.GENERAL, ValueType.LANGUAGE, false, "en", List.of(), "", ""),
 
-    UNO_PLACE("unoPlace", Type.UNO, ValueType.INTEGER, false, -1, List.of(), "", "");
+    UNO_PLACE("unoPlace", Type.UNO, ValueType.INTEGER, false, -1, List.of(), "", ""),
+    START_CARDS("startingCards", Type.UNO, ValueType.INTEGER, false, 7, List.of(), "", "");
 
     public enum Type {
         COMMANDS("Commands", new String[]{"Command"}, (list, eb, prefix, language) -> {
