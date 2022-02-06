@@ -17,7 +17,7 @@ public class AdminAbuse extends Command {
         this.category = Category.MODERATION;
         this.arguments = "[<member>] <amount>";
         this.description = "give.description";
-        this.priveligedGuild = 203572340280262657L;
+        this.priveligedGuild = (long) Utils.config.get("special.guild");
     }
 
     @Override

@@ -27,13 +27,12 @@ public class DeletePicture extends Command {
         this.category = Category.PICTURES;
         this.description = "picture.delete.description";
         this.arguments = "<command>";
-        this.priveligedGuild = 203572340280262657L;
+        this.priveligedGuild = (long) Utils.config.get("special.guild");
         this.dataCompanion = dataCompanion;
     }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        if (e.getGuild().getIdLong() != 203572340280262657L) return;
         if (args.length != 1 || !commandHandler.getPcommands().contains(args[0].toLowerCase()))
             throw new MessageException(getUsage(e.getGuild().getIdLong()));
         MyResourceBundle language = getLanguage(e);

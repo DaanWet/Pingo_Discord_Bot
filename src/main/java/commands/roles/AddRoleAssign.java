@@ -47,7 +47,7 @@ public class AddRoleAssign extends RoleCommand {
             throw new MessageException(language.getString("roleassign.error.category"));
 
         if (!hasEmoji(e.getMessage(), args[1]))
-            throw new MessageException(language.getString("roleassign.error.emoji", args[1]) );
+            throw new MessageException(language.getString("roleassign.error.emoji", args[1]));
         Role role;
         try {
             role = e.getMessage().getMentionedRoles().size() == 0 ? e.getGuild().getRoleById(args[2]) : e.getMessage().getMentionedRoles().get(0);

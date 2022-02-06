@@ -17,7 +17,7 @@ public class Suggest extends Command {
         this.aliases = new String[]{"issue", "suggestion"};
         this.arguments = "{**bot** | **plugin** | **discord**} <title> **-d** <description>";
         this.description = "suggestion.description";
-        this.priveligedGuild = 203572340280262657L;
+        this.priveligedGuild = (long) Utils.config.get("special.guild");
     }
 
     @Override
@@ -57,7 +57,7 @@ public class Suggest extends Command {
         eb.setTitle(title.toString());
         eb.setDescription(descript.toString());
         eb.setFooter(repo != null ? language.getString("suggestion.footer", config.getProperty(repo)) : "");
-        e.getGuild().getTextChannelById(747228850353733739L).sendMessageEmbeds(eb.build()).queue(m -> {
+        e.getGuild().getTextChannelById((long) Utils.config.get("special.suggestion")).sendMessageEmbeds(eb.build()).queue(m -> {
             m.addReaction(config.getProperty("emoji.green_tick")).queue();
             m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
             m.addReaction(config.getProperty("emoji.red_tick")).queue();

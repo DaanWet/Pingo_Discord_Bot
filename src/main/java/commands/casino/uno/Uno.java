@@ -51,7 +51,7 @@ public class Uno extends Command {
             }
         }
         settingDH.setCooldown(guildId, e.getAuthor().getIdLong(), Setting.UNO, LocalDateTime.now());
-        UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), e.getChannel().getIdLong());
+        UnoGame unogame = new UnoGame(bet, e.getAuthor().getIdLong(), guildId, e.getChannel().getIdLong());
         gameCompanion.setUnoGame(guildId, unogame);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(language.getString("uno.embed.title"));

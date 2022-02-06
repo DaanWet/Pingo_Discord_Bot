@@ -31,7 +31,7 @@ public class Weekly extends Command {
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length != 0)
-            throw new MessageException(this.getUsage( e.getGuild().getIdLong()));
+            throw new MessageException(this.getUsage(e.getGuild().getIdLong()));
 
         CreditDataHandler dataHandler = new CreditDataHandler();
         long id = e.getAuthor().getIdLong();

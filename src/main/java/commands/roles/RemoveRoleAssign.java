@@ -39,7 +39,7 @@ public class RemoveRoleAssign extends RoleCommand {
         if (args.length == 1)
             throw new MessageException(language.getString("roleassign.remove.error.emoji"));
         if (args.length > 2 || !dataHandler.getRoleCategories(e.getGuild().getIdLong()).contains(args[0]))
-            throw new MessageException(language.getString("roleassign.error.category") );
+            throw new MessageException(language.getString("roleassign.error.category"));
         if (!hasEmoji(e.getMessage(), args[1]))
             throw new MessageException(language.getString("roleassign.edit.error.emoji", args[1]));
 

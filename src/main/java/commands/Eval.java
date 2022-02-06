@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.sk.PrettyTable;
 import utils.MessageException;
+import utils.Utils;
 
 public class Eval extends Command {
 
@@ -13,7 +14,7 @@ public class Eval extends Command {
         this.arguments = "<query>";
         this.hidden = true;
         this.description = "eval.description";
-        this.priveligedGuild = 203572340280262657L;
+        this.priveligedGuild = (long) Utils.config.get("special.guild");
     }
 
     @Override
