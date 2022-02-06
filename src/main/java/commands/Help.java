@@ -51,7 +51,7 @@ public class Help extends Command {
                 eb.setTitle(language.getString("help.moderation"));
                 fillCommands(eb, true, guildId, prefix, language);
 
-            } else if (args[0].equalsIgnoreCase("pictures") && guildId == 203572340280262657L){
+            } else if (args[0].equalsIgnoreCase("pictures") && guildId == (long)Utils.config.get("special.guild")){
                 File dir = new File(pathname);
                 eb.setTitle(language.getString("help.pictures"));
                 StringBuilder sb = new StringBuilder();
@@ -107,7 +107,7 @@ public class Help extends Command {
 
             }
         }
-        if (guildId == 203572340280262657L && !moderation)
+        if (guildId == (long)Utils.config.get("special.guild") && !moderation)
             sbs.get(Category.PICTURES).append("\n").append(language.getString("help.pictures.list", prefix + "help"));
         sbs.keySet().forEach(s -> eb.addField(s.getDisplay(), sbs.get(s).toString().trim(), false));
     }
