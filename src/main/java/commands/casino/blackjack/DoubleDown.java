@@ -1,39 +1,39 @@
 package commands.casino.blackjack;
 
-import casino.BlackJackGame;
-import casino.GameHandler;
+import companions.GameCompanion;
+import companions.cardgames.BlackJackGame;
+import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import utils.DataHandler;
 import utils.MessageException;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 public class DoubleDown extends BCommand {
 
 
-    public DoubleDown(GameHandler gameHandler) {
-        super(gameHandler);
+    public DoubleDown(GameCompanion gameCompanion){
+        super(gameCompanion);
         this.name = "double";
     }
 
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         long id = e.getAuthor().getIdLong();
         long guildId = e.getGuild().getIdLong();
-        if (args.length == 0) {
-            BlackJackGame bjg = gameHandler.getBlackJackGame(guildId, id);
-            if (bjg != null) {
-                if (!bjg.canDouble()) {
-                    throw new MessageException("You can't do that");
-                }
-                DataHandler dataHandler = new DataHandler();
-                if (new DataHandler().getCredits(guildId, id) < 2*bjg.getBet()) {
-                    throw new MessageException("You have not enough credits");
-                }
-                
-                bjg.doubleDown();
-                updateMessage(e.getChannel(), bjg, dataHandler, guildId, id, e.getAuthor().getName());
-
+        MyResourceBundle language = Utils.getLanguage(guildId);
+        BlackJackGame bjg = gameCompanion.getBlackJackGame(guildId, id);
+        if (args.length == 0 && bjg != null){
+            if (!bjg.canDouble()){
+                throw new MessageException(language.getString("bj.error.invalid"));
             }
+            CreditDataHandler dataHandler = new CreditDataHandler();
+            if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet()){
+                throw new MessageException(language.getString("credit.error.not_enough.short"));
+            }
+
+            bjg.doubleDown();
+            updateMessage(e, bjg, dataHandler, language);
         }
     }
 }

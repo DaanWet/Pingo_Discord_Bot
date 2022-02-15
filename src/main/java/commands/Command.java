@@ -2,21 +2,43 @@ package commands;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import utils.DataHandler;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Command {
 
+    public enum Category {
+        CASINO("Casino"),
+        MODERATION("Moderation"),
+        PICTURES("Pictures"),
+        UNO("Uno"),
+        OTHER("Other");
+
+
+        private final String display;
+
+        Category(String display){
+            this.display = display;
+        }
+
+        public String getDisplay(){
+            return display;
+        }
+
+    }
+
+
     protected String name;
     protected String[] aliases = new String[0];
-    protected String category = "Other";
+    protected Category category = Category.OTHER;
     protected String arguments = "";
     protected String description;
     protected boolean hidden = false;
@@ -25,7 +47,7 @@ public abstract class Command {
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
     protected CommandState canBeExecuted(long guildId, long channelId, Member member, Setting setting){
-        DataHandler dataHandler = new DataHandler();
+        SettingsDataHandler dataHandler = new SettingsDataHandler();
         CommandState state = CommandState.DISABLED;
         boolean enabled = dataHandler.getBoolSetting(guildId, setting);
         long userId = member.getIdLong();
@@ -36,7 +58,7 @@ public abstract class Command {
                 state = CommandState.CHANNEL;
                 while (state != CommandState.ENABLED && i < whitelist.size()){
                     Pair<Long, Setting.LongType> pair = whitelist.get(i);
-                    if (pair.getLeft().equals(channelId) || pair.getLeft().equals(userId) || member.getRoles().stream().map(ISnowflake::getIdLong). anyMatch(id -> id.equals(pair.getLeft()))) {
+                    if (pair.getLeft().equals(channelId) || pair.getLeft().equals(userId) || member.getRoles().stream().map(ISnowflake::getIdLong).anyMatch(id -> id.equals(pair.getLeft()))){
                         state = CommandState.ENABLED;
                     }
                     i++;
@@ -51,7 +73,7 @@ public abstract class Command {
                     Pair<Long, Setting.LongType> pair = blacklist.get(i);
                     if (pair.getLeft().equals(channelId)){
                         state = CommandState.CHANNEL;
-                    } else if (pair.getLeft().equals(userId) || member.getRoles().stream().map(ISnowflake::getIdLong).anyMatch(id -> id.equals(pair.getLeft()))) {
+                    } else if (pair.getLeft().equals(userId) || member.getRoles().stream().map(ISnowflake::getIdLong).anyMatch(id -> id.equals(pair.getLeft()))){
                         state = CommandState.USER;
                     }
                     i++;
@@ -71,59 +93,68 @@ public abstract class Command {
     }
 
 
-    public CommandState canBeExecuted(long guildId, long channelId, Member member) {
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
         Setting s = Setting.fromString(name, Setting.Type.COMMANDS);
         CommandState state = CommandState.ENABLED;
-        if (s != null) {
+        if (s != null){
             state = canBeExecuted(guildId, channelId, member, s);
         }
         return state;
     }
 
-    public String getDescription() {
+    public String getDescription(){
         return description;
     }
 
-    public String getName() {
-        //if (name == null) throw new ExecutionControl.NotImplementedException("Command should have a name");
+    public String getDescription(MyResourceBundle language){
+        return language.getString(description);
+    }
+
+
+    public String getName(){
         return name;
     }
 
-    public String getArguments() {
+    public String getArguments(){
         return arguments;
     }
 
-    public String[] getAliases() {
+    public String[] getAliases(){
         return aliases;
     }
 
-    public String getCategory() {
+    public Category getCategory(){
         return category;
     }
 
-    public boolean isHidden() {
+    public boolean isHidden(){
         return hidden;
     }
 
 
-    public long getPriveligedGuild() {
+    public long getPriveligedGuild(){
         return priveligedGuild;
     }
 
-    public String getUsage() {
-        return String.format("Usage: !%s %s\n%s", name, arguments, description == null ? "" : description);
+    public String getUsage(long guildId){
+        MyResourceBundle language = Utils.getLanguage(guildId);
+        String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
+        return language.getString("command.usage", prefix, name, arguments, description == null ? "" : getDescription(language));
     }
 
-    public boolean isCommandFor(String s) {
-        if (s.equalsIgnoreCase(name)) {
+    public boolean isCommandFor(String s){
+        if (s.equalsIgnoreCase(name)){
             return true;
         }
         int ctr = 0;
-        while (ctr < aliases.length && !s.equalsIgnoreCase(aliases[ctr])) {
-            //System.out.println(String.format("%s: %s", s, aliases[ctr]));
+        while (ctr < aliases.length && !s.equalsIgnoreCase(aliases[ctr])){
             ctr++;
         }
 
         return ctr < aliases.length;
+    }
+
+    protected MyResourceBundle getLanguage(GuildMessageReceivedEvent e){
+        return Utils.getLanguage(e.getGuild().getIdLong());
     }
 }

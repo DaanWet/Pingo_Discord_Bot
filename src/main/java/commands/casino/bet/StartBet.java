@@ -1,28 +1,28 @@
 package commands.casino.bet;
 
-import casino.CustomBet;
-import casino.GameHandler;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import companions.CustomBet;
+import companions.GameCompanion;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 public class StartBet extends Command {
 
-    private GameHandler gameHandler;
+    private final GameCompanion gameCompanion;
 
-    public StartBet(GameHandler gameHandler) {
-        this.gameHandler = gameHandler;
+    public StartBet(GameCompanion gameCompanion){
+        this.gameCompanion = gameCompanion;
         this.name = "startbet";
         this.aliases = new String[]{"sbet"};
-        this.category = "Casino";
+        this.category = Category.CASINO;
         this.arguments = "<question>";
-        this.description = "Starts a custom bet";
+        this.description = "start_bet.description";
     }
 
     @Override
@@ -34,19 +34,17 @@ public class StartBet extends Command {
 
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        if (args.length == 0) {
-            throw new MessageException("You need to provide a question to bet on");
-        }
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
+        if (args.length == 0)
+            throw new MessageException(language.getString("start_bet.error.no_question"));
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
         eb.setTitle(Utils.concat(args, 0));
-        CustomBet bet = gameHandler.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
-        eb.setFooter(String.format("Id: %d", bet.getID()));
-        e.getChannel().sendMessage(eb.build()).queue(m -> {
-            bet.setIds(m.getChannel().getIdLong(), m.getIdLong());
-        });
+        CustomBet bet = gameCompanion.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
+        eb.setFooter(language.getString("start_bet.footer", bet.getID()));
+        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> bet.setIds(m.getChannel().getIdLong(), m.getIdLong()));
         e.getMessage().delete().queue();
 
     }

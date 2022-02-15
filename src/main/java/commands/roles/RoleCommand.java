@@ -2,12 +2,13 @@ package commands.roles;
 
 import com.vdurmont.emoji.EmojiManager;
 import commands.Command;
+import data.models.RoleAssignData;
+import data.models.RoleAssignRole;
 import emoji4j.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import utils.dbdata.RoleAssignData;
-import utils.dbdata.RoleAssignRole;
+import utils.MyResourceBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,22 +35,18 @@ public abstract class RoleCommand extends Command {
     }
 
     public RoleCommand(){
-        this.category = "moderation";
+        this.category = Category.MODERATION;
     }
 
-    protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, RoleAssignData data){
+    protected EmbedBuilder getRoleEmbed(ArrayList<RoleAssignRole> roles, String category, RoleAssignData data, MyResourceBundle language){
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(data.getTitle() == null ? String.format("%s Roles", category) : data.getTitle());
-        StringBuilder sb = new StringBuilder(String.format("Get your %s roles here, react to get the role", category));
+        eb.setTitle(data.getTitle() == null ? language.getString("roleassign.embed.title", category) : data.getTitle());
+        StringBuilder sb = new StringBuilder(language.getString("roleassign.embed.description", category));
         ArrayList<RoleAssignRole> sorted;
-        switch(data.getSorting()){
-            case EMOJI:
-                sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());
-                break;
-            case NAME:
-                sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName)).collect(Collectors.toList());
-                break;
-            case CUSTOM:
+        switch (data.getSorting()){
+            case EMOJI -> sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());
+            case NAME -> sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName)).collect(Collectors.toList());
+            case CUSTOM -> {
                 sorted = new ArrayList<>();
                 for (String s : data.getCustomS().split(" ")){
                     RoleAssignRole r = null;
@@ -64,11 +61,8 @@ public abstract class RoleCommand extends Command {
                     sorted.add(r);
                 }
                 sorted.addAll(roles);
-                break;
-            default:
-                sorted = roles;
-                break;
-
+            }
+            default -> sorted = roles;
         }
         Compacting compact = data.getCompacting();
         if (compact == Compacting.COMPACT || compact == Compacting.SUPER_COMPACT){
@@ -77,12 +71,12 @@ public abstract class RoleCommand extends Command {
             for (int i = 0; i < sorted.size(); i++){
                 if (i <= sorted.size() / 2){
                     sb1.append(sorted.get(i).getEmoji()).append("\t").append(sorted.get(i).getName()).append("\n");
-                    if (compact == Compacting.COMPACT) {
+                    if (compact == Compacting.COMPACT){
                         sb1.append("\n");
                     }
                 } else {
                     sb2.append(sorted.get(i).getEmoji()).append("\t").append(sorted.get(i).getName()).append("\n");
-                    if (compact == Compacting.COMPACT) {
+                    if (compact == Compacting.COMPACT){
                         sb2.append("\n");
                     }
                 }
@@ -101,13 +95,13 @@ public abstract class RoleCommand extends Command {
     }
 
     protected Compacting detectCompact(MessageEmbed me){
-        if (me.getFields().size() > 0) {
+        if (me.getFields().size() > 0){
             if (me.getFields().get(0).getValue().contains("\n\n")){
                 return Compacting.SUPER_COMPACT;
             } else {
                 return Compacting.COMPACT;
             }
-        } else{
+        } else {
             return Compacting.NORMAL;
         }
     }

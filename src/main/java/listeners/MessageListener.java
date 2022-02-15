@@ -1,34 +1,35 @@
 package listeners;
 
-import commands.CommandHandler;
 import commands.settings.Setting;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.kohsuke.github.GitHub;
+import utils.EmbedException;
 import utils.MessageException;
-import utils.DataHandler;
+import utils.MyResourceBundle;
+import utils.Utils;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter {
 
-    private final CommandHandler commandListener;
-    private GitHub github;
     static final Logger logger = Logger.getLogger(MessageListener.class.getName());
+    private final CommandHandler commandListener;
 
     public MessageListener(GitHub github){
-        this.github = github;
-        this.commandListener =  new CommandHandler(github);
+        this.commandListener = new CommandHandler(github);
+
     }
 
-    public CommandHandler getCommandHandler() {
+    public CommandHandler getCommandHandler(){
         return commandListener;
     }
 
@@ -38,40 +39,44 @@ public class MessageListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e){
         User author = e.getAuthor();
         TextChannel channel = e.getChannel();
         Message message = e.getMessage();
         Guild guild = e.getGuild();
 
-
+        Properties config = Utils.config;
         // Minecraft update
-        if (e.isWebhookMessage() || author.isBot()) {
-            if (channel.getIdLong() == 686645470835245079L && (!message.getContentRaw().startsWith("**Minecraft - Beta"))) {
-                guild.getTextChannelById(685146958997749801L).sendMessage(message).queue();
+        if (e.isWebhookMessage() || author.isBot()){
+            if (channel.getIdLong() == (long) config.get("special.mc") && (!message.getContentRaw().startsWith("**Minecraft - Beta"))){
+                guild.getTextChannelById((long) config.get("special.mc2")).sendMessage(message).queue();
             }
-        } else if (!author.isBot()) {
+        } else if (!author.isBot()){
             //Text to speech mute
-            if (message.isTTS()) {
+            if (message.isTTS()){
                 message.delete().complete();
-
-                channel.sendMessage(String.format("%s has been muted, cause TTS sucks", e.getMember().getAsMention())).queue();
-                Role role = guild.getRoleById(598551156867858442L);
+                MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
+                channel.sendMessage(language.getString("tts.muted", e.getMember().getAsMention())).queue();
+                Role role = guild.getRoleById((long) config.get("special.muted"));
                 List<Role> roles = e.getMember().getRoles();
-                guild.modifyMemberRoles(e.getMember(), role).queue(em -> {
-                    guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES);
-                });
+                guild.modifyMemberRoles(e.getMember(), role).queue(em -> guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES));
             }
 
             String contentRaw = e.getMessage().getContentRaw();
             // Codex submissions
-            if (channel.getIdLong() == 664230911935512586L) {
+            if (channel.getIdLong() == (long) config.get("special.codex")){
                 message.delete().queue();
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
             } // Check for commands
-            else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new DataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))) {
-                try  {
+            else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new SettingsDataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))){
+                try {
                     commandListener.onCommandReceived(e);
+                } catch (EmbedException exc){
+                    e.getChannel().sendMessageEmbeds(exc.getEmbed().build()).queue(m -> {
+                        if (exc.getDelete() != 0)
+                            m.delete().queueAfter(exc.getDelete(), TimeUnit.SECONDS);
+                    });
+                    logger.info(String.format("Content: %s, error: %s", contentRaw, exc.getMessage()));
                 } catch (MessageException exc){
                     e.getChannel().sendMessage(exc.getMessage()).queue(m -> {
                         if (exc.getDelete() != 0)
@@ -89,24 +94,21 @@ public class MessageListener extends ListenerAdapter {
                     e.getChannel().sendMessage(String.format("Oops, something went wrong: %s", exc.getLocalizedMessage())).queue();
                 }
                 MDC.clear();
-            } else if (e.getGuild().getIdLong() == 712013079629660171L) {
-                message.delete().queue();
-                e.getJDA().getGuildById(203572340280262657L).getTextChannelById(203572340280262657L).sendMessage(message.getContentRaw()).queue();
             }
-
         }
 
     }
 
-    public void buildSuggestion(User author, String content, Guild g, TextChannel channel) {
+    public void buildSuggestion(User author, String content, Guild g, TextChannel channel){
         EmbedBuilder eb = new EmbedBuilder();
         eb.setAuthor(author.getName(), null, author.getEffectiveAvatarUrl());
         eb.setDescription(content);
         eb.setColor(g.getSelfMember().getColorRaw());
-        channel.sendMessage(eb.build()).queue(m -> {
-            m.addReaction(":green_tick:667450925677543454").queue();
-            m.addReaction(":indifferent_tick:667450939208368130").queue();
-            m.addReaction(":red_tick:667450953217212436").queue();
+        channel.sendMessageEmbeds(eb.build()).queue(m -> {
+            Properties config = Utils.config;
+            m.addReaction(config.getProperty("emoji.green_tick")).queue();
+            m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
+            m.addReaction(config.getProperty("emoji.red_tick")).queue();
         });
     }
 

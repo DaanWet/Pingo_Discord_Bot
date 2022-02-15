@@ -5,7 +5,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 public class ErrorLayout extends SimpleLayout {
     @Override
-    public String format(LoggingEvent loggingEvent) {
+    public String format(LoggingEvent loggingEvent){
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">");
         sb.append(LINE_SEP).append("<html>").append(LINE_SEP);
@@ -22,7 +22,7 @@ public class ErrorLayout extends SimpleLayout {
         sb.append(": ");
         sb.append("<br><body>");
         String LINE_SEP = "<br>";
-        if (loggingEvent.getThrowableStrRep() != null) {
+        if (loggingEvent.getThrowableStrRep() != null){
             for (String s : loggingEvent.getThrowableStrRep()){
                 sb.append(s);
                 sb.append(LINE_SEP);
@@ -48,7 +48,7 @@ public class ErrorLayout extends SimpleLayout {
     }
 
     @Override
-    public boolean ignoresThrowable() {
+    public boolean ignoresThrowable(){
         return false;
     }
 

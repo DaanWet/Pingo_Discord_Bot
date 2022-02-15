@@ -1,19 +1,21 @@
 package commands.settings;
 
+import utils.MyResourceBundle;
+
 public enum CommandState {
-    DISABLED(4, "❌ That command is currently disabled"),
-    CHANNEL(3, "❌ You can't use that command in this channel"),
-    USER(2, "❌ You don't have permission to run this command"),
-    COOLDOWN(1, "❌ That command is still on cooldown"),
+    DISABLED(4, "command.disabled"),
+    CHANNEL(3, "command.channel"),
+    USER(2, "command.user"),
+    COOLDOWN(1, "command.cooldown"),
     ENABLED(0, "");
+
+    private final int priority;
+    private final String error;
 
     CommandState(int priority, String error){
         this.priority = priority;
         this.error = error;
     }
-
-    private final int priority;
-    private final String error;
 
     public CommandState worst(CommandState other){
         if (this.priority > other.priority){
@@ -22,7 +24,7 @@ public enum CommandState {
         return other;
     }
 
-    public String getError() {
-        return error;
+    public String getError(MyResourceBundle language){
+        return language.getString(error);
     }
 }
