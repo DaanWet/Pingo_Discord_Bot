@@ -31,7 +31,7 @@ public class Eval extends Command {
             if (table == null)
                 throw new MessageException(String.format("Invalid SQL Query Noob: `%s`", query));
             sb.append("```").append(table).append("```");
-        } else if (lquery.startsWith("insert") || lquery.startsWith("update") || lquery.startsWith("drop") || lquery.startsWith("create") || lquery.startsWith("delete") || lquery.startsWith("alter")){
+        } else {
             if (!e.getMember().hasPermission(Permission.ADMINISTRATOR))
                 throw new MessageException("You don't have permission to update the db");
 

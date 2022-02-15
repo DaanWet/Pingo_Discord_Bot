@@ -196,11 +196,12 @@ public class ReactionListener extends ListenerAdapter {
                 }
             }
             List<MessageEmbed> embedList = m.getEmbeds();
-            if ((pro >= 6 || con >= 6) && !embedList.isEmpty()){
+            int threshold = (int) Math.ceil((e.getChannel().getMembers().size() - 1) * (double)config.get("special.threshold"));
+            if ((pro >= threshold || con >= threshold) && !embedList.isEmpty()){
                 MessageEmbed embed = embedList.get(0);
                 EmbedBuilder eb = new EmbedBuilder(embed);
-                if (embed.getFooter() == null || (embed.getFooter().getText().contains("Approved") && con >= 6) || (embed.getFooter().getText().contains("Rejected") && pro >= 6)){
-                    eb.setFooter(String.format("Pro: %d, Con: %d => %s", pro, con, pro >= 6 ? "Approved" : "Rejected"));
+                if (embed.getFooter() == null || (embed.getFooter().getText().contains("Approved") && con >= threshold) || (embed.getFooter().getText().contains("Rejected") && pro >= threshold)){
+                    eb.setFooter(String.format("Pro: %d, Con: %d => %s", pro, con, pro >= threshold ? "Approved" : "Rejected"));
                     eb.setTimestamp(LocalDateTime.now(ZoneId.systemDefault()));
                     m.editMessageEmbeds(eb.build()).queue();
                 }
