@@ -42,7 +42,7 @@ public class EditSuggestion extends Command {
             if (args[1].equalsIgnoreCase("-r")){
                 if (edit.equalsIgnoreCase("bot")){
                     eb.setFooter(language.getString("suggestion.footer", Utils.config.getProperty("repo.bot")));
-                } else if (args[0].equalsIgnoreCase("plugin")){
+                } else if (edit.equalsIgnoreCase("plugin")){
                     eb.setFooter(language.getString("suggestion.footer", Utils.config.getProperty("repo.plugin")));
                 }
             } else if (args[1].equalsIgnoreCase("-t")){

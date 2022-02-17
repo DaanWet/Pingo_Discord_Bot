@@ -15,7 +15,7 @@ public class Suggest extends Command {
     public Suggest(){
         this.name = "suggest";
         this.aliases = new String[]{"issue", "suggestion"};
-        this.arguments = "{**bot** | **plugin** | **discord**} <title> **-d** <description>";
+        this.arguments = "{**bot** | **plugin** | **discord**} <title> <description>";
         this.description = "suggestion.description";
         this.priveligedGuild = (long) Utils.config.get("special.guild");
     }
@@ -23,7 +23,7 @@ public class Suggest extends Command {
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
         long guildId = e.getGuild().getIdLong();
-        if (args.length < 4)
+        if (args.length < 2)
             throw new MessageException(getUsage(guildId));
         String repo = null;
         if (args[0].equalsIgnoreCase("bot")){
@@ -31,31 +31,18 @@ public class Suggest extends Command {
         } else if (args[0].equalsIgnoreCase("plugin")){
             repo = "repo.plugin";
         }
-        boolean t = true;
-        StringBuilder title = new StringBuilder();
-        StringBuilder descript = new StringBuilder();
-        for (int i = 1; i < args.length; i++){
-            if (t){
-                if (args[i].equalsIgnoreCase("-d")){
-                    t = false;
-                } else {
-                    title.append(args[i]).append(" ");
-                }
-            } else {
-                descript.append(args[i]).append(" ");
-            }
-        }
         // If no description is given send error
         MyResourceBundle language = getLanguage(e);
-        if (t)
+        if (args.length == 2){
             throw new MessageException(language.getString("suggestion.error"));
+        }
 
         EmbedBuilder eb = new EmbedBuilder();
         Properties config = Utils.config;
 
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
-        eb.setTitle(title.toString());
-        eb.setDescription(descript.toString());
+        eb.setTitle(args[1]);
+        eb.setDescription(args[2]);
         eb.setFooter(repo != null ? language.getString("suggestion.footer", config.getProperty(repo)) : "");
         e.getGuild().getTextChannelById((long) Utils.config.get("special.suggestion")).sendMessageEmbeds(eb.build()).queue(m -> {
             m.addReaction(config.getProperty("emoji.green_tick")).queue();
