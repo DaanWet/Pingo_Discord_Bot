@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.log4j.Logger;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
+import utils.MyProperties;
 import utils.Utils;
 import utils.logging.ErrorLayout;
 import utils.logging.MyFileAppender;
@@ -51,7 +52,7 @@ public class Main {
 
     private static void start(String[] args) throws Exception{
         Utils.findAvailableLanguages();
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         DataHandler.setUserId(config.getProperty("jdbc.user"));
         DataHandler.setPASSWD(config.getProperty("jdbc.passwd"));
         DataHandler.setJdbcUrl(config.getProperty("jdbc.url"));

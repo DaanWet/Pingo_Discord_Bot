@@ -145,7 +145,7 @@ public class CommandHandler {
             }
         }
         Set<String> pcommands = getPcommands();
-        if (pcommands.contains(command.toLowerCase()) && e.getGuild().getIdLong() == (long) Utils.config.get("special.guild")){
+        if (pcommands.contains(command.toLowerCase()) && e.getGuild().getIdLong() == Utils.config.get("special.guild")){
             try {
                 File dir = new File(String.format("%s/%s", pathname, command));
                 File photo = new File(String.format("%s/%s/%d.jpg", pathname, command, random.nextInt(dir.listFiles().length)));

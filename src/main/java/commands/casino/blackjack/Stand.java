@@ -10,7 +10,7 @@ public class Stand extends BCommand {
 
     public Stand(GameCompanion gameCompanion){
         super(gameCompanion);
-        this.name = "Stand";
+        this.name = "stand";
     }
 
     @Override

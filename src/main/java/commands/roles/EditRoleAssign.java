@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -96,7 +97,7 @@ public class EditRoleAssign extends RoleCommand {
                 name.append(args[i]).append(" ");
             }
             boolean succeeded = dh.editRoleName(guildId, args[0], args[1], name.toString().trim());
-            Properties config = Utils.config;
+            MyProperties config = Utils.config;
             if (!succeeded){
                 e.getMessage().addReaction(config.getProperty("emoji.cancel")).queue();
                 throw new MessageException(language.getString("roleassign.edit.error.emoji", args[0]));

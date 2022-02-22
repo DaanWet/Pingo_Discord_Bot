@@ -13,11 +13,11 @@ public class AdminAbuse extends Command {
 
 
     public AdminAbuse(){
-        this.name = "AdminAbuse";
+        this.name = "adminAbuse";
         this.category = Category.MODERATION;
         this.arguments = "[<member>] <amount>";
         this.description = "give.description";
-        this.priveligedGuild = (long) Utils.config.get("special.guild");
+        this.priveligedGuild = Utils.config.get("special.guild");
     }
 
     @Override

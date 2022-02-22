@@ -16,7 +16,7 @@ public class EditSuggestion extends Command {
         this.category = Category.MODERATION;
         this.arguments = "<messageId> {**-r** | **-t** | **-d** | **-l**} <edit>";
         this.description = "suggestion.edit.description";
-        this.priveligedGuild = (long) Utils.config.get("special.guild");
+        this.priveligedGuild = Utils.config.get("special.guild");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class EditSuggestion extends Command {
 
         String edit = Utils.concat(args, 2);
         MyResourceBundle language = getLanguage(e);
-        e.getGuild().getTextChannelById((long) Utils.config.get("special.suggestion")).retrieveMessageById(messageid).queue(m -> {
+        e.getGuild().getTextChannelById(Utils.config.get("special.suggestion")).retrieveMessageById(messageid).queue(m -> {
             MessageEmbed me = m.getEmbeds().get(0);
             EmbedBuilder eb = new EmbedBuilder(me);
             if (args[1].equalsIgnoreCase("-r")){

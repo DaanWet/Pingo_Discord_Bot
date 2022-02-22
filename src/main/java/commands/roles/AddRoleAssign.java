@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -55,7 +56,7 @@ public class AddRoleAssign extends RoleCommand {
             throw new MessageException(language.getString("roleassign.error.role"));
         }
         int pos = role.getPosition();
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         if (e.getGuild().getSelfMember().getRoles().stream().noneMatch(r -> r.getPosition() > pos) || !e.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)){
             e.getMessage().addReaction(config.getProperty("emoji.cancel")).queue();
             throw new MessageException(language.getString("roleassign.error.perms"));

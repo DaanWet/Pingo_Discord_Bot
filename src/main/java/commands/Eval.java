@@ -14,7 +14,7 @@ public class Eval extends Command {
         this.arguments = "<query>";
         this.hidden = true;
         this.description = "eval.description";
-        this.priveligedGuild = (long) Utils.config.get("special.guild");
+        this.priveligedGuild = Utils.config.get("special.guild");
     }
 
     @Override

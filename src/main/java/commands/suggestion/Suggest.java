@@ -4,6 +4,7 @@ import commands.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -17,7 +18,7 @@ public class Suggest extends Command {
         this.aliases = new String[]{"issue", "suggestion"};
         this.arguments = "{**bot** | **plugin** | **discord**} <title> <description>";
         this.description = "suggestion.description";
-        this.priveligedGuild = (long) Utils.config.get("special.guild");
+        this.priveligedGuild = Utils.config.get("special.guild");
     }
 
     @Override
@@ -38,13 +39,13 @@ public class Suggest extends Command {
         }
 
         EmbedBuilder eb = new EmbedBuilder();
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
 
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
         eb.setTitle(args[1]);
         eb.setDescription(args[2]);
         eb.setFooter(repo != null ? language.getString("suggestion.footer", config.getProperty(repo)) : "");
-        e.getGuild().getTextChannelById((long) Utils.config.get("special.suggestion")).sendMessageEmbeds(eb.build()).queue(m -> {
+        e.getGuild().getTextChannelById(Utils.config.get("special.suggestion")).sendMessageEmbeds(eb.build()).queue(m -> {
             m.addReaction(config.getProperty("emoji.green_tick")).queue();
             m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
             m.addReaction(config.getProperty("emoji.red_tick")).queue();

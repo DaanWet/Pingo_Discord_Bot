@@ -9,6 +9,7 @@ import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -58,7 +59,7 @@ public class Uno extends Command {
         if (bet != 0)
             eb.setDescription(language.getString("uno.embed.description", bet));
         eb.addField(language.getString("uno.embed.players.title"), language.getString("uno.embed.players.no_players"), false);
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         eb.setFooter(language.getString("uno.embed.footer", config.getProperty("emoji.uno.join"), config.getProperty("emoji.uno.start"), config.getProperty("emoji.cancel")));
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             unogame.setMessageID(m.getIdLong());

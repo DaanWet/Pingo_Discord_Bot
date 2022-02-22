@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -61,7 +62,7 @@ public class Play extends Command {
             unoGame.playCard(card);
             Color color = guild.getSelfMember().getColor();
             int newturn = unoGame.getTurn();
-            Properties config = Utils.config;
+            MyProperties config = Utils.config;
             for (int i = 0; i < hands.size(); i++){
                 UnoHand hand = hands.get(i);
                 long player = hand.getPlayerId();

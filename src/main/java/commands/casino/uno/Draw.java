@@ -24,7 +24,7 @@ public class Draw extends Command {
     private final GameCompanion gameCompanion;
 
     public Draw(GameCompanion gameCompanion){
-        this.name = "Draw";
+        this.name = "draw";
         this.aliases = new String[]{"d"};
         this.category = Category.UNO;
         this.gameCompanion = gameCompanion;

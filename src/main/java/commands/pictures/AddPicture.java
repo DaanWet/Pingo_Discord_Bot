@@ -22,7 +22,7 @@ public class AddPicture extends Command {
         category = Category.PICTURES;
         this.description = "picture.add.description";
         this.arguments = "<name> <picture>";
-        this.priveligedGuild = (long) Utils.config.get("special.guild");
+        this.priveligedGuild = Utils.config.get("special.guild");
     }
 
     @Override

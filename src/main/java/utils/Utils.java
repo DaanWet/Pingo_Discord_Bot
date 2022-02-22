@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Utils {
 
-    public static Properties config;
+    public static MyProperties config;
     private static Map<Locale, ResourceBundle> locales;
 
     public static boolean isInteger(String s){
@@ -125,7 +125,7 @@ public class Utils {
     }
 
     public static void loadProperties() throws Exception{
-        config = new Properties();
+        config = new MyProperties();
         config.load(Utils.class.getClassLoader().getResourceAsStream("config.properties"));
     }
 

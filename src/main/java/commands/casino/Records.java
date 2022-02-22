@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -21,7 +22,7 @@ import java.util.Properties;
 
 public class Records extends Command {
 
-    private final Properties properties;
+    private final MyProperties properties;
     private final DataCompanion handler;
 
     public Records(DataCompanion handler){

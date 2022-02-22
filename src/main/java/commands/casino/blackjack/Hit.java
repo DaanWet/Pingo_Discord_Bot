@@ -11,7 +11,7 @@ public class Hit extends BCommand {
 
     public Hit(GameCompanion gameCompanion){
         super(gameCompanion);
-        this.name = "Hit";
+        this.name = "hit";
     }
 
     @Override
