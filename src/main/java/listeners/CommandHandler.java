@@ -52,49 +52,50 @@ public class CommandHandler {
         CommandHandler commh = this;
         gameCompanion = new GameCompanion();
         dataCompanion = new DataCompanion();
-        commands = new HashMap<>() {
-            {
-                put("help", new Help(gameCompanion));
-                put("add", new AddPicture());
-                put("fuckpingo", new FuckPingo());
-                put("delete", new DeletePicture(commh, dataCompanion));
-                put("nickname", new Nickname());
-                put("roleassign", new RoleAssign());
-                put("addRA", new AddRoleAssign());
-                put("removeRA", new RemoveRoleAssign());
-                put("daily", new CollectEventCredits());
-                put("weekly", new Weekly());
-                put("balance", new ShowCredits(dataCompanion));
-                put("blackjack", new BlackJack(gameCompanion));
-                put("stand", new Stand(gameCompanion));
-                put("hit", new Hit(gameCompanion));
-                put("double", new DoubleDown(gameCompanion));
-                put("split", new Split(gameCompanion));
-                put("suggest", new Suggest());
-                put("issues", new ListIssues(gitHub));
-                put("editI", new EditSuggestion());
-                put("adminAbuse", new AdminAbuse());
-                put("clean", new Clean());
-                put("records", new Records(dataCompanion));
-                put("uno", new Uno(gameCompanion));
-                put("play", new Play(gameCompanion));
-                put("draw", new Draw(gameCompanion));
-                put("challenge", new Challenge(gameCompanion));
-                put("amongus", new AmongUs());
-                put("eval", new Eval());
-                put("teampicker", new TeamPicker());
-                put("poll", new Poll());
-                put("editRA", new EditRoleAssign());
-                put("settings", new Settings());
-                put("startbet", new StartBet(gameCompanion));
-                put("bet", new Bet(gameCompanion));
-                put("endbet", new EndBet(gameCompanion));
-            }
-
-        };
-        ((Help) commands.get("help")).setCommands(commands);
+        commands = new HashMap<>();
+        Help help = new Help(gameCompanion);
+        registerCommand(help);
+        registerCommand(new AddPicture());
+        registerCommand(new FuckPingo());
+        registerCommand(new DeletePicture(commh, dataCompanion));
+        registerCommand(new Nickname());
+        registerCommand(new RoleAssign());
+        registerCommand(new AddRoleAssign());
+        registerCommand(new RemoveRoleAssign());
+        registerCommand(new CollectEventCredits());
+        registerCommand(new Weekly());
+        registerCommand(new ShowCredits(dataCompanion));
+        registerCommand(new BlackJack(gameCompanion));
+        registerCommand(new Stand(gameCompanion));
+        registerCommand(new Hit(gameCompanion));
+        registerCommand(new DoubleDown(gameCompanion));
+        registerCommand(new Split(gameCompanion));
+        registerCommand(new Suggest());
+        registerCommand(new ListIssues(gitHub));
+        registerCommand(new EditSuggestion());
+        registerCommand(new AdminAbuse());
+        registerCommand(new Clean());
+        registerCommand(new Records(dataCompanion));
+        registerCommand(new Uno(gameCompanion));
+        registerCommand(new Play(gameCompanion));
+        registerCommand(new Draw(gameCompanion));
+        registerCommand(new Challenge(gameCompanion));
+        registerCommand(new AmongUs());
+        registerCommand(new Eval());
+        registerCommand(new TeamPicker());
+        registerCommand(new Poll());
+        registerCommand(new EditRoleAssign());
+        registerCommand(new Settings());
+        registerCommand(new StartBet(gameCompanion));
+        registerCommand(new Bet(gameCompanion));
+        registerCommand(new EndBet(gameCompanion));
+        registerCommand(new Arguments());
+        help.setCommands(commands);
     }
 
+    public void registerCommand(Command command){
+        this.commands.put(command.getName(), command);
+    }
 
     public GameCompanion getGameHandler(){
         return gameCompanion;
