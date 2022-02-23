@@ -26,6 +26,7 @@ public class Bet extends Command {
         this.arguments = "<bet id> <credits> <answer>";
         this.description = "bet.description";
         this.category = Category.CASINO;
+        this.example = "2 100 \"Tomorrow 10:00\"";
     }
 
     @Override

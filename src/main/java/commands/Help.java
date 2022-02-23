@@ -23,7 +23,9 @@ public class Help extends Command {
     public Help(GameCompanion gameCompanion){
         this.name = "help";
         this.aliases = new String[]{"commands", "command", "h"};
+        this.arguments = "[<command>]";
         this.description = "help.description";
+        this.example = "poll";
         this.gameCompanion = gameCompanion;
     }
 
@@ -66,6 +68,7 @@ public class Help extends Command {
                         if (command.getAliases().length != 0){
                             eb.addField(language.getString("help.aliases"), String.join(", ", command.getAliases()), false);
                         }
+                        eb.addField(language.getString("help.example"), String.format("%s%s %s", prefix, command.getName(), command.getExample()), false);
                         eb.setFooter(language.getString("help.embed.cmd.footer"));
                         found = true;
                     }

@@ -33,6 +33,7 @@ public class Play extends Command {
         this.arguments = "<color><value>";
         this.gameCompanion = gameCompanion;
         this.description = "uno.play.description";
+        this.example = "blueskip";
         this.hidden = true;
     }
 

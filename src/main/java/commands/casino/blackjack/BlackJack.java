@@ -26,6 +26,7 @@ public class BlackJack extends BCommand {
         this.aliases = new String[]{"bj", "21"};
         this.arguments = "<bet>";
         this.description = "bj.description";
+        this.example = "10k";
         this.hidden = false;
     }
 

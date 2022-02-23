@@ -18,6 +18,7 @@ public class Suggest extends Command {
         this.aliases = new String[]{"issue", "suggestion"};
         this.arguments = "{**bot** | **plugin** | **discord**} <title> <description>";
         this.description = "suggestion.description";
+        this.example = "bot \"Cat command\" \"Add a command which shows a random picture of a cat\"";
         this.priveligedGuild = Utils.config.get("special.guild");
     }
 

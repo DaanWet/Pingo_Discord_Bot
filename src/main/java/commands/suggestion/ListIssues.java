@@ -19,6 +19,7 @@ public class ListIssues extends Command {
         this.name = "issues";
         this.arguments = "{**bot** | **plugin**} [-l]";
         this.description = "issues.description";
+        this.example = "bot";
     }
 
 

@@ -41,6 +41,7 @@ public abstract class Command {
     protected Category category = Category.OTHER;
     protected String arguments = "";
     protected String description;
+    protected String example = "";
     protected boolean hidden = false;
     protected long priveligedGuild = -1;
 
@@ -117,6 +118,10 @@ public abstract class Command {
 
     public String getArguments(){
         return arguments;
+    }
+
+    public String getExample(){
+        return example;
     }
 
     public String[] getAliases(){

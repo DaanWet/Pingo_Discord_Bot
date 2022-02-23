@@ -16,6 +16,7 @@ public class EditSuggestion extends Command {
         this.category = Category.MODERATION;
         this.arguments = "<messageId> {**-r** | **-t** | **-d** | **-l**} <edit>";
         this.description = "suggestion.edit.description";
+        this.example = "123456789101112131 -d \"This is the new Description\"";
         this.priveligedGuild = Utils.config.get("special.guild");
     }
 

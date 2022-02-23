@@ -32,6 +32,7 @@ public class Records extends Command {
         this.arguments = "[<member>|<record>|me|list|global]\n<record> global";
         properties = Utils.config;
         this.handler = handler;
+        this.example = "highest_credits global";
     }
 
     @Override

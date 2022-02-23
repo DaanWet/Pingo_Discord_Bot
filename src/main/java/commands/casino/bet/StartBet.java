@@ -23,6 +23,7 @@ public class StartBet extends Command {
         this.category = Category.CASINO;
         this.arguments = "<question>";
         this.description = "start_bet.description";
+        this.example = "When will Pedro wake up?";
     }
 
     @Override

@@ -16,8 +16,9 @@ public class Poll extends Command {
     public Poll(){
         this.name = "poll";
         this.aliases = new String[]{"strawpoll"};
-        this.arguments = "\"<question>\" [\"<option>\"]";
+        this.arguments = "<question> [<option>,...]";
         this.description = "poll.description";
+        this.example = "\"Who is the richest man on earth?\" \"Jef Bezos\" \"I am\" \"Notch\"";
     }
 
     @Override

@@ -26,6 +26,7 @@ public class AddRoleAssign extends RoleCommand {
         aliases = new String[]{"addRole", "addRoleA", "addRA"};
         this.arguments = "<category> <emoji> <role> <name>";
         this.description = "roleassign.add.description";
+        this.example = "Games :square: @Minecraft \"Mc Role\"";
     }
 
     public CommandState canBeExecuted(long guildId, long channelId, Member member){
