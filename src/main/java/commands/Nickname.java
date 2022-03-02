@@ -18,7 +18,7 @@ public class Nickname extends Command {
 
     public Nickname(){
         this.name = "nickname";
-        this.aliases = new String[]{"rename", "bijnaam"};
+        this.aliases = new String[]{"rename"};
         this.arguments = "@Jef \"Bezos\"";
         this.description = "nick.description";
 

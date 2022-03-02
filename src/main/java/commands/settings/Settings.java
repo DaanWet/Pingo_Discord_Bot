@@ -31,7 +31,7 @@ public class Settings extends Command {
         if (args.length == 0){
             eb.setTitle(language.getString("settings.title", "Pingo"));
             for (Setting.Type type : Setting.Type.values()){
-                eb.addField(type.getName(), language.getString("settings.error.category", type.getName(), prefix, type.getName().toLowerCase()), true);
+                eb.addField(type.getName(),  language.getString("settings.category", type.getName(), prefix), true);
             }
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
             return;

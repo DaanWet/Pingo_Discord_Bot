@@ -42,7 +42,7 @@ public class Weekly extends Command {
             long days = now.until(till, ChronoUnit.DAYS);
             long hours = now.plusDays(days).until(till, ChronoUnit.HOURS);
             long minutes = now.plusDays(days).plusHours(hours).until(till, ChronoUnit.MINUTES);
-            throw new MessageException(language.getString("weekly.wait", hours, minutes));
+            throw new MessageException(language.getString("weekly.wait", days, hours, minutes));
         }
         int weekly = (int) Utils.config.get("weekly");
         int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, weekly);
