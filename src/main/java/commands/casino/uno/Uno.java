@@ -24,7 +24,7 @@ public class Uno extends Command {
         this.name = "uno";
         this.aliases = new String[]{"playuno"};
         this.category = Category.CASINO;
-        this.arguments = "[bet]";
+        this.arguments = new String[]{"[bet]"};
         this.description = "uno.description";
         this.gameCompanion = gameCompanion;
     }

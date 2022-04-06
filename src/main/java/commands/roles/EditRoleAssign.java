@@ -20,7 +20,7 @@ public class EditRoleAssign extends RoleCommand {
     public EditRoleAssign(){
         this.name = "editRoleAssign";
         this.aliases = new String[]{"editRA"};
-        this.arguments = "<category> sort <**emoji**|**name**|**none**|\"custom_emoji_order\"> **compact**|**supercompact**|**normal**\n<category> <emoji> <name>\n<category> **title** <newtitle>";
+        this.arguments = new String[]{"<category> sort <**emoji**|**name**|**none**|\"custom_emoji_order\"> **compact**|**supercompact**|**normal**", "<category> <emoji> <name>", "<category> **title** <newtitle>"};
         this.description = "roleassign.edit.description";
         this.example = "Games sort name compact";
     }

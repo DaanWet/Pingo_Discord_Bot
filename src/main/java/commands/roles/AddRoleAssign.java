@@ -24,7 +24,7 @@ public class AddRoleAssign extends RoleCommand {
     public AddRoleAssign(){
         name = "addRoleAssign";
         aliases = new String[]{"addRole", "addRoleA", "addRA"};
-        this.arguments = "<category> <emoji> <role> <name>";
+        this.arguments = new String[]{"<category> <emoji> <role> <name>"};
         this.description = "roleassign.add.description";
         this.example = "Games :square: @Minecraft \"Mc Role\"";
     }

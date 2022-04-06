@@ -15,7 +15,7 @@ public class TeamPicker extends Command {
     public TeamPicker(){
         this.name = "teams";
         this.aliases = new String[]{"t"};
-        this.arguments = "[**t**|**p** <number>] <name,...>";
+        this.arguments = new String[]{"[**t**|**p** <number>] <name,...>"};
         this.description = "team.description";
         this.example = "Peter Jef Bob Sarah";
     }

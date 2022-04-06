@@ -27,7 +27,7 @@ public class DeletePicture extends Command {
         this.commandHandler = commandHandler;
         this.category = Category.PICTURES;
         this.description = "picture.delete.description";
-        this.arguments = "<command>";
+        this.arguments = new String[]{"<command>"};
         this.priveligedGuild = Utils.config.get("special.guild");
         this.dataCompanion = dataCompanion;
     }

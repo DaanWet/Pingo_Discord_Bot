@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Category;
 import utils.*;
 
 import java.io.File;
@@ -23,7 +22,7 @@ public class Help extends Command {
     public Help(GameCompanion gameCompanion){
         this.name = "help";
         this.aliases = new String[]{"commands", "command", "h"};
-        this.arguments = "[command]";
+        this.arguments = new String[]{"[command]"};
         this.description = "help.description";
         this.example = "poll";
         this.gameCompanion = gameCompanion;
@@ -63,7 +62,11 @@ public class Help extends Command {
                     Command command = iterator.next();
                     if (command.isCommandFor(args[0])){
                         eb.setTitle(language.getString("help.command", StringUtils.capitalize(command.getName())));
-                        eb.addField(language.getString("help.usage"), String.format("%s%s %s", prefix, command.getName(), command.getArguments()), false);
+                        StringBuilder sb = new StringBuilder();
+                        for (String arg : command.getArguments()){
+                            sb.append(String.format("%s%s %s\n", prefix, command.getName(), arg));
+                        }
+                        eb.addField(language.getString("help.usage"), sb.toString(), false);
                         eb.setDescription(command.getDescription(language));
                         if (command.getAliases().length != 0){
                             eb.addField(language.getString("help.aliases"), String.join(", ", command.getAliases()), false);

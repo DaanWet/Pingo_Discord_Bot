@@ -23,7 +23,7 @@ public class Bet extends Command {
     public Bet(GameCompanion gameCompanion){
         this.gameCompanion = gameCompanion;
         this.name = "bet";
-        this.arguments = "<bet id> <credits> <answer>";
+        this.arguments = new String[]{"<bet id> <credits> <answer>"};
         this.description = "bet.description";
         this.category = Category.CASINO;
         this.example = "2 100 \"Tomorrow 10:00\"";

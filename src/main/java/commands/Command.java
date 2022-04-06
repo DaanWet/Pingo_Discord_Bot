@@ -39,7 +39,7 @@ public abstract class Command {
     protected String name;
     protected String[] aliases = new String[0];
     protected Category category = Category.OTHER;
-    protected String arguments = "";
+    protected String[] arguments = new String[0];
     protected String description;
     protected String example = "";
     protected boolean hidden = false;
@@ -116,7 +116,7 @@ public abstract class Command {
         return name;
     }
 
-    public String getArguments(){
+    public String[] getArguments(){
         return arguments;
     }
 

@@ -11,7 +11,7 @@ public class Eval extends Command {
 
     public Eval(){
         this.name = "eval";
-        this.arguments = "<query>";
+        this.arguments = new String[]{"<query>"};
         this.hidden = true;
         this.description = "eval.description";
         this.priveligedGuild = Utils.config.get("special.guild");

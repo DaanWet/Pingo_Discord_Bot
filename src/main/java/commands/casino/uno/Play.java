@@ -30,7 +30,7 @@ public class Play extends Command {
         this.name = "play";
         this.aliases = new String[]{"p"};
         this.category = Category.UNO;
-        this.arguments = "<color><value>";
+        this.arguments = new String[]{"<color><value>"};
         this.gameCompanion = gameCompanion;
         this.description = "uno.play.description";
         this.example = "blueskip";

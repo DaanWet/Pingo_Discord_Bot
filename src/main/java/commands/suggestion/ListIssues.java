@@ -17,7 +17,7 @@ public class ListIssues extends Command {
     public ListIssues(GitHub gitHub){
         this.gitHub = gitHub;
         this.name = "issues";
-        this.arguments = "**bot**|**plugin** [-l]";
+        this.arguments = new String[]{"**bot**|**plugin** [-l]"};
         this.description = "issues.description";
         this.example = "bot";
     }
