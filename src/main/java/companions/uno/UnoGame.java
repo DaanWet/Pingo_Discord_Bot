@@ -3,10 +3,12 @@ package companions.uno;
 import commands.settings.Setting;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.sk.PrettyTable;
 import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
 
@@ -22,6 +24,7 @@ public class UnoGame {
     private final long guildId;
     private final long channelID;
     private final long starter;
+    private final int cards;
     private int turn;
     private boolean clockwise;
     private boolean finished;
@@ -48,12 +51,12 @@ public class UnoGame {
         this.starter = starter;
         this.channelID = channelID;
         this.guildId = guildId;
+        cards = new SettingsDataHandler().getIntSetting(guildId, Setting.START_CARDS).get(0);
         hands = new ArrayList<>();
     }
 
     public void addPlayer(long id, String name){
         UnoHand hand = new UnoHand(id, name);
-        int cards = new SettingsDataHandler().getIntSetting(guildId, Setting.START_CARDS).get(0);
         for (int i = 0; i < cards; i++){
             hand.addCard(drawPile.remove(0), false);
         }
@@ -237,26 +240,26 @@ public class UnoGame {
         eb.addField(language.getString("uno.current_card"), getTopCard().toString(), false);
         eb.addField(language.getString("uno.your_cards"), sb.toString(), false);
 
-        StringBuilder names = new StringBuilder();
-        StringBuilder cards = new StringBuilder();
-        names.append(language.getString("uno.order")).append(String.format(" %s\n", Utils.config.getProperty(clockwise ? "emoji.arrow" : "emoji.back_arrow")));
+
+        String[] header = new String[hands.size()];
+        String[] values = new String[header.length];
+
         for (int i = 0; i < hands.size(); i++){
             hand = hands.get(i);
             String name = hand.getPlayerName();
-            names.append(name, 0, min(name.length(), 5));
-            names.append(name.length() > 5 ? "." : "");
-            cards.append("   ").append(hand.getCards().size()).append("   ");
+            name = name.substring(0, min(name.length(), 5)) + (name.length() > 5 ? "." : "");
             if (hand.getPlayerId() == player){
-                names.append("(You)");
-                cards.append("    ");
+                name = name + "(You)";
             } else if (i == turn){
-                names.append("(Now)");
-                cards.append("    ");
+                name = name + "(Now)";
             }
-            names.append(" ");
+            header[i] = name;
+            values[i] = Integer.toString(hand.getCards().size());
         }
-        names.append("\n").append(cards);
-        eb.addField(language.getString("uno.other_cards"), names.toString(), false);
+        PrettyTable table = new PrettyTable(header);
+        table.addRow(values);
+        String otherCards = String.format("%s %s\n```%s```", language.getString("uno.order"), Utils.config.getProperty(clockwise ? "emoji.arrow" : "emoji.back_arrow"), table.toString());
+        eb.addField(language.getString("uno.other_cards"), otherCards, false);
         eb.setImage("attachment://hand.png");
         eb.setThumbnail(String.format("%s%s%s.png", PATH, getTopCard().getColor().getToken(), getTopCard().getValue().getToken()));
         return eb;

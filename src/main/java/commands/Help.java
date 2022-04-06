@@ -89,6 +89,8 @@ public class Help extends Command {
         } else {
             eb.setTitle(language.getString("help.commands"));
             fillCommands(eb, false, guildId, prefix, language);
+            if (e.getMember().hasPermission(Permission.MANAGE_SERVER))
+                eb.appendDescription(language.getString("help.embed.moderation", prefix));
         }
         e.getChannel().sendMessageEmbeds(eb.build()).queue();
     }

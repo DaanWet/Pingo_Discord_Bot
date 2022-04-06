@@ -141,6 +141,7 @@ public abstract class Command {
         return priveligedGuild;
     }
 
+    @Deprecated
     public String getUsage(long guildId){
         MyResourceBundle language = Utils.getLanguage(guildId);
         String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
