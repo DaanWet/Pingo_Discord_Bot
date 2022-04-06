@@ -20,7 +20,7 @@ public class ShowCredits extends Command {
         this.name = "balance";
         this.aliases = new String[]{"bal", "credits", "ShowCredits"};
         this.category = Category.CASINO;
-        this.arguments = "[top|global]";
+        this.arguments = "[**top**|**global**]";
         this.description = "balance.description";
         this.example = "top";
         this.handler = handler;

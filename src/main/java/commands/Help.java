@@ -23,7 +23,7 @@ public class Help extends Command {
     public Help(GameCompanion gameCompanion){
         this.name = "help";
         this.aliases = new String[]{"commands", "command", "h"};
-        this.arguments = "[<command>]";
+        this.arguments = "[command]";
         this.description = "help.description";
         this.example = "poll";
         this.gameCompanion = gameCompanion;
