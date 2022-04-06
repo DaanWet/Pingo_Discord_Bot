@@ -57,7 +57,7 @@ public class Draw extends Command {
                 if (newCard.getValue() == UnoCard.Value.PLUSFOUR || newCard.getValue() == UnoCard.Value.WILD){
                     UnoHand hand = hands.get(turn);
                     TextChannel channel = guild.getTextChannelById(hand.getChannelId());
-                    deb.setTitle(language.getString("uno.draw.one", newCard));
+                    deb.setTitle(language.getString("uno.draw.wild", newCard));
                     channel.sendMessageEmbeds(deb.build()).queue();
                     return;
                 }

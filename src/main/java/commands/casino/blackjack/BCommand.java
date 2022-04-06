@@ -25,7 +25,7 @@ public abstract class BCommand extends Command {
 
     protected void updateMessage(GuildMessageReceivedEvent e, BlackJackGame bjg, CreditDataHandler dataHandler, MyResourceBundle language){
         long guildId = e.getGuild().getIdLong();
-        long id = e.getMessageIdLong();
+        long id = e.getAuthor().getIdLong();
         if (bjg.hasEnded())
             gameCompanion.removeBlackJackGame(guildId, id);
         e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {

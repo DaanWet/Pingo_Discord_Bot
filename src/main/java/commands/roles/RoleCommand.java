@@ -90,7 +90,7 @@ public abstract class RoleCommand extends Command {
         return eb;
     }
 
-    protected boolean hasEmoji(Message message, String arg){
+    protected boolean hasEmoji(Message message, String arg) throws Exception{
         return EmojiUtils.isEmoji(arg) || EmojiManager.containsEmoji(arg) || (message.getEmotes().size() == 1 && message.getEmotes().get(0).getAsMention().equals(arg));
     }
 

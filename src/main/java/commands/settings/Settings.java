@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.apache.commons.lang3.LocaleUtils;
 import utils.EmbedException;
 import utils.MyResourceBundle;
 import utils.Utils;
@@ -281,7 +282,7 @@ public class Settings extends Command {
             }
             case LANGUAGE -> {
                 Map<Locale, ResourceBundle> languages = Utils.getAvailableLanguages();
-                if (!languages.containsKey(new Locale(value))){
+                if (!languages.containsKey(LocaleUtils.toLocale(value))){
                     StringBuilder sb = new StringBuilder(language.getString("settings.error.input.language"));
                     for (Locale locale : languages.keySet()){
                         sb.append("\n").append(locale.getDisplayName()).append(" (").append(locale).append(")");

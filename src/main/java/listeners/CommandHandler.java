@@ -62,7 +62,7 @@ public class CommandHandler {
         registerCommand(new RoleAssign());
         registerCommand(new AddRoleAssign());
         registerCommand(new RemoveRoleAssign());
-        registerCommand(new CollectEventCredits());
+        registerCommand(new CollectCredits());
         registerCommand(new Weekly());
         registerCommand(new ShowCredits(dataCompanion));
         registerCommand(new BlackJack(gameCompanion));
