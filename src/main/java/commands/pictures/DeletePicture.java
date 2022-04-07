@@ -11,7 +11,6 @@ import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
-import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 

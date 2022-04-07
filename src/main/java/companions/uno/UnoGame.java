@@ -8,7 +8,6 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
 
@@ -258,7 +257,7 @@ public class UnoGame {
         }
         PrettyTable table = new PrettyTable(header);
         table.addRow(values);
-        String otherCards = String.format("%s %s\n```%s```", language.getString("uno.order"), Utils.config.getProperty(clockwise ? "emoji.arrow" : "emoji.back_arrow"), table.toString());
+        String otherCards = String.format("%s %s\n```%s```", language.getString("uno.order"), Utils.config.getProperty(clockwise ? "emoji.arrow" : "emoji.back_arrow"), table);
         eb.addField(language.getString("uno.other_cards"), otherCards, false);
         eb.setImage("attachment://hand.png");
         eb.setThumbnail(String.format("%s%s%s.png", PATH, getTopCard().getColor().getToken(), getTopCard().getValue().getToken()));

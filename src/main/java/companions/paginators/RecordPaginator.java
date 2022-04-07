@@ -22,11 +22,11 @@ public class RecordPaginator extends EmbedPaginator {
 
 
     @Override
-    public MessageEmbed createEmbed(){
+    public MessageEmbed createEmbed(long guild){
         RecordDataHandler dataHandler = new RecordDataHandler();
         EmbedBuilder eb = new EmbedBuilder();
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords(record) : dataHandler.getRecords(guildId, record);
-        MyResourceBundle language = Utils.getLanguage(guildId);
+        MyResourceBundle language = Utils.getLanguage(guild);
         eb.setTitle(language.getString(guildId == null ? "record.leaderboard.global" : "record.leaderboard.title", record.getDisplay(language)));
         StringBuilder sb = new StringBuilder();
         int size = records.size();

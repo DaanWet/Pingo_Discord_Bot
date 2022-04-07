@@ -14,7 +14,6 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
-import java.util.Properties;
 
 public class Uno extends Command {
 

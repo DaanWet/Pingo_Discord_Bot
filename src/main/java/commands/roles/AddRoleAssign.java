@@ -16,7 +16,6 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class AddRoleAssign extends RoleCommand {

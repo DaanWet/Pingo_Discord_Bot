@@ -5,11 +5,10 @@ import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MyResourceBundle;
-import utils.Utils;
 
 import static utils.Utils.config;
 
-public class Arguments extends Command{
+public class Arguments extends Command {
 
     public Arguments(){
         this.name = "commands";

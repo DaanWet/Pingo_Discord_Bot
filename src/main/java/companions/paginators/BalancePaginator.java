@@ -24,7 +24,7 @@ public class BalancePaginator extends EmbedPaginator {
 
 
     @Override
-    public MessageEmbed createEmbed(){
+    public MessageEmbed createEmbed(long guild){
         CreditDataHandler dataHandler = new CreditDataHandler();
         HashMap<Long, Integer> map = global ? dataHandler.getAllCredits() : dataHandler.getAllCredits(guildId);
         Stream<Map.Entry<Long, Integer>> stream = map.entrySet().stream().sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue());
@@ -37,7 +37,7 @@ public class BalancePaginator extends EmbedPaginator {
             page = maxpage;
         else
             page = Math.min(maxpage, page);
-        MyResourceBundle language = Utils.getLanguage(guildId);
+        MyResourceBundle language = Utils.getLanguage(guild);
         eb.setTitle(language.getString(global ? "leaderboard.global" : "leaderboard.title"));
         for (int i = (page - 1) * 10; i < Math.min(size, page * 10); i++){
             sb.append("`").append(i + 1).append(i >= 9 ? ".`  " : ". `  ")

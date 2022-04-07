@@ -6,7 +6,6 @@ import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.lang3.StringUtils;
 import utils.*;
 
 import java.io.File;
@@ -61,18 +60,7 @@ public class Help extends Command {
                 while (!found && iterator.hasNext()){
                     Command command = iterator.next();
                     if (command.isCommandFor(args[0])){
-                        eb.setTitle(language.getString("help.command", StringUtils.capitalize(command.getName())));
-                        StringBuilder sb = new StringBuilder();
-                        for (String arg : command.getArguments()){
-                            sb.append(String.format("%s%s %s\n", prefix, command.getName(), arg));
-                        }
-                        eb.addField(language.getString("help.usage"), sb.toString(), false);
-                        eb.setDescription(command.getDescription(language));
-                        if (command.getAliases().length != 0){
-                            eb.addField(language.getString("help.aliases"), String.join(", ", command.getAliases()), false);
-                        }
-                        eb.addField(language.getString("help.example"), String.format("%s%s %s", prefix, command.getName(), command.getExample()), false);
-                        eb.setFooter(language.getString("help.embed.cmd.footer"));
+                        eb = command.getHelp(eb, language, prefix);
                         found = true;
                     }
                 }
@@ -112,7 +100,7 @@ public class Help extends Command {
                 sb.append(String.format("• %s%s\n", c.getName(), c.getAliases().length > 0 ? " / " + c.getAliases()[0] : ""));
             }
         }
-        if (guildId == (long) config.get("special.guild") && !moderation)
+        if (guildId == config.get("special.guild") && !moderation)
             sbs.get(Category.PICTURES).append("\n").append(language.getString("help.pictures.list", prefix + "help"));
         Arrays.stream(Category.values()).forEachOrdered(c -> {
             if (sbs.containsKey(c))

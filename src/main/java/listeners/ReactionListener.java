@@ -53,10 +53,10 @@ public class ReactionListener extends ListenerAdapter {
         User user = e.getUser();
         if (user.isBot()) return;
         MyProperties config = Utils.config;
-        if (e.getChannel().getIdLong() == (long) config.get("special.codex")){
+        if (e.getChannel().getIdLong() == config.get("special.codex")){
             handleSuggestionReaction(e);
             return;
-        } else if (e.getChannel().getIdLong() == (long) config.get("special.suggestion")){
+        } else if (e.getChannel().getIdLong() == config.get("special.suggestion")){
             handleBotSuggestion(e);
             return;
         }
@@ -118,7 +118,7 @@ public class ReactionListener extends ListenerAdapter {
         map.get(emoji).run();
 
         e.retrieveMessage().queue(m -> {
-            m.editMessageEmbeds(paginator.createEmbed()).queue();
+            m.editMessageEmbeds(paginator.createEmbed(e.getGuild().getIdLong())).queue();
             m.removeReaction(e.getReactionEmote().getEmoji(), e.getUser()).queue();
         });
     }
@@ -126,11 +126,11 @@ public class ReactionListener extends ListenerAdapter {
 
     public void handleBotSuggestion(GuildMessageReactionAddEvent e){
         MyProperties config = Utils.config;
-        if (e.getMember().getIdLong() == (long) config.get("special.owner") && e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals(config.getProperty("emoji.checkmark"))){
+        if (e.getMember().getIdLong() == config.get("special.owner") && e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals(config.getProperty("emoji.checkmark"))){
             e.retrieveMessage().queue(m -> {
                 if (m.getEmbeds().size() == 1){
                     e.getReaction().retrieveUsers().queue(users -> {
-                        boolean added = users.stream().anyMatch(u -> u.isBot() && u.getIdLong() == (long) config.get("special.bot"));
+                        boolean added = users.stream().anyMatch(u -> u.isBot() && u.getIdLong() == config.get("special.bot"));
                         if (!added){
                             try {
                                 MessageEmbed me = m.getEmbeds().get(0);

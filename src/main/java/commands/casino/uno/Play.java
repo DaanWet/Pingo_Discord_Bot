@@ -18,7 +18,6 @@ import utils.Utils;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 

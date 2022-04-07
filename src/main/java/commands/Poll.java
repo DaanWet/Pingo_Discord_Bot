@@ -9,7 +9,6 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
-import java.util.Properties;
 
 public class Poll extends Command {
 

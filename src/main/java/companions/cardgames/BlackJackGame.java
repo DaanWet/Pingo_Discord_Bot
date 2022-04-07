@@ -8,7 +8,6 @@ import utils.Utils;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Properties;
 
 public class BlackJackGame {
     public enum EndState {

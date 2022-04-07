@@ -13,7 +13,6 @@ import org.kohsuke.github.GitHub;
 import utils.*;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter {
@@ -45,8 +44,8 @@ public class MessageListener extends ListenerAdapter {
         MyProperties config = Utils.config;
         // Minecraft update
         if (e.isWebhookMessage() || author.isBot()){
-            if (channel.getIdLong() == (long) config.get("special.mc") && (!message.getContentRaw().startsWith("**Minecraft - Beta"))){
-                guild.getTextChannelById((long) config.get("special.mc2")).sendMessage(message).queue();
+            if (channel.getIdLong() == config.get("special.mc") && (!message.getContentRaw().startsWith("**Minecraft - Beta"))){
+                guild.getTextChannelById(config.get("special.mc2")).sendMessage(message).queue();
             }
         } else if (!author.isBot()){
             //Text to speech mute
@@ -54,14 +53,14 @@ public class MessageListener extends ListenerAdapter {
                 message.delete().complete();
                 MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
                 channel.sendMessage(language.getString("tts.muted", e.getMember().getAsMention())).queue();
-                Role role = guild.getRoleById((long) config.get("special.muted"));
+                Role role = guild.getRoleById(config.get("special.muted"));
                 List<Role> roles = e.getMember().getRoles();
                 guild.modifyMemberRoles(e.getMember(), role).queue(em -> guild.modifyMemberRoles(e.getMember(), roles).queueAfter(1, TimeUnit.MINUTES));
             }
 
             String contentRaw = e.getMessage().getContentRaw();
             // Codex submissions
-            if (channel.getIdLong() == (long) config.get("special.codex")){
+            if (channel.getIdLong() == config.get("special.codex")){
                 message.delete().queue();
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
             } // Check for commands

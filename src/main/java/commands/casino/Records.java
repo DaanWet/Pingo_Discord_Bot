@@ -18,7 +18,6 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class Records extends Command {
 
@@ -29,7 +28,7 @@ public class Records extends Command {
         this.name = "records";
         this.category = Category.CASINO;
         this.description = "records.description";
-        this.arguments = new String[]{"[member|record|**me**|**list**|**global**]", "<record> **global**"};
+        this.arguments = new String[]{"[member|record|**me**|**list**|**global**]", "<record> [**global**]"};
         properties = Utils.config;
         this.handler = handler;
         this.example = "highest_credits global";

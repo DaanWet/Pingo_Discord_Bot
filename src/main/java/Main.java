@@ -16,7 +16,6 @@ import utils.logging.ErrorLayout;
 import utils.logging.MyFileAppender;
 
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * https://discordapp.com/api/oauth2/authorize?client_id=589027434611867668&permissions=738716736&scope=bot
