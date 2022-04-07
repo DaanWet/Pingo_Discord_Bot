@@ -69,14 +69,7 @@ public class Help extends Command {
                 }
             }
         } else if (gameCompanion.isUnoChannel(guildId, e.getChannel().getIdLong())){
-            eb.setTitle(language.getString("help.uno"));
-            StringBuilder sb = new StringBuilder();
-            for (Command c : commands){
-                if (c.getCategory() != null && c.getCategory() == Category.UNO){
-                    sb.append(String.format("\n%s%s %s: *%s*", prefix, c.getName(), c.getArguments(), language.getString(c.getDescription() == null ? "help.error" : c.getDescription().trim())));
-                }
-            }
-            eb.setDescription(sb.toString());
+            getUnoHelp(eb, language, prefix);
         } else {
             eb.setTitle(language.getString("help.commands"));
             fillCommands(eb, false, guildId, prefix, language);
@@ -108,5 +101,18 @@ public class Help extends Command {
         });
         eb.addField(language.getString("help.embed.links"), language.getString("help.embed.link.2", config.getProperty("github"), config.getProperty("bot.invite"), config.getProperty("server.invite")), false);
         eb.setFooter(language.getString("help.embed.footer"));
+    }
+
+
+    public EmbedBuilder getUnoHelp(EmbedBuilder eb, MyResourceBundle language, String prefix){
+        eb.setTitle(language.getString("help.uno"));
+        StringBuilder sb = new StringBuilder();
+        for (Command c : commands){
+            if (c.getCategory() != null && c.getCategory() == Category.UNO){
+                sb.append(String.format("\n%s%s %s: *%s*", prefix, c.getName(), c.getArguments()[0], language.getString(c.getDescription() == null ? "help.error" : c.getDescription().trim())));
+            }
+        }
+        eb.setDescription(sb.toString());
+        return eb;
     }
 }

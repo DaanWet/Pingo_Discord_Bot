@@ -76,7 +76,7 @@ public class CommandHandler {
         registerCommand(new AdminAbuse());
         registerCommand(new Clean());
         registerCommand(new Records(dataCompanion));
-        registerCommand(new Uno(gameCompanion));
+        registerCommand(new Uno(gameCompanion, help));
         registerCommand(new Play(gameCompanion));
         registerCommand(new Draw(gameCompanion));
         registerCommand(new Challenge(gameCompanion));
