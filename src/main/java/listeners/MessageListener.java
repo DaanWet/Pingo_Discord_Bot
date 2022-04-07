@@ -44,7 +44,9 @@ public class MessageListener extends ListenerAdapter {
         MyProperties config = Utils.config;
         // Minecraft update
         if (e.isWebhookMessage() || author.isBot()){
-            if (channel.getIdLong() == config.get("special.mc") && (!message.getContentRaw().startsWith("**Minecraft - Beta"))){
+            boolean isBedrock = (message.getContentRaw().contains("bedrock") || message.getContentRaw().contains("Bedrock")) && !(message.getContentRaw().contains("java") || message.getContentRaw().contains("Java"));
+
+            if (channel.getIdLong() == config.get("special.mc") && !isBedrock){
                 guild.getTextChannelById(config.get("special.mc2")).sendMessage(message).queue();
             }
         } else if (!author.isBot()){

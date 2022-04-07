@@ -11,6 +11,7 @@ import data.ImageHandler;
 import data.handlers.RRDataHandler;
 import data.handlers.SettingsDataHandler;
 import data.models.RoleAssignRole;
+import org.apache.log4j.MDC;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -49,7 +50,12 @@ public class ReactionListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e){
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
+        MDC.put("Guild", e.getGuild().getId());
+        MDC.put("User", e.getUser().getId());
+        MDC.put("Channel", e.getChannel().getId());
+        MDC.put("Message", e.getMessageId());
+        MDC.put("Content", e.getReaction().getReactionEmote());
         User user = e.getUser();
         if (user.isBot()) return;
         MyProperties config = Utils.config;
@@ -84,6 +90,7 @@ public class ReactionListener extends ListenerAdapter {
         if (unoGame != null && unoGame.getMessageID() == e.getMessageIdLong() && unoGame.getChannelID() == e.getChannel().getIdLong()){
             e.retrieveMessage().queue(m -> handleUnoReaction(e.getMember(), m, unoGame, e.getReactionEmote()));
         }
+        MDC.clear();
     }
 
     @Override
@@ -92,7 +99,7 @@ public class ReactionListener extends ListenerAdapter {
             String roleCat = new RRDataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
             if (roleCat != null){
                 try {
-                    handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), false);
+                    handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, u, false);
                 } catch (HierarchyException exc){
                     if (e.getGuild().getDefaultChannel() != null)
                         e.getGuild().getDefaultChannel().sendMessage(Utils.getLanguage(e.getGuild().getIdLong()).getString("roleassign.error.perms.short")).queue();
