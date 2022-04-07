@@ -22,6 +22,7 @@ public class Split extends BCommand {
         MyResourceBundle language = Utils.getLanguage(guildId);
         BlackJackGame bjg = gameCompanion.getBlackJackGame(guildId, id);
         if (args.length == 0 && bjg != null){
+
             CreditDataHandler dataHandler = new CreditDataHandler();
             if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet())
                 throw new MessageException(language.getString("credit.error.not_enough.short"));

@@ -1,5 +1,6 @@
 package listeners;
 
+
 import commands.settings.Setting;
 import companions.DataCompanion;
 import companions.GameCompanion;
@@ -49,6 +50,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e){
+
         User user = e.getUser();
         if (user.isBot()) return;
         Properties config = Utils.config;
@@ -222,8 +224,6 @@ public class ReactionListener extends ListenerAdapter {
             if (explorerData.getPlayerId() == e.getUserIdLong() || emoji.equals(config.getProperty("emoji.cancel"))){
                 File dir = new File(String.format("%s/%s", pathname, explorerData));
                 int max = dir.listFiles().length;
-
-
                 if (config.getProperty("emoji.previous").equals(emoji)){
                     m.removeReaction(emoji, user).queue();
                     if (n != 0){
