@@ -7,20 +7,21 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Properties;
 
 public class EditRoleAssign extends RoleCommand {
 
     public EditRoleAssign(){
         this.name = "editRoleAssign";
         this.aliases = new String[]{"editRA"};
-        this.arguments = "<category> sort {emoji|name|none|\"<custom_emoji_order>\"} {compact|supercompact|normal}\n<category> <emoji> <name>\n<category> {title} <newtitle>";
+        this.arguments = new String[]{"<category> sort <**emoji**|**name**|**none**|\"custom_emoji_order\"> **compact**|**supercompact**|**normal**", "<category> <emoji> <name>", "<category> **title** <newtitle>"};
         this.description = "roleassign.edit.description";
+        this.example = "Games sort name compact";
     }
 
 
@@ -96,7 +97,7 @@ public class EditRoleAssign extends RoleCommand {
                 name.append(args[i]).append(" ");
             }
             boolean succeeded = dh.editRoleName(guildId, args[0], args[1], name.toString().trim());
-            Properties config = Utils.config;
+            MyProperties config = Utils.config;
             if (!succeeded){
                 e.getMessage().addReaction(config.getProperty("emoji.cancel")).queue();
                 throw new MessageException(language.getString("roleassign.edit.error.emoji", args[0]));

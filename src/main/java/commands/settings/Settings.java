@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.apache.commons.lang3.LocaleUtils;
 import utils.EmbedException;
 import utils.MyResourceBundle;
 import utils.Utils;
@@ -31,7 +32,7 @@ public class Settings extends Command {
         if (args.length == 0){
             eb.setTitle(language.getString("settings.title", "Pingo"));
             for (Setting.Type type : Setting.Type.values()){
-                eb.addField(type.getName(), language.getString("settings.error.category", type.getName(), prefix, type.getName().toLowerCase()), true);
+                eb.addField(type.getName(), language.getString("settings.category", type.getName(), prefix), true);
             }
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
             return;
@@ -281,7 +282,7 @@ public class Settings extends Command {
             }
             case LANGUAGE -> {
                 Map<Locale, ResourceBundle> languages = Utils.getAvailableLanguages();
-                if (!languages.containsKey(new Locale(value))){
+                if (!languages.containsKey(LocaleUtils.toLocale(value))){
                     StringBuilder sb = new StringBuilder(language.getString("settings.error.input.language"));
                     for (Locale locale : languages.keySet()){
                         sb.append("\n").append(locale.getDisplayName()).append(" (").append(locale).append(")");

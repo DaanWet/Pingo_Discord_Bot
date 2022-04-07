@@ -3,6 +3,7 @@ package utils.logging;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import utils.MyProperties;
 import utils.Utils;
 
 import java.io.File;
@@ -10,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Properties;
 
 public class MyFileAppender extends FileAppender {
     private final FileAppender fileAppender;
@@ -18,7 +18,7 @@ public class MyFileAppender extends FileAppender {
     private final String folder;
 
     public MyFileAppender() throws Exception{
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         this.folder = config.getProperty("logging.path");
         Files.createDirectories(Paths.get(folder));
         fileAppender = new FileAppender();

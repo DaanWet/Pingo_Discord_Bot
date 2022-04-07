@@ -4,11 +4,13 @@ import commands.settings.Setting;
 import companions.uno.UnoGame;
 import data.handlers.SettingsDataHandler;
 
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Utils {
 
-    public static Properties config;
+    public static MyProperties config;
     private static Map<Locale, ResourceBundle> locales;
 
     public static boolean isInteger(String s){
@@ -125,8 +127,8 @@ public class Utils {
     }
 
     public static void loadProperties() throws Exception{
-        config = new Properties();
-        config.load(Utils.class.getClassLoader().getResourceAsStream("config.properties"));
+        config = new MyProperties();
+        config.load(new InputStreamReader(Utils.class.getClassLoader().getResourceAsStream("config.properties"), StandardCharsets.UTF_8));
     }
 
 }

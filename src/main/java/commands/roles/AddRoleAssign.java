@@ -11,11 +11,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class AddRoleAssign extends RoleCommand {
@@ -23,8 +23,9 @@ public class AddRoleAssign extends RoleCommand {
     public AddRoleAssign(){
         name = "addRoleAssign";
         aliases = new String[]{"addRole", "addRoleA", "addRA"};
-        this.arguments = "<category> <emoji> <role> <name>";
+        this.arguments = new String[]{"<category> <emoji> <role> <name>"};
         this.description = "roleassign.add.description";
+        this.example = "Games :square: @Minecraft \"Mc Role\"";
     }
 
     public CommandState canBeExecuted(long guildId, long channelId, Member member){
@@ -55,7 +56,7 @@ public class AddRoleAssign extends RoleCommand {
             throw new MessageException(language.getString("roleassign.error.role"));
         }
         int pos = role.getPosition();
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         if (e.getGuild().getSelfMember().getRoles().stream().noneMatch(r -> r.getPosition() > pos) || !e.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)){
             e.getMessage().addReaction(config.getProperty("emoji.cancel")).queue();
             throw new MessageException(language.getString("roleassign.error.perms"));

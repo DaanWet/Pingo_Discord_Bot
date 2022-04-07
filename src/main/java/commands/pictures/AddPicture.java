@@ -21,8 +21,8 @@ public class AddPicture extends Command {
         aliases = new String[]{"addpicture"};
         category = Category.PICTURES;
         this.description = "picture.add.description";
-        this.arguments = "<name> <picture>";
-        this.priveligedGuild = (long) Utils.config.get("special.guild");
+        this.arguments = new String[]{"<name> <picture>"};
+        this.priveligedGuild = Utils.config.get("special.guild");
     }
 
     @Override

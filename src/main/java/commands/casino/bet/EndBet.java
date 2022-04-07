@@ -25,8 +25,9 @@ public class EndBet extends Command {
         this.gameCompanion = gameCompanion;
         this.name = "endbet";
         this.aliases = new String[]{"ebet"};
-        this.arguments = "<bet id> <winners>";
+        this.arguments = new String[]{"<bet id> <winners>"};
         this.description = "end_bet.description";
+        this.example = "2 @Jef @Peter";
         this.category = Category.CASINO;
     }
 

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -51,11 +52,11 @@ public class ReactionListener extends ListenerAdapter {
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e){
         User user = e.getUser();
         if (user.isBot()) return;
-        Properties config = Utils.config;
-        if (e.getChannel().getIdLong() == (long) config.get("special.codex")){
+        MyProperties config = Utils.config;
+        if (e.getChannel().getIdLong() == config.get("special.codex")){
             handleSuggestionReaction(e);
             return;
-        } else if (e.getChannel().getIdLong() == (long) config.get("special.suggestion")){
+        } else if (e.getChannel().getIdLong() == config.get("special.suggestion")){
             handleBotSuggestion(e);
             return;
         }
@@ -103,7 +104,7 @@ public class ReactionListener extends ListenerAdapter {
 
     public void handlePaginatorReaction(GuildMessageReactionAddEvent e){
         EmbedPaginator paginator = dataCompanion.getEmbedPaginatorMap(e.getGuild().getIdLong()).get(e.getMessageIdLong());
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         String emoji = e.getReactionEmote().getEmoji();
 
         HashMap<String, Runnable> map = new HashMap<>() {{
@@ -117,19 +118,19 @@ public class ReactionListener extends ListenerAdapter {
         map.get(emoji).run();
 
         e.retrieveMessage().queue(m -> {
-            m.editMessageEmbeds(paginator.createEmbed()).queue();
+            m.editMessageEmbeds(paginator.createEmbed(e.getGuild().getIdLong())).queue();
             m.removeReaction(e.getReactionEmote().getEmoji(), e.getUser()).queue();
         });
     }
 
 
     public void handleBotSuggestion(GuildMessageReactionAddEvent e){
-        Properties config = Utils.config;
-        if (e.getMember().getIdLong() == (long) config.get("special.owner") && e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals(config.getProperty("emoji.checkmark"))){
+        MyProperties config = Utils.config;
+        if (e.getMember().getIdLong() == config.get("special.owner") && e.getReactionEmote().isEmoji() && e.getReactionEmote().getEmoji().equals(config.getProperty("emoji.checkmark"))){
             e.retrieveMessage().queue(m -> {
                 if (m.getEmbeds().size() == 1){
                     e.getReaction().retrieveUsers().queue(users -> {
-                        boolean added = users.stream().anyMatch(u -> u.isBot() && u.getIdLong() == (long) config.get("special.bot"));
+                        boolean added = users.stream().anyMatch(u -> u.isBot() && u.getIdLong() == config.get("special.bot"));
                         if (!added){
                             try {
                                 MessageEmbed me = m.getEmbeds().get(0);
@@ -162,7 +163,7 @@ public class ReactionListener extends ListenerAdapter {
     public void handleSuggestionReaction(GuildMessageReactionAddEvent e){
         User user = e.getUser();
         e.getChannel().retrieveMessageById(e.getMessageId()).queue(m -> {
-            Properties config = Utils.config;
+            MyProperties config = Utils.config;
             HashMap<String, Runnable> map = new HashMap<>() {{
                 put(config.getProperty("emoji.green_tick"), () -> {
                     m.removeReaction(config.getProperty("emoji.indifferent_tick"), user).queue();
@@ -196,7 +197,7 @@ public class ReactionListener extends ListenerAdapter {
                 }
             }
             List<MessageEmbed> embedList = m.getEmbeds();
-            int threshold = (int) Math.ceil((e.getChannel().getMembers().size() - 1) * (double)config.get("special.threshold"));
+            int threshold = (int) Math.ceil((e.getChannel().getMembers().size() - 1) * (double) config.get("special.threshold"));
             if ((pro >= threshold || con >= threshold) && !embedList.isEmpty()){
                 MessageEmbed embed = embedList.get(0);
                 EmbedBuilder eb = new EmbedBuilder(embed);
@@ -218,7 +219,7 @@ public class ReactionListener extends ListenerAdapter {
             String emoji = e.getReactionEmote().getEmoji();
             String command = explorerData.getCommand();
 
-            Properties config = Utils.config;
+            MyProperties config = Utils.config;
             if (explorerData.getPlayerId() == e.getUserIdLong() || emoji.equals(config.getProperty("emoji.cancel"))){
                 File dir = new File(String.format("%s/%s", pathname, explorerData));
                 int max = dir.listFiles().length;
@@ -284,7 +285,7 @@ public class ReactionListener extends ListenerAdapter {
             ArrayList<UnoHand> hands = unoGame.getHands();
             MyResourceBundle language = Utils.getLanguage(guild.getIdLong());
             String emojiEmoji = emoji.getEmoji();
-            Properties config = Utils.config;
+            MyProperties config = Utils.config;
             if (config.getProperty("emoji.uno.start").equals(emojiEmoji)){
                 if (unoGame.getStarter() == member.getIdLong() && unoGame.getTurn() == -1){
                     int turn = unoGame.start();

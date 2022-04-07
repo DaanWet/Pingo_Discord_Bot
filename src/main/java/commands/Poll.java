@@ -4,19 +4,20 @@ import commands.settings.Setting;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
-import java.util.Properties;
 
 public class Poll extends Command {
 
     public Poll(){
         this.name = "poll";
         this.aliases = new String[]{"strawpoll"};
-        this.arguments = "\"<question>\" [\"<option>\"]";
+        this.arguments = new String[]{"<question> [<option>,...]"};
         this.description = "poll.description";
+        this.example = "\"Who is the richest man on earth?\" \"Jef Bezos\" \"I am\" \"Notch\"";
     }
 
     @Override
@@ -25,7 +26,7 @@ public class Poll extends Command {
         if (args.length == 0 || args.length == 2)
             throw new MessageException(language.getString("poll.error.least"));
         if (args.length == 1){
-            Properties config = Utils.config;
+            MyProperties config = Utils.config;
             e.getChannel().sendMessage(String.format("**%s#%s: %s**", e.getAuthor().getName(), e.getAuthor().getDiscriminator(), Utils.upperCaseFirst(args[0]))).queue(m -> {
                 m.addReaction(config.getProperty("emoji.green_tick")).queue();
                 m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();

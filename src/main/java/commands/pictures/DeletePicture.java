@@ -7,10 +7,10 @@ import listeners.CommandHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
-import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -26,8 +26,8 @@ public class DeletePicture extends Command {
         this.commandHandler = commandHandler;
         this.category = Category.PICTURES;
         this.description = "picture.delete.description";
-        this.arguments = "<command>";
-        this.priveligedGuild = (long) Utils.config.get("special.guild");
+        this.arguments = new String[]{"<command>"};
+        this.priveligedGuild = Utils.config.get("special.guild");
         this.dataCompanion = dataCompanion;
     }
 
@@ -40,7 +40,7 @@ public class DeletePicture extends Command {
             throw new MessageException(language.getString("picture.delete.error"));
 
         EmbedBuilder eb = new EmbedBuilder();
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         eb.setImage(String.format("%s/%s/%d&%d=%d", config.getProperty("pictures.url"), args[0], 0, random.nextInt(), random.nextInt()));
         eb.setTitle(language.getString("picture.delete.embed", args[0]));
         eb.setDescription("0.jpg");

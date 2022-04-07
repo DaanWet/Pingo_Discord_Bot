@@ -19,8 +19,9 @@ public class RoleAssign extends RoleCommand {
 
     public RoleAssign(){
         name = "roleassign";
-        this.arguments = "<category> [<compact>]";
+        this.arguments = new String[]{"<category> [**compact**|**supercompact**|**normal**]"};
         this.description = "roleassign.description";
+        this.example = "Games";
     }
 
     @Override

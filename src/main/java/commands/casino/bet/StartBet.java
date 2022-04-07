@@ -21,8 +21,9 @@ public class StartBet extends Command {
         this.name = "startbet";
         this.aliases = new String[]{"sbet"};
         this.category = Category.CASINO;
-        this.arguments = "<question>";
+        this.arguments = new String[]{"<question>"};
         this.description = "start_bet.description";
+        this.example = "When will Pedro wake up?";
     }
 
     @Override

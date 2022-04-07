@@ -22,8 +22,9 @@ public class RemoveRoleAssign extends RoleCommand {
     public RemoveRoleAssign(){
         this.name = "removeRoleAssign";
         this.aliases = new String[]{"removeRole", "removeRoleA", "removeRA"};
-        this.arguments = "<category> <emoji>";
+        this.arguments = new String[]{"<category> <emoji>"};
         this.description = "roleassign.remove.description";
+        this.example = "Games :square:";
     }
 
     public CommandState canBeExecuted(long guildId, long channelId, Member member){

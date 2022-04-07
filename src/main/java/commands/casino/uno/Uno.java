@@ -1,6 +1,7 @@
 package commands.casino.uno;
 
 import commands.Command;
+import commands.Help;
 import commands.settings.Setting;
 import companions.GameCompanion;
 import companions.uno.UnoGame;
@@ -9,23 +10,25 @@ import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
-import java.util.Properties;
 
 public class Uno extends Command {
 
     private final GameCompanion gameCompanion;
+    private final Help help;
 
-    public Uno(GameCompanion gameCompanion){
+    public Uno(GameCompanion gameCompanion, Help help){
         this.name = "uno";
         this.aliases = new String[]{"playuno"};
         this.category = Category.CASINO;
-        this.arguments = "[<bet>]";
+        this.arguments = new String[]{"[bet]"};
         this.description = "uno.description";
         this.gameCompanion = gameCompanion;
+        this.help = help;
     }
 
     @Override
@@ -58,13 +61,16 @@ public class Uno extends Command {
         if (bet != 0)
             eb.setDescription(language.getString("uno.embed.description", bet));
         eb.addField(language.getString("uno.embed.players.title"), language.getString("uno.embed.players.no_players"), false);
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         eb.setFooter(language.getString("uno.embed.footer", config.getProperty("emoji.uno.join"), config.getProperty("emoji.uno.start"), config.getProperty("emoji.cancel")));
-        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
+
+        EmbedBuilder eb2 = help.getUnoHelp(new EmbedBuilder(), language, settingDH.getStringSetting(guildId, Setting.PREFIX).get(0));
+        e.getChannel().sendMessageEmbeds(eb2.build(), eb.build()).queue(m -> {
             unogame.setMessageID(m.getIdLong());
             m.addReaction(config.getProperty("emoji.uno.join")).queue();
             m.addReaction(config.getProperty("emoji.uno.start")).queue();
             m.addReaction(config.getProperty("emoji.cancel")).queue();
         });
     }
+
 }

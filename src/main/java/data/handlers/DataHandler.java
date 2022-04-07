@@ -2,7 +2,7 @@ package data.handlers;
 
 import java.util.Properties;
 
-public class DataHandler {
+public abstract class DataHandler {
 
 
     protected static String JDBC_URL;

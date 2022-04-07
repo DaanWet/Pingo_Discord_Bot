@@ -3,10 +3,10 @@ package companions.paginators;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import utils.MyProperties;
 import utils.Utils;
 
 import javax.annotation.Nullable;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 public abstract class EmbedPaginator {
@@ -17,11 +17,11 @@ public abstract class EmbedPaginator {
      */
     protected int page = 1;
 
-    public abstract MessageEmbed createEmbed();
+    public abstract MessageEmbed createEmbed(long guild);
 
-    public MessageEmbed createEmbed(int page){
+    public MessageEmbed createEmbed(long guild, int page){
         this.page = page;
-        return createEmbed();
+        return createEmbed(guild);
     }
 
     public void sendMessage(TextChannel channel){
@@ -29,12 +29,12 @@ public abstract class EmbedPaginator {
     }
 
     public void sendMessage(TextChannel channel, @Nullable Consumer<Message> consumer){
-        channel.sendMessageEmbeds(createEmbed())
+        channel.sendMessageEmbeds(createEmbed(channel.getGuild().getIdLong()))
                 .queue(m ->
                        {
                            if (consumer != null)
                                consumer.accept(m);
-                           Properties config = Utils.config;
+                           MyProperties config = Utils.config;
                            m.addReaction(config.getProperty("emoji.first")).queue();
                            m.addReaction(config.getProperty("emoji.previous")).queue();
                            m.addReaction(config.getProperty("emoji.next")).queue();

@@ -20,7 +20,7 @@ public class NicknameHandler extends ListenerAdapter {
                 AuditLogEntry log = logs.get(0);
                 Member person = guild.getMember(log.getUser());
                 Member target = guild.getMemberById(log.getTargetId());
-                if (!person.getUser().isBot() && !target.getRoles().contains(guild.getRoleById((long) Utils.config.get("special.role"))) && !person.equals(target) && !person.hasPermission(Permission.ADMINISTRATOR)){
+                if (!person.getUser().isBot() && !target.getRoles().contains(guild.getRoleById(Utils.config.get("special.role"))) && !person.equals(target) && !person.hasPermission(Permission.ADMINISTRATOR)){
                     target.modifyNickname(name).queue();
                 }
             }

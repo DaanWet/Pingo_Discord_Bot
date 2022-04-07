@@ -24,8 +24,9 @@ public class BlackJack extends BCommand {
         super(gameCompanion);
         this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
-        this.arguments = "<bet>";
+        this.arguments = new String[]{"<bet>"};
         this.description = "bj.description";
+        this.example = "10k";
         this.hidden = false;
     }
 

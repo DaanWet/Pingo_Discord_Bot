@@ -1,13 +1,13 @@
 package companions.cardgames;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import utils.MyProperties;
 import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Properties;
 
 public class BlackJackGame {
     public enum EndState {
@@ -199,10 +199,10 @@ public class BlackJackGame {
     }
 
     public EmbedBuilder buildEmbed(String user, String prefix, MyResourceBundle language){
-        Properties config = Utils.config;
+        MyProperties config = Utils.config;
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(String.format("\u2063%s         \u2063", language.getString("blackjack.title", user, bet + secondbet)));
-        eb.addField((hasSplit && firsthand ? config.getProperty("emoji.arrow")/*extra space here*/ : "") + language.getString("blackjack.player.title"), String.format("%s\n%s", playerHand.toString(), language.getString("blackjack.player.value", playerHand.getValue())), true);
+        eb.addField((hasSplit && firsthand ? config.getProperty("emoji.arrow")/*extra space here*/ : "") + language.getString("blackjack.player.title"), String.format("%s\n%s", playerHand.toString(), language.getString("blackjack.value", playerHand.getValue())), true);
         eb.addField(language.getString("blackjack.dealer.title"), String.format("%s\n%s", hasEnded ? dealerHand.toString() : dealerHand.toString().split(" ")[0] + /*extra space here*/config.getProperty("emoji.question"), language.getString("blackjack.value", hasEnded ? dealerHand.getValue() : config.getProperty("emoji.question"))), true);
 
         if (hasSplit){
@@ -216,7 +216,7 @@ public class BlackJackGame {
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append(language.getString("blackjack.stand", prefix + "stand")).append("\n");
-            sb.append(language.getString("blackjack.hit", prefix + "stand"));
+            sb.append(language.getString("blackjack.hit", prefix + "hit"));
             if (canDouble())
                 sb.append("\n").append(language.getString("blackjack.double", prefix + "double"));
             if (canSplit() && !hasSplit)

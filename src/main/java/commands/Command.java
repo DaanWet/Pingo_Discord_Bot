@@ -3,10 +3,12 @@ package commands;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import data.handlers.SettingsDataHandler;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.apache.commons.lang3.StringUtils;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -39,8 +41,9 @@ public abstract class Command {
     protected String name;
     protected String[] aliases = new String[0];
     protected Category category = Category.OTHER;
-    protected String arguments = "";
+    protected String[] arguments = new String[0];
     protected String description;
+    protected String example = "";
     protected boolean hidden = false;
     protected long priveligedGuild = -1;
 
@@ -115,8 +118,12 @@ public abstract class Command {
         return name;
     }
 
-    public String getArguments(){
+    public String[] getArguments(){
         return arguments;
+    }
+
+    public String getExample(){
+        return example;
     }
 
     public String[] getAliases(){
@@ -136,11 +143,40 @@ public abstract class Command {
         return priveligedGuild;
     }
 
+
     public String getUsage(long guildId){
         MyResourceBundle language = Utils.getLanguage(guildId);
         String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
-        return language.getString("command.usage", prefix, name, arguments, description == null ? "" : getDescription(language));
+        StringBuilder sb = new StringBuilder();
+        for (String arg : arguments){
+            sb.append(String.format("\n%s%s %s", prefix, name, arg));
+        }
+        return language.getString("command.usage", sb.toString(), prefix, name);
     }
+
+    public EmbedBuilder getHelp(EmbedBuilder eb, MyResourceBundle language, String prefix){
+        eb.setTitle(language.getString("help.command", StringUtils.capitalize(name)));
+        StringBuilder sb = new StringBuilder();
+        for (String arg : arguments){
+            sb.append(String.format("%s%s %s\n", prefix, name, arg));
+        }
+        eb.addField(language.getString("help.usage"), sb.toString(), false);
+        eb.setDescription(getDescription(language));
+        if (aliases.length != 0){
+            eb.addField(language.getString("help.aliases"), String.join(", ", aliases), false);
+        }
+        eb.addField(language.getString("help.example"), String.format("%s%s %s", prefix, name, example), false);
+        eb.setFooter(language.getString("help.embed.cmd.footer"));
+        return eb;
+    }
+
+    public EmbedBuilder getHelp(long guildId){
+        String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
+        MyResourceBundle language = Utils.getLanguage(guildId);
+        EmbedBuilder eb = new EmbedBuilder();
+        return getHelp(eb, language, prefix);
+    }
+
 
     public boolean isCommandFor(String s){
         if (s.equalsIgnoreCase(name)){
