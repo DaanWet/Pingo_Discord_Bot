@@ -4,6 +4,7 @@ import casino.GameHandler;
 import casino.uno.UnoGame;
 import casino.uno.UnoHand;
 import commands.CommandHandler;
+import org.apache.log4j.MDC;
 import utils.dbdata.RoleAssignRole;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -42,6 +43,11 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
+        MDC.put("Guild", e.getGuild().getId());
+        MDC.put("User", e.getUser().getId());
+        MDC.put("Channel", e.getChannel().getId());
+        MDC.put("Message", e.getMessageId());
+        MDC.put("Content", e.getReaction().getReactionEmote());
         User user = e.getUser();
         if (!user.isBot()) {
             if (e.getChannel().getIdLong() == 664230911935512586L) {
@@ -75,6 +81,7 @@ public class ReactionListener extends ListenerAdapter {
                 }
             }
         }
+        MDC.clear();
     }
 
     @Override
@@ -84,7 +91,7 @@ public class ReactionListener extends ListenerAdapter {
                 String roleCat = new DataHandler().getCategory(e.getGuild().getIdLong(), e.getChannel().getIdLong(), e.getMessageIdLong());
                 if (roleCat != null) {
                     try {
-                        handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, e.getMember(), false);
+                        handleRoleReaction(e.getReactionEmote().getAsReactionCode(), e.getGuild(), roleCat, u, false);
                     } catch (HierarchyException exc) {
                         if (e.getGuild().getDefaultChannel() != null)
                             e.getGuild().getDefaultChannel().sendMessage("Unable to assign role due to lack of permissions, place my role above the roles you want me to assign").queue();

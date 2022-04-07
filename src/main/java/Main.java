@@ -15,7 +15,6 @@ import utils.DataHandler;
 
 import utils.logging.ErrorLayout;
 import utils.logging.MyFileAppender;
-import utils.logging.MyHTMLLayout;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
