@@ -1,49 +1,47 @@
 package commands;
 
+import data.handlers.GeneralDataHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.sk.PrettyTable;
-import utils.DataHandler;
+import utils.MessageException;
+import utils.Utils;
 
-public class Eval extends Command{
+public class Eval extends Command {
 
     public Eval(){
         this.name = "eval";
-        this.arguments = "<query>";
+        this.arguments = new String[]{"<query>"};
         this.hidden = true;
-        this.description = "executes a SQL query";
-        this.priveligedGuild = 203572340280262657L;
+        this.description = "eval.description";
+        this.priveligedGuild = Utils.config.get("special.guild");
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
-        if (args.length >= 1){
-            String query = e.getMessage().getContentRaw().substring(5);
-            String lquery = query.trim().toLowerCase();
-            StringBuilder sb = new StringBuilder();
-            if (lquery.startsWith("select") ||lquery.startsWith("show")){
-                PrettyTable table = new DataHandler().executeQuery(query);
-                if (table != null){
-                    sb.append("```").append(table).append("```");
-                } else {
-                    sb.append("Invalid SQL Query Noob: `").append(query).append("`");
-                }
-            } else if (lquery.startsWith("insert") || lquery.startsWith("update") || lquery.startsWith("drop") || lquery.startsWith("create") || lquery.startsWith("delete") || lquery.startsWith("alter")){
-                if (e.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    int i = new DataHandler().executeUpdate(query);
-                    if (i < 0){
-                        sb.append("Invalid SQL Query Noob: `").append(query).append("`");
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        if (args.length == 0)
+            throw new MessageException("You need to provide a SQL query");
 
-                    } else {
-                        sb.append("Updated ").append(i).append(" rows");
-                    }
 
-                } else {
-                    sb.append("You don't have permission to update the db");
-                }
-            }
+        String query = e.getMessage().getContentRaw().substring(5);
+        String lquery = query.trim().toLowerCase();
+        StringBuilder sb = new StringBuilder();
+        if (lquery.startsWith("select") || lquery.startsWith("show")){
+            PrettyTable table = new GeneralDataHandler().executeQuery(query);
+            if (table == null)
+                throw new MessageException(String.format("Invalid SQL Query Noob: `%s`", query));
+            sb.append("```").append(table).append("```");
+        } else {
+            if (!e.getMember().hasPermission(Permission.ADMINISTRATOR))
+                throw new MessageException("You don't have permission to update the db");
 
-            e.getChannel().sendMessage(sb.toString()).queue();
+            int i = new GeneralDataHandler().executeUpdate(query);
+            if (i < 0)
+                throw new MessageException(String.format("Invalid SQL Query Noob: `%s`", query));
+
+            sb.append("Updated ").append(i).append(" rows");
         }
+
+        e.getChannel().sendMessage(sb.toString()).queue();
     }
 }

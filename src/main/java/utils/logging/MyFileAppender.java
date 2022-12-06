@@ -1,20 +1,26 @@
 package utils.logging;
 
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import utils.MyProperties;
+import utils.Utils;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class MyFileAppender extends FileAppender {
-    public static final String folder = "./logging";
     private final FileAppender fileAppender;
     private final FileAppender rateLimitAppender;
+    private final String folder;
 
-    public MyFileAppender() {
+    public MyFileAppender() throws Exception{
+        MyProperties config = Utils.config;
+        this.folder = config.getProperty("logging.path");
+        Files.createDirectories(Paths.get(folder));
         fileAppender = new FileAppender();
         MyHTMLLayout layout = new MyHTMLLayout();
         layout.setTitle("All logs");
@@ -34,23 +40,23 @@ public class MyFileAppender extends FileAppender {
 
 
     @Override
-    public void close() {
+    public void close(){
         super.close();
         fileAppender.close();
         rateLimitAppender.close();
     }
 
     @Override
-    public void doAppend(LoggingEvent loggingEvent) {
+    public void doAppend(LoggingEvent loggingEvent){
         if (!loggingEvent.getThreadName().contains("RateLimit")){
-            if (loggingEvent.getLevel().isGreaterOrEqual(Level.WARN)) {
+            if (loggingEvent.getLevel().isGreaterOrEqual(Level.WARN)){
                 try {
                     int i = new File(folder).listFiles().length;
                     FileWriter myWriter = new FileWriter(String.format("%s/log_%d.html", folder, i));
                     myWriter.write(this.layout.format(loggingEvent));
                     myWriter.close();
                     loggingEvent.setProperty("link", Integer.toString(i));
-                } catch (IOException exc) {
+                } catch (IOException exc){
                     exc.printStackTrace();
                 }
             }
@@ -62,7 +68,7 @@ public class MyFileAppender extends FileAppender {
 
 
     @Override
-    public boolean requiresLayout() {
+    public boolean requiresLayout(){
         return false;
     }
 }

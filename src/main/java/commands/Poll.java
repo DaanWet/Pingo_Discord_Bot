@@ -1,49 +1,53 @@
 package commands;
 
 import commands.settings.Setting;
+import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
-import utils.DataHandler;
+import utils.MyProperties;
+import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
 
-public class Poll extends Command{
+public class Poll extends Command {
 
     public Poll(){
         this.name = "poll";
         this.aliases = new String[]{"strawpoll"};
-        this.arguments = "\"<question>\" [\"<option>\"]";
-        this.description = "Creates a poll";
+        this.arguments = new String[]{"<question> [<option>,...]"};
+        this.description = "poll.description";
+        this.example = "\"Who is the richest man on earth?\" \"Jef Bezos\" \"I am\" \"Notch\"";
     }
 
     @Override
-    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception {
+    public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        MyResourceBundle language = getLanguage(e);
+        if (args.length == 0 || args.length == 2)
+            throw new MessageException(language.getString("poll.error.least"));
         if (args.length == 1){
-            e.getChannel().sendMessage(String.format("**%s**", Utils.upperCaseFirst(args[0]))).queue(m -> {
-                m.addReaction(":greentick:804432208483844146").queue();
-                m.addReaction(":indifftick:804432286455169044").queue();
-                m.addReaction(":redtick:804432244469923890").queue();
+            MyProperties config = Utils.config;
+            e.getChannel().sendMessage(String.format("**%s#%s: %s**", e.getAuthor().getName(), e.getAuthor().getDiscriminator(), Utils.upperCaseFirst(args[0]))).queue(m -> {
+                m.addReaction(config.getProperty("emoji.green_tick")).queue();
+                m.addReaction(config.getProperty("emoji.indifferent_tick")).queue();
+                m.addReaction(config.getProperty("emoji.red_tick")).queue();
             });
-        } else if (args.length >= 3){
-            if (args.length <= 21){
-                StringBuilder sb = new StringBuilder();
-                sb.append("**").append(Utils.upperCaseFirst(args[0])).append("**");
-                for (int i = 1; i < args.length; i++){
-                    sb.append("\n").append(Utils.regionalEmoji(i - 1)).append(" ").append(Utils.upperCaseFirst(args[i]));
-                }
-                e.getChannel().sendMessage(sb.toString()).queue(m -> {
-                    for (int i = 0; i < args.length - 1; i++){
-                        m.addReaction(Utils.regionalUnicode(i)).queue();
-                    }
-                });
-            } else {
-                throw new MessageException("More than 20 options is not allowed");
-            }
         } else {
-            throw new MessageException("You have to give a question and/or at least 2 options");
+            if (args.length > 21)
+                throw new MessageException(language.getString("poll.error.max"));
+            StringBuilder sb = new StringBuilder();
+            sb.append("**").append(e.getAuthor().getName()).append("#").append(e.getAuthor().getDiscriminator()).append(": ").append(Utils.upperCaseFirst(args[0])).append("**");
+            for (int i = 1; i < args.length; i++){
+                sb.append("\n").append(Utils.regionalEmoji(i - 1)).append(" ").append(Utils.upperCaseFirst(args[i]));
+            }
+            e.getChannel().sendMessage(sb.toString()).queue(m -> {
+                for (int i = 0; i < args.length - 1; i++){
+                    m.addReaction(Utils.regionalUnicode(i)).queue();
+                }
+            });
+
         }
         e.getMessage().delete().queue();
-        new DataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.POLL, LocalDateTime.now());
+        new SettingsDataHandler().setCooldown(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), Setting.POLL, LocalDateTime.now());
     }
 }

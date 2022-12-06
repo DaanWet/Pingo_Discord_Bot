@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import utils.Utils;
 
 public class NicknameHandler extends ListenerAdapter {
 
@@ -19,7 +20,7 @@ public class NicknameHandler extends ListenerAdapter {
                 AuditLogEntry log = logs.get(0);
                 Member person = guild.getMember(log.getUser());
                 Member target = guild.getMemberById(log.getTargetId());
-                if (!person.getUser().isBot() && !target.getRoles().contains(guild.getRoleById("664218195011436594")) && !person.equals(target) && !person.hasPermission(Permission.ADMINISTRATOR)){
+                if (!person.getUser().isBot() && !target.getRoles().contains(guild.getRoleById(Utils.config.get("special.role"))) && !person.equals(target) && !person.hasPermission(Permission.ADMINISTRATOR)){
                     target.modifyNickname(name).queue();
                 }
             }
