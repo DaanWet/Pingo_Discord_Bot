@@ -27,3 +27,47 @@ More info coming soon
 - `!roleassign <category>` : Show/move the role picker for the \<category> to the current channel
 
 More info coming soon
+
+# Other features
+## Upcoming new features
+- Uno turn reminders
+- Uno messaging
+- Pin message command
+- Blackbox
+- Temporary voice channel command
+- Never have I ever
+- Leveling
+- Poker
+- More casino games
+- Reminder
+- Balance lookup
+
+## Upcoming improvements
+- More enhanced poll
+- Better Among us Command
+- Slash commands
+
+## Scrapped features
+- Once slash commands are implemented most command settings will be deleted
+
+# Contributing
+
+If you want to contribute to Pingo, make sure to base your branch off of the development branch and create your PR into that same branch. Any PRs between branches or into the master branch will be rejected! It is very possible that your change might already be in development or you missed something.
+
+# Self hosting this bot
+
+## Requirements
+- Java 14 or newer
+- Maven
+- MySQL Database
+- Github repository
+
+## Setup
+- Build the bot using maven either using your preffered IDE or command line
+- Create a Discord application in the discord developer portal
+- Create a database in your MySQL instance and create a user with a password
+- Copy the jdbc connection url of the database with utf8mb4 as the character set of the server.
+- Fill in the bot token, github token and jdbc connection url in the `config.properties` file
+- Fill in any other settings you want to change in the `config.properties` file
+- Run the bot (wether or not you use nohup, screen or any other kind of service is up to you)
+
