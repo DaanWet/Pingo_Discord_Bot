@@ -38,7 +38,9 @@ public enum Setting {
             return eb;
         }),
         UNO("Uno", (list, eb, prefix, language) -> {
-            return eb.addField("Uno", "Change uno idk ", false);
+            eb.setDescription("Change the default settings of uno games");
+            list.forEach(l -> eb.addField(Utils.upperCaseFirst(l.name), language.getString("uno.desc", l.name, prefix), false));
+            return eb;
         });
 
         private final String name;
