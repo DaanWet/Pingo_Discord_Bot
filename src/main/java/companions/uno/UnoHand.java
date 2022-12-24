@@ -1,5 +1,8 @@
 package companions.uno;
 
+import net.sf.cglib.core.Local;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class UnoHand {
@@ -10,6 +13,8 @@ public class UnoHand {
     private long channelId;
     private long messageId;
     private boolean drawn;
+
+    private LocalDateTime lastPingOrPlay;
 
 
     public UnoHand(long playerId, String playerName){
@@ -36,6 +41,14 @@ public class UnoHand {
             cards.remove(card);
         }
         drawn = false;
+    }
+
+    public void setPingOrPlay(){
+        this.lastPingOrPlay = LocalDateTime.now();
+    }
+
+    public LocalDateTime getLastPingOrPlay(){
+        return this.lastPingOrPlay;
     }
 
     public ArrayList<UnoCard> getCards(){
