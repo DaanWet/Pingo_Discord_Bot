@@ -13,7 +13,6 @@ public class GameCompanion {
 
     private final HashMap<Long, HashMap<Long, BlackJackGame>> blackJackGames;
     private final HashMap<Long, UnoGame> unoGames;
-
     private final HashMap<Long, ArrayList<CustomBet>> customBetMap;
 
 

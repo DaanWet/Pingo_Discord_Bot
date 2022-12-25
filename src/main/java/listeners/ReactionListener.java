@@ -42,11 +42,11 @@ public class ReactionListener extends ListenerAdapter {
     private final GameCompanion gameCompanion;
     private final DataCompanion dataCompanion;
 
-    public ReactionListener(CommandHandler commandHandler, GitHub gitHub, GameCompanion gameCompanion, DataCompanion dataCompanion){
+    public ReactionListener(CommandHandler commandHandler, GitHub gitHub){
         this.commandHandler = commandHandler;
         this.gitHub = gitHub;
-        this.gameCompanion = gameCompanion;
-        this.dataCompanion = dataCompanion;
+        this.gameCompanion = commandHandler.getGameHandler();
+        this.dataCompanion = commandHandler.getDataCompanion();
     }
 
     @Override
