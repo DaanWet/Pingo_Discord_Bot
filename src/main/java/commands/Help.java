@@ -109,7 +109,7 @@ public class Help extends Command {
         StringBuilder sb = new StringBuilder();
         for (Command c : commands){
             if (c.getCategory() != null && c.getCategory() == Category.UNO){
-                sb.append(String.format("\n%s%s %s: *%s*", prefix, c.getName(), c.getArguments()[0], language.getString(c.getDescription() == null ? "help.error" : c.getDescription().trim())));
+                sb.append(String.format("\n%s%s %s: *%s*", prefix, c.getName(), c.getArguments().length > 0 ? c.getArguments()[0] : "", language.getString(c.getDescription() == null ? "help.error" : c.getDescription().trim())));
             }
         }
         eb.setDescription(sb.toString());

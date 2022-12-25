@@ -90,11 +90,18 @@ public class CommandHandler {
         registerCommand(new Bet(gameCompanion));
         registerCommand(new EndBet(gameCompanion));
         registerCommand(new Arguments());
+        registerCommand(new Ping(gameCompanion));
         help.setCommands(commands);
     }
 
     public void registerCommand(Command command){
         this.commands.put(command.getName(), command);
+    }
+
+    public void registerCommands(Command... commands){
+        for (Command c : commands){
+            registerCommand(c);
+        }
     }
 
     public GameCompanion getGameHandler(){

@@ -42,8 +42,8 @@ public class Ping extends Command {
             if (unoGame.isFinished())
                 throw new MessageException(language.getString("uno.ended"));
             UnoHand hand = unoGame.getHands().get(turn);
-            if (hand.getLastPingOrPlay().isAfter(LocalDateTime.now().minusDays(0))){
-                LocalDateTime till = hand.getLastPingOrPlay().plusDays(1);
+            if (hand.getLastPingOrPlay().isAfter(LocalDateTime.now().plusHours(12))){
+                LocalDateTime till = hand.getLastPingOrPlay().plusHours(12);
                 LocalDateTime temp = LocalDateTime.now();
                 long hours = temp.until(till, ChronoUnit.HOURS) + 1;
                 throw new MessageException(language.getString("uno.ping.error", hours));
@@ -53,7 +53,7 @@ public class Ping extends Command {
             EmbedBuilder eb2 = new EmbedBuilder();
             eb2.setTitle( language.getString("uno.turn"));
             eb2.setColor(color);
-            channel.sendMessageEmbeds(eb2.build()).mentionUsers(hand.getPlayerId()).queue();
+            channel.sendMessageEmbeds(eb2.build()).append(e.getGuild().getMemberById(hand.getPlayerId()).getAsMention()).queue();
         }
     }
 }

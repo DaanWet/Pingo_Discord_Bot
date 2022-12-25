@@ -24,6 +24,7 @@ public class UnoHand {
         drawn = false;
         channelId = -1;
         messageId = -1;
+        this.lastPingOrPlay = LocalDateTime.now();
     }
 
 
