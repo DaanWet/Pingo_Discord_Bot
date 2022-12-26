@@ -3,8 +3,8 @@ package commands.casino.bet;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
-import companions.CustomBet;
 import companions.GameCompanion;
+import companions.Question;
 import data.handlers.CreditDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -43,15 +43,14 @@ public class EndBet extends Command {
         long guildId = e.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
         int id = args.length == 0 ? -1 : Utils.getInt(args[0]);
-        ArrayList<CustomBet> customBet = gameCompanion.getCustomBet(guildId);
-        if (id == -1 || customBet.size() < id)
+        Question<Pair<Integer, String>> customBet = gameCompanion.getCustomBet(guildId, id);
+        if (id == -1 || customBet == null)
             throw new MessageException(language.getString("bet.error.id"));
 
-        CustomBet bet = customBet.get(id - 1);
-        if (bet.isEnded())
+        if (customBet.isEnded())
             throw new MessageException(language.getString("bet.error.ended", id));
 
-        if (bet.getUserId() != e.getAuthor().getIdLong())
+        if (customBet.getUserId() != e.getAuthor().getIdLong())
             throw new MessageException(language.getString("end_bet.error.perm"));
 
         if (args.length == 1 || e.getMessage().getMentionedMembers().size() == 0)
@@ -60,15 +59,15 @@ public class EndBet extends Command {
 
         ArrayList<Long> winners = new ArrayList<>();
         for (Member m : e.getMessage().getMentionedMembers()){
-            if (!bet.didBet(m.getIdLong()))
+            if (!customBet.didAnswer(m.getIdLong()))
                 throw new MessageException(language.getString("end_bet.error.no_bet", m.getEffectiveName()));
             winners.add(m.getIdLong());
         }
-        bet.end();
+        customBet.end();
         int winnerTotal = 0;
         int prize = 0;
         CreditDataHandler dh = new CreditDataHandler();
-        for (Map.Entry<Long, Pair<Integer, String>> entry : bet.getBets().entrySet()){
+        for (Map.Entry<Long, Pair<Integer, String>> entry : customBet.getAnswers().entrySet()){
             if (winners.contains(entry.getKey()))
                 winnerTotal += entry.getValue().getLeft();
             else {
@@ -77,14 +76,14 @@ public class EndBet extends Command {
             }
         }
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(language.getString("end_bet.ended", bet.getID()), String.format("https://discord.com/channels/%d/%d/%d", guildId, bet.getChannelId(), bet.getMessageId()));
+        eb.setTitle(language.getString("end_bet.ended", customBet.getID()), String.format("https://discord.com/channels/%d/%d/%d", guildId, customBet.getChannelId(), customBet.getMessageId()));
         eb.appendDescription(language.getString("end_bet.prize", prize + winnerTotal));
 
         for (long winner : winners){
-            double percentage = (double) bet.getBet(winner) / winnerTotal;
+            double percentage = (double) customBet.getAnswer(winner).getLeft() / winnerTotal;
             int won = (int) (percentage * prize);
             dh.addCredits(guildId, winner, won);
-            eb.appendDescription("\n").appendDescription(language.getString("end_bet.winner", String.format("<@!%d>", winner), won, bet.getAnswer(winner)));
+            eb.appendDescription("\n").appendDescription(language.getString("end_bet.winner", String.format("<@!%d>", winner), won, customBet.getAnswer(winner).getRight()));
         }
         e.getChannel().sendMessageEmbeds(eb.build()).queue();
         e.getMessage().delete().queue();

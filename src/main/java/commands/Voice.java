@@ -4,7 +4,6 @@ import companions.VoiceCompanion;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import utils.MessageException;
 import utils.MyResourceBundle;
@@ -14,7 +13,6 @@ import java.nio.channels.Channel;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Voice extends Command{
@@ -26,6 +24,7 @@ public class Voice extends Command{
         this.name = "voice";
         this.arguments = new String[]{"<channelName> [people]"};
         this.voiceCompanion = voiceCompanion;
+        this.category = Category.OTHER;
     }
 
 

@@ -4,6 +4,7 @@ package companions;
 import companions.cardgames.BlackJackGame;
 import companions.uno.UnoGame;
 import companions.uno.UnoHand;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,8 +14,7 @@ public class GameCompanion {
 
     private final HashMap<Long, HashMap<Long, BlackJackGame>> blackJackGames;
     private final HashMap<Long, UnoGame> unoGames;
-    private final HashMap<Long, ArrayList<CustomBet>> customBetMap;
-
+    private final HashMap<Long, HashMap<Integer, Question<Pair<Integer, String>>>> customBetMap;
 
     public GameCompanion(){
         blackJackGames = new HashMap<>();
@@ -57,16 +57,26 @@ public class GameCompanion {
         return false;
     }
 
-    public ArrayList<CustomBet> getCustomBet(long guildId){
-        return customBetMap.getOrDefault(guildId, new ArrayList<>());
+    public HashMap<Integer, Question<Pair<Integer, String>>> getCustomBets(long guildId){
+        return customBetMap.getOrDefault(guildId, new HashMap<>());
     }
 
-    public CustomBet addCustomBet(long guildId, long userId){
-        ArrayList<CustomBet> b = getCustomBet(guildId);
-        CustomBet c = new CustomBet(b.size() + 1, userId);
-        b.add(c);
-        customBetMap.put(guildId, b);
-        return c;
+    public Question<Pair<Integer, String>> getCustomBet(long guildId, int id){
+        return getCustomBets(guildId).get(id);
+    }
+
+    public Question<Pair<Integer, String>> addCustomBet(long guildId, long userId, String question){
+        HashMap<Integer, Question<Pair<Integer, String>>> bets = getCustomBets(guildId);
+        Question<Pair<Integer, String>> q = new Question<>(userId, question);
+        while (bets.containsKey(q.getID())){
+            q = new Question<>(userId, question); // ensure unique key
+        }
+        bets.put(q.getID(), q);
+        customBetMap.put(guildId, bets);
+        return q;
+    }
+
+
     }
 
 }
