@@ -10,7 +10,9 @@ import utils.MessageException;
 import utils.MyResourceBundle;
 import utils.Utils;
 
+import java.nio.channels.Channel;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -41,19 +43,20 @@ public class Voice extends Command{
              List<IMentionable> mentions = e.getMessage().getMentions();
              if (mentions.size() != args.length - 1)
                  throw new MessageException(language.getString("voice.error.mentions"));
-             action = action.addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), Collections.emptyList(), Collections.singletonList(Permission.VOICE_CONNECT));
+             action = action.addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), Collections.emptyList(), EnumSet.of(Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL));
+             action = action.addMemberPermissionOverride(e.getGuild().getSelfMember().getIdLong(), EnumSet.of(Permission.VIEW_CHANNEL, Permission.VOICE_CONNECT, Permission.MANAGE_CHANNEL), Collections.emptyList());
              for (int i = 1; i < args.length; i++){
-                 if (args[i].replaceFirst("!", "").equalsIgnoreCase(mentions.get(i).getAsMention())){
-                     IMentionable mention = mentions.get(i);
+                 if (args[i].replaceFirst("!", "").equalsIgnoreCase(mentions.get(i-1).getAsMention())){
+                     IMentionable mention = mentions.get(i-1);
+                     if (mention instanceof Channel)
+                         throw new MessageException(language.getString("voice.error.mentions"));
                      if (mention instanceof Role)
-                         action = action.addRolePermissionOverride(mention.getIdLong(), Collections.singletonList(Permission.VOICE_CONNECT), Collections.emptyList());
-                     if (mention instanceof Member)
-                         action = action.addMemberPermissionOverride(mention.getIdLong(), Collections.singletonList(Permission.VOICE_CONNECT), Collections.emptyList());
-
+                         action = action.addRolePermissionOverride(mention.getIdLong(),  List.of(Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL), Collections.emptyList());
+                     if (mention instanceof Member || mention instanceof User)
+                         action = action.addMemberPermissionOverride(mention.getIdLong(),  List.of(Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL), Collections.emptyList());
                  }
              }
              action.queue(voice -> createVoice(voice, e));
-
          }
     }
 
