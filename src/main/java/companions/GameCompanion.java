@@ -15,12 +15,13 @@ public class GameCompanion {
     private final HashMap<Long, HashMap<Long, BlackJackGame>> blackJackGames;
     private final HashMap<Long, UnoGame> unoGames;
     private final HashMap<Long, HashMap<Integer, Question<Pair<Integer, String>>>> customBetMap;
+    private final HashMap<Integer, Question<String>> blackboxes;
 
     public GameCompanion(){
         blackJackGames = new HashMap<>();
         unoGames = new HashMap<>();
         customBetMap = new HashMap<>();
-
+        blackboxes = new HashMap<>();
     }
 
     public BlackJackGame getBlackJackGame(long guildId, long user){
@@ -77,6 +78,18 @@ public class GameCompanion {
     }
 
 
+    public Question<String> getBlackBox(int id){
+        return blackboxes.get(id);
     }
+    public Question<String> addBlackBox(long guildId, long userId, String question){
+        Question<String> q = new Question<>(userId, question);
+        while (blackboxes.containsKey(q.getID())){
+            q = new Question<>(userId, question); // ensure unique key
+        }
+        blackboxes.put(q.getID(), q);
+        return q;
+    }
+
+
 
 }
