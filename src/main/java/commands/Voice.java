@@ -1,5 +1,7 @@
 package commands;
 
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import companions.VoiceCompanion;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -22,12 +24,12 @@ public class Voice extends Command{
 
     public Voice(VoiceCompanion voiceCompanion){
         this.name = "voice";
+        this.description = "voice.description";
         this.arguments = new String[]{"<channelName> [people]"};
         this.voiceCompanion = voiceCompanion;
         this.category = Category.OTHER;
+        this.example = "temporary @bob";
     }
-
-
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{

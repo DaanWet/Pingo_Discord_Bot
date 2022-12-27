@@ -1,9 +1,12 @@
 package commands.casino.bet;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import companions.GameCompanion;
 import companions.Question;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.MyResourceBundle;
@@ -21,11 +24,16 @@ public class EndBlackbox extends Command {
     public EndBlackbox(GameCompanion gameCompanion){
         this.gameCompanion = gameCompanion;
         this.name = "endBlackbox";
+        this.description = "blackbox.end.description";
         this.arguments = new String[]{"<id>"};
         this.aliases = new String[]{"ebb"};
         this.category = Category.CASINO;
     }
 
+    @Override
+    public CommandState canBeExecuted(long guildId, long channelId, Member member){
+        return canBeExecuted(guildId, channelId, member, Setting.BLACKBOX);
+    }
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{

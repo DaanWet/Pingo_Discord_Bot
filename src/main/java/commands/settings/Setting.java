@@ -15,7 +15,9 @@ public enum Setting {
     NICKNAME("nickname", Type.COMMANDS, ValueType.BOOLEAN, false, false, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     POLL("poll", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     CUSTOMBET("custombet", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
-
+    BLACKBOX("blackbox", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
+    VOICE("voice", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
+    TEAMS("teams", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
 
     PREFIX("prefix", Type.GENERAL, ValueType.STRING, false, "!", List.of(), "", ""),
     LANGUAGE("language", Type.GENERAL, ValueType.LANGUAGE, false, "en", List.of(), "", ""),

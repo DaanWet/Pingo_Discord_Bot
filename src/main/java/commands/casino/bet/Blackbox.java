@@ -1,9 +1,12 @@
 package commands.casino.bet;
 
 import commands.Command;
+import commands.settings.CommandState;
+import commands.settings.Setting;
 import companions.GameCompanion;
 import companions.Question;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
 import utils.MyResourceBundle;
@@ -17,10 +20,11 @@ public class Blackbox extends Command {
     public Blackbox(GameCompanion gameCompanion){
         this.gameCompanion = gameCompanion;
         this.name = "blackbox";
+        this.description = "blackbox.description";
         this.arguments = new String[]{"<question>"};
         this.category = Category.CASINO;
+        this.example = "Who will marry first";
     }
-
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
