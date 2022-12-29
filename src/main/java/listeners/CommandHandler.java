@@ -87,6 +87,7 @@ public class CommandHandler {
         registerCommand(new Arguments());
         registerCommand(new Ping(gameCompanion));
         registerCommands(new Blackbox(gameCompanion), new EndBlackbox(gameCompanion));
+        registerCommand(new Level());
         help.setCommands(commands);
     }
 

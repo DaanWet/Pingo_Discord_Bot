@@ -88,7 +88,9 @@ public class GeneralDataHandler extends DataHandler {
             stmn.setLong(1, guildID);
             stmn.setLong(2, userId);
             try (ResultSet set = stmn.executeQuery()) {
-                return set.getInt("Experience");
+                if (set.next()){
+                    return set.getInt("Experience");
+                }
             }
         } catch (SQLException throwables){
             throwables.printStackTrace();
@@ -102,7 +104,9 @@ public class GeneralDataHandler extends DataHandler {
             stmn.setLong(1, guildId);
             stmn.setLong(2, userId);
             try (ResultSet set = stmn.executeQuery()) {
-                return set.getInt("Experience");
+                if (set.next()){
+                    return set.getInt("Experience");
+                }
             }
         } catch (SQLException throwables){
             throwables.printStackTrace();

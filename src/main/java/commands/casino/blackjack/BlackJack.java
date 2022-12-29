@@ -5,6 +5,7 @@ import commands.settings.Setting;
 import companions.GameCompanion;
 import companions.cardgames.BlackJackGame;
 import data.handlers.CreditDataHandler;
+import data.handlers.GeneralDataHandler;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -69,7 +70,10 @@ public class BlackJack extends BCommand {
             gameCompanion.putBlackJackGame(guildId, playerId, bjg);
         } else {
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
-            eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);
+            int xp = bjg.getWonXP();
+            if (xp > 0)
+                new GeneralDataHandler().addXP(guildId, playerId, xp);
+            eb.addField(language.getString("credit.name"), language.getString("credit.new", credits) + "\n" + language.getString("xp.new", xp), false);
         }
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());

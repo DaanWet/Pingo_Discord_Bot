@@ -197,6 +197,14 @@ public class BlackJackGame {
     public int getWonCreds(){
         return ((Double) (bet * endstate.reward + (hasSplit ? secondbet * secondEndstate.reward : 0))).intValue();
     }
+    public int getWonXP(){
+        int xp = Utils.getGameXP(this.bet);
+        int xp2 = Utils.getGameXP(this.secondbet);
+        xp = endstate.reward > 0 ? xp : Math.min(xp, 1);
+        if (secondEndstate != null)
+            xp2 = secondEndstate.reward > 0 ? xp2 : Math.min(xp2, 1);
+        return xp + xp2;
+    }
 
     public EmbedBuilder buildEmbed(String user, String prefix, MyResourceBundle language){
         MyProperties config = Utils.config;

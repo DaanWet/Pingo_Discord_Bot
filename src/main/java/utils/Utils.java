@@ -4,6 +4,7 @@ import commands.settings.Setting;
 import companions.uno.UnoGame;
 import data.handlers.SettingsDataHandler;
 
+import java.awt.*;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -12,7 +13,7 @@ public class Utils {
 
     public static MyProperties config;
     private static Map<Locale, ResourceBundle> locales;
-
+    public static PieceWiseFunction piecewise;
     public static boolean isInteger(String s){
         if (s == null){
             return false;
@@ -129,6 +130,40 @@ public class Utils {
     public static void loadProperties() throws Exception{
         config = new MyProperties();
         config.load(new InputStreamReader(Utils.class.getClassLoader().getResourceAsStream("config.properties"), StandardCharsets.UTF_8));
+        piecewise = new PieceWiseFunction(9, 1.06, 2, 30);
+    }
+
+
+    private static Point p1 = new Point(500, 3);
+    private static Point p2 = new Point(5000, 4);
+    private static Point p3  = new Point(10000, 5);
+    private static Point p4 = new Point(100000, 12);
+    private static Point p5 = new Point(1000000, 25);
+    public static int getGameXP(int credits){
+        int i = 0;
+        if (credits > p5.x){
+            i = p5.y;
+        } else if (credits > p4.x){
+            i = (int) formula(p4, p5, credits, true);
+        } else if (credits > p3.x){
+            i = (int) formula(p3, p4, credits, false);
+        } else if (credits > p2.x){
+            i = (int) formula(p2, p3, credits, false);
+        } else if (credits > p1.x){
+            i = (int) formula(p4, p1, credits, false);
+        }
+        return i;
+    }
+
+    private static double formula(Point p1, Point p2, int cr, boolean round){
+        double x = ((float)p2.y-p1.y)/(p2.x-p1.x)*(cr - p1.x) + p1.y;
+        return round ? Math.round(x) : Math.floor(x);
+    }
+    public static int getXP(int level){
+        return (int) Math.ceil(piecewise.integrate(level));
+    }
+    public static int getLevel(int xp){
+        return (int)Math.floor(piecewise.solveForX(xp));
     }
 
 }

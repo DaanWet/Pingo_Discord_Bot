@@ -6,6 +6,7 @@ import companions.GameCompanion;
 import companions.Record;
 import companions.cardgames.BlackJackGame;
 import data.handlers.CreditDataHandler;
+import data.handlers.GeneralDataHandler;
 import data.handlers.RecordDataHandler;
 import data.handlers.SettingsDataHandler;
 import data.models.RecordData;
@@ -33,8 +34,11 @@ public abstract class BCommand extends Command {
             EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName(), prefix, language);
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
+                int xp = bjg.getWonXP();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);
-                eb.addField(language.getString("credit.name"), language.getString("credit.new", credits), false);
+                if (xp > 0)
+                    new GeneralDataHandler().addXP(guildId, id, xp);
+                eb.addField(language.getString("credit.name"), language.getString("credit.new", credits) + "\n" + language.getString("xp.new", xp), false);
                 updateRecords(guildId, id, won_lose, m.getJumpUrl());
             }
             m.editMessageEmbeds(eb.build()).queue();
