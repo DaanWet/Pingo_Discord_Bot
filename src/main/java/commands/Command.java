@@ -2,10 +2,12 @@ package commands;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import data.handlers.GeneralDataHandler;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.StringUtils;
@@ -193,4 +195,18 @@ public abstract class Command {
     protected MyResourceBundle getLanguage(GuildMessageReceivedEvent e){
         return Utils.getLanguage(e.getGuild().getIdLong());
     }
+
+    protected void checkAchievements(TextChannel textChannel, long userId){
+
+    }
+
+    protected void checkLevel(TextChannel textChannel, Member member, int startXP, int endXP){
+        int startLevel = Utils.getLevel(startXP);
+        int endLevel = Utils.getLevel(endXP);
+        while(startLevel < endLevel){
+            startLevel++;
+            textChannel.sendMessage(String.format("Good job %s! You andvanced to level %d", member.getAsMention(), startLevel)).queue();
+        }
+    }
+
 }

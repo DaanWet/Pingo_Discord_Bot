@@ -32,16 +32,26 @@ public abstract class BCommand extends Command {
         e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
             String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
             EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName(), prefix, language);
+            int startXP = 0;
+            int endXP = 0;
+            int xp = 0;
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
-                int xp = bjg.getWonXP();
+                xp = bjg.getWonXP();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);
-                if (xp > 0)
-                    new GeneralDataHandler().addXP(guildId, id, xp);
+                if (xp > 0){
+                    GeneralDataHandler handler = new GeneralDataHandler();
+                    startXP = handler.getXP(guildId, id);
+                    endXP = handler.addXP(guildId, id, xp);
+                }
+
                 eb.addField(language.getString("credit.name"), language.getString("credit.new", credits) + "\n" + language.getString("xp.new", xp), false);
                 updateRecords(guildId, id, won_lose, m.getJumpUrl());
             }
+
             m.editMessageEmbeds(eb.build()).queue();
+            if (xp > 0)
+                checkLevel(m.getTextChannel(), e.getMember(), startXP, endXP);
         });
     }
 

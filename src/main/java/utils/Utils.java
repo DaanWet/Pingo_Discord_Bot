@@ -141,15 +141,15 @@ public class Utils {
     private static Point p5 = new Point(1000000, 25);
     public static int getGameXP(int credits){
         int i = 0;
-        if (credits > p5.x){
+        if (credits >= p5.x){
             i = p5.y;
-        } else if (credits > p4.x){
+        } else if (credits >= p4.x){
             i = (int) formula(p4, p5, credits, true);
-        } else if (credits > p3.x){
+        } else if (credits >= p3.x){
             i = (int) formula(p3, p4, credits, false);
-        } else if (credits > p2.x){
+        } else if (credits >= p2.x){
             i = (int) formula(p2, p3, credits, false);
-        } else if (credits > p1.x){
+        } else if (credits >= p1.x){
             i = (int) formula(p4, p1, credits, false);
         }
         return i;

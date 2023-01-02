@@ -66,13 +66,19 @@ public class BlackJack extends BCommand {
         settingDH.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
         String prefix = settingDH.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix, language);
+        int xp = 0;
+        int startXP = 0;
+        int endXP = 0;
         if (!bjg.hasEnded()){
             gameCompanion.putBlackJackGame(guildId, playerId, bjg);
         } else {
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
-            int xp = bjg.getWonXP();
-            if (xp > 0)
-                new GeneralDataHandler().addXP(guildId, playerId, xp);
+            xp = bjg.getWonXP();
+            if (xp > 0){
+                GeneralDataHandler handler = new GeneralDataHandler();
+                startXP = handler.getXP(guildId, playerId);
+                endXP = handler.addXP(guildId, playerId, xp);
+            }
             eb.addField(language.getString("credit.name"), language.getString("credit.new", credits) + "\n" + language.getString("xp.new", xp), false);
         }
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
@@ -80,5 +86,7 @@ public class BlackJack extends BCommand {
             else
                 updateRecords(guildId, playerId, bjg.getWonCreds(), m.getJumpUrl());
         });
+        if (xp > 0)
+            checkLevel(e.getChannel(), e.getMember(), startXP, endXP);
     }
 }
