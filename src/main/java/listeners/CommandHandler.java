@@ -57,7 +57,7 @@ public class CommandHandler {
         registerCommand(new RoleAssign());
         registerCommand(new AddRoleAssign());
         registerCommand(new RemoveRoleAssign());
-        registerCommand(new CollectCredits());
+        registerCommand(new CollectEventCredits());
         registerCommand(new Weekly());
         registerCommand(new ShowCredits(dataCompanion));
         registerCommand(new BlackJack(gameCompanion));
@@ -87,7 +87,7 @@ public class CommandHandler {
         registerCommand(new Arguments());
         registerCommand(new Ping(gameCompanion));
         registerCommands(new Blackbox(gameCompanion), new EndBlackbox(gameCompanion));
-        registerCommand(new Level());
+        registerCommand(new Level(dataCompanion));
         help.setCommands(commands);
     }
 

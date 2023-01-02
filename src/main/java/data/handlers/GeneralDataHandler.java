@@ -117,7 +117,7 @@ public class GeneralDataHandler extends DataHandler {
     public HashMap<Long, Integer> getAllXp(long guildId){
         HashMap<Long, Integer> map = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stmn = conn.prepareStatement("SELECT Experience, UserId FROM Member WHERE GuildId = ?")) {
+             PreparedStatement stmn = conn.prepareStatement("SELECT Experience, UserId FROM Member WHERE GuildId = ? AND Experience != 0 ORDER BY Experience DESC")) {
             stmn.setLong(1, guildId);
             try (ResultSet set = stmn.executeQuery()) {
                 while (set.next()){
@@ -129,6 +129,26 @@ public class GeneralDataHandler extends DataHandler {
         }
         return map;
     }
+
+    public HashMap<Long, Integer> getAllXp(){
+        HashMap<Long, Integer> map = new HashMap<>();
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stmn = conn.prepareStatement("SELECT Experience, UserId FROM Member WHERE Experience != 0 ORDER BY Experience DESC")) {
+            try (ResultSet set = stmn.executeQuery()) {
+                while (set.next()){
+                    if (!map.containsKey(set.getLong("UserId")))
+                        map.put(set.getLong("UserId"), set.getInt("Experience"));
+                }
+            }
+        } catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        return map;
+    }
+
+
+
+
 
     //</editor-fold>
     public PrettyTable executeQuery(String query){
