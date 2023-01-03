@@ -66,27 +66,30 @@ public class BlackJack extends BCommand {
         settingDH.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
         String prefix = settingDH.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix, language);
+        GeneralDataHandler handler = new GeneralDataHandler();
         int xp = 0;
-        int startXP = 0;
-        int endXP = 0;
-        if (!bjg.hasEnded()){
-            gameCompanion.putBlackJackGame(guildId, playerId, bjg);
-        } else {
+        int startXP = handler.getXP(guildId, playerId);;
+        int endXP = handler.getXP(guildId, playerId);;
+        gameCompanion.putBlackJackGame(guildId, playerId, bjg);
+        if (bjg.hasEnded()){
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
             xp = bjg.getWonXP();
             if (xp > 0){
-                GeneralDataHandler handler = new GeneralDataHandler();
-                startXP = handler.getXP(guildId, playerId);
                 endXP = handler.addXP(guildId, playerId, xp);
             }
             eb.addField(language.getString("credit.name"), language.getString("credit.new", credits) + "\n" + language.getString("xp.new", xp), false);
         }
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
-            if (!bjg.hasEnded()) bjg.setMessageId(m.getIdLong());
-            else
+            bjg.setMessageId(m.getIdLong());
+            if (bjg.hasEnded())
                 updateRecords(guildId, playerId, bjg.getWonCreds(), m.getJumpUrl());
         });
-        if (xp > 0)
+        if (bjg.hasEnded()){
             checkLevel(e.getChannel(), e.getMember(), startXP, endXP);
+            //checkAchievements(e.getChannel(), id, gameCompanion);
+            gameCompanion.removeBlackJackGame(guildId, playerId);
+            //checkLevel(m.getTextChannel(), e.getMember(), endXP, handler.getXP(guildId, id)); //TODO change this ??
+        }
+
     }
 }

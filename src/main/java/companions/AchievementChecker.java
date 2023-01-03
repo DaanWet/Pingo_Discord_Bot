@@ -10,7 +10,6 @@ public interface AchievementChecker {
 
     boolean isAchieved(long guildId, long userId, GameCompanion gameCompanion);
 
-
     class Balance implements AchievementChecker{
 
         private final int amount;
@@ -68,6 +67,8 @@ public interface AchievementChecker {
 
         @Override
         public boolean isAchieved(long guildId, long userId, GameCompanion gameCompanion){
+            if (gameCompanion == null)
+                return false;
             BlackJackGame game = gameCompanion.getBlackJackGame(guildId, userId);
             if (game == null)
                 return false;

@@ -4,6 +4,7 @@ import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
 import data.handlers.CreditDataHandler;
+import data.handlers.GeneralDataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
@@ -29,13 +30,14 @@ public class Weekly extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
+        long guildId = e.getGuild().getIdLong();
+        MyResourceBundle language = Utils.getLanguage(guildId);
         if (args.length != 0)
-            throw new MessageException(this.getUsage(e.getGuild().getIdLong()));
+            throw new MessageException(this.getUsage(guildId));
 
         CreditDataHandler dataHandler = new CreditDataHandler();
         long id = e.getAuthor().getIdLong();
-        LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
+        LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(guildId, id);
         if (latestcollect != null && !LocalDateTime.now().minusDays(7).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(7);
             LocalDateTime now = LocalDateTime.now();
@@ -45,9 +47,14 @@ public class Weekly extends Command {
             throw new MessageException(language.getString("weekly.wait", days, hours, minutes));
         }
         int weekly = (int) Utils.config.get("weekly");
-        int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, weekly);
-        dataHandler.setLatestWeekCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
+        int creds = dataHandler.addCredits(guildId, id, weekly);
+        dataHandler.setLatestWeekCollect(guildId, id, LocalDateTime.now());
         e.getChannel().sendMessage(language.getString("weekly.success", weekly, creds)).queue();
+        GeneralDataHandler handler = new GeneralDataHandler();
+        int startXP = handler.getXP(guildId, id);
+        //checkAchievements(e.getChannel(), id);
+        int endXp = handler.getXP(guildId, id);
+        checkLevel(e.getChannel(), e.getMember(), startXP, endXp);
 
     }
 }

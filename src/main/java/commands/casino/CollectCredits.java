@@ -3,7 +3,9 @@ package commands.casino;
 import commands.Command;
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import companions.GameCompanion;
 import data.handlers.CreditDataHandler;
+import data.handlers.GeneralDataHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import utils.MessageException;
@@ -30,13 +32,13 @@ public class CollectCredits extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
+        long guildId = e.getGuild().getIdLong();
         if (args.length != 0)
-            throw new MessageException(this.getUsage(e.getGuild().getIdLong()));
-
+            throw new MessageException(this.getUsage(guildId));
         long id = e.getAuthor().getIdLong();
         CreditDataHandler dataHandler = new CreditDataHandler();
-        LocalDateTime latestcollect = dataHandler.getLatestCollect(e.getGuild().getIdLong(), id);
-        MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
+        LocalDateTime latestcollect = dataHandler.getLatestCollect(guildId, id);
+        MyResourceBundle language = Utils.getLanguage(guildId);
         if (latestcollect != null && !LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(1);
             LocalDateTime temp = LocalDateTime.now();
@@ -45,9 +47,13 @@ public class CollectCredits extends Command {
             throw new MessageException(language.getString("daily.wait", hours, minutes));
         }
         int daily = (int) Utils.config.get("daily");
-        int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, daily);
-        dataHandler.setLatestCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
+        int creds = dataHandler.addCredits(guildId, id, daily);
+        dataHandler.setLatestCollect(guildId, id, LocalDateTime.now());
         e.getChannel().sendMessage(language.getString("daily.success", daily, creds)).queue();
-
+        GeneralDataHandler handler = new GeneralDataHandler();
+        int startXP = handler.getXP(guildId, id);
+        //checkAchievements(e.getChannel(), id);
+        int endXp = handler.getXP(guildId, id);
+        checkLevel(e.getChannel(), e.getMember(), startXP, endXp);
     }
 }

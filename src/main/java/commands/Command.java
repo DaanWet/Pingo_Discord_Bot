@@ -4,6 +4,7 @@ import commands.settings.CommandState;
 import commands.settings.Setting;
 import companions.Achievement;
 import companions.GameCompanion;
+import data.handlers.AchievementHandler;
 import data.handlers.GeneralDataHandler;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,6 +14,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.MDC;
+import org.w3c.dom.Text;
 import utils.MyResourceBundle;
 import utils.Utils;
 
@@ -198,10 +201,23 @@ public abstract class Command {
         return Utils.getLanguage(e.getGuild().getIdLong());
     }
 
+    protected void checkAchievements(TextChannel textChannel, long userId){
+        checkAchievements(textChannel, userId, null);
+    }
+
     protected void checkAchievements(TextChannel textChannel, long userId, GameCompanion gameCompanion){
+        long guildId = textChannel.getGuild().getIdLong();
+        MyResourceBundle language = Utils.getLanguage(guildId);
+        AchievementHandler handler = new AchievementHandler();
         for (Achievement achievement : Achievement.values()){
-            if (achievement.isAchieved(textChannel.getGuild().getIdLong(), userId, gameCompanion)){
+            if (achievement.isAchieved(guildId, userId, gameCompanion)){
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setTitle(String.format("Congratulations %s, you achieved:", textChannel.getGuild().getMemberById(userId).getEffectiveName()));
+                eb.addField(language.getString(achievement.getTitle()), String.format("%s - %d XP", language.getString(achievement.getDescription()), achievement.getReward()), false);
+                eb.setColor(textChannel.getGuild().getSelfMember().getColor());
+                textChannel.sendMessageEmbeds(eb.build()).queue();
                 // notify
+                //handler.setAchieved(guildId, userId, achievement);
             }
         }
     }

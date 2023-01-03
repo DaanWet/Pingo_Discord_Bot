@@ -79,4 +79,4 @@ CREATE TABLE IF NOT EXISTS UserAchievement
     Achieved BOOLEAN DEFAULT FALSE,
     Time TIMESTAMP,
     PRIMARY KEY (GuildId, UserId, Achievement)
-)
+);

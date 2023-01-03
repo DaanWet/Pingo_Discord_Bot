@@ -10,8 +10,12 @@ import data.handlers.GeneralDataHandler;
 import data.handlers.RecordDataHandler;
 import data.handlers.SettingsDataHandler;
 import data.models.RecordData;
+import listeners.MessageListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+import utils.MessageException;
 import utils.MyResourceBundle;
 
 public abstract class BCommand extends Command {
@@ -24,23 +28,21 @@ public abstract class BCommand extends Command {
         this.hidden = true;
     }
 
-    protected void updateMessage(GuildMessageReceivedEvent e, BlackJackGame bjg, CreditDataHandler dataHandler, MyResourceBundle language){
+    protected void updateMessage(GuildMessageReceivedEvent e, BlackJackGame bjg, CreditDataHandler dataHandler, MyResourceBundle language) throws Exception{
         long guildId = e.getGuild().getIdLong();
         long id = e.getAuthor().getIdLong();
-        if (bjg.hasEnded())
-            gameCompanion.removeBlackJackGame(guildId, id);
         e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
             String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
             EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName(), prefix, language);
-            int startXP = 0;
-            int endXP = 0;
+            GeneralDataHandler handler = new GeneralDataHandler();
+            int startXP = handler.getXP(guildId, id);
+            int endXP = handler.getXP(guildId, id);
             int xp = 0;
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
                 xp = bjg.getWonXP();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);
                 if (xp > 0){
-                    GeneralDataHandler handler = new GeneralDataHandler();
                     startXP = handler.getXP(guildId, id);
                     endXP = handler.addXP(guildId, id, xp);
                 }
@@ -50,8 +52,12 @@ public abstract class BCommand extends Command {
             }
 
             m.editMessageEmbeds(eb.build()).queue();
-            if (xp > 0)
+            if (bjg.hasEnded()){
                 checkLevel(m.getTextChannel(), e.getMember(), startXP, endXP);
+                //checkAchievements(e.getChannel(), id, gameCompanion);
+                gameCompanion.removeBlackJackGame(guildId, id);
+                //checkLevel(m.getTextChannel(), e.getMember(), endXP, handler.getXP(guildId, id)); //TODO change this ??
+            }
         });
     }
 

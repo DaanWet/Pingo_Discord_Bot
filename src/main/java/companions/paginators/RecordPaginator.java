@@ -27,7 +27,7 @@ public class RecordPaginator extends EmbedPaginator {
         EmbedBuilder eb = new EmbedBuilder();
         ArrayList<RecordData> records = guildId == null ? dataHandler.getRecords(record) : dataHandler.getRecords(guildId, record);
         MyResourceBundle language = Utils.getLanguage(guild);
-        eb.setTitle(language.getString(guildId == null ? "record.leaderboard.global" : "record.leaderboard.title", record.getDisplay(language)));
+        eb.setTitle(language.getString(guildId == null ? "leaderboard.record.global" : "leaderboard.record.title", record.getDisplay(language)));
         StringBuilder sb = new StringBuilder();
         int size = records.size();
         int maxpage = ((size - 1) / 10) + 1;

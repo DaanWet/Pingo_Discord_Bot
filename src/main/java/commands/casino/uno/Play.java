@@ -7,6 +7,7 @@ import companions.uno.UnoGame;
 import companions.uno.UnoHand;
 import data.ImageHandler;
 import data.handlers.CreditDataHandler;
+import data.handlers.GeneralDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -112,15 +113,21 @@ public class Play extends Command {
                     } else {
                         EmbedBuilder eb2 = new EmbedBuilder();
                         int size = hands.size() - 1;
-                        int credits = unoGame.getBet() == 0 ? 200 * size : unoGame.getBet() * size;
-                        eb2.setTitle(language.getString("uno.win.you", card, credits));
+                        int credits = (200+ unoGame.getBet()) * size;
+                        int xp = 10 + size *2;
+                        eb2.setTitle(language.getString("uno.win.you", card, credits, xp));
                         dataHandler.addCredits(guild.getIdLong(), player, credits);
+                        GeneralDataHandler genHandler = new GeneralDataHandler();
+                        int startxp = genHandler.getXP(guild.getIdLong(), player);
+                        int endXP = genHandler.addXP(guild.getIdLong(), player, xp);
                         channel.sendMessageEmbeds(eb2.build()).queue();
                         guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
                             EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));
                             eb.setTitle(language.getString("uno.end"));
                             eb.setDescription(language.getString("uno.win.short", hand.getPlayerName(), credits));
                             m.editMessageEmbeds(eb.build()).queue();
+                            //checkAchievements(m.getTextChannel(), player, gameCompanion);
+                            checkLevel(m.getTextChannel(), guild.getMemberById(player), startxp, endXP);
                         });
                         channel.delete().queueAfter((int) config.get("uno.timeout"), TimeUnit.MINUTES);
 
