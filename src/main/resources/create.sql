@@ -71,3 +71,12 @@ CREATE TABLE IF NOT EXISTS Cooldown
     PRIMARY KEY (GuildId, UserId, Setting),
     FOREIGN KEY (Setting) REFERENCES Setting (ID)
 );
+CREATE TABLE IF NOT EXISTS UserAchievement
+(
+    GuildId BIGINT NOT NULL,
+    UserId BIGINT NOT NULL,
+    Achievement VARCHAR(50),
+    Achieved BOOLEAN DEFAULT FALSE,
+    Time TIMESTAMP,
+    PRIMARY KEY (GuildId, UserId, Achievement)
+)

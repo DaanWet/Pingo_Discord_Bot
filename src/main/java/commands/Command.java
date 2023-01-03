@@ -2,6 +2,8 @@ package commands;
 
 import commands.settings.CommandState;
 import commands.settings.Setting;
+import companions.Achievement;
+import companions.GameCompanion;
 import data.handlers.GeneralDataHandler;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -196,8 +198,12 @@ public abstract class Command {
         return Utils.getLanguage(e.getGuild().getIdLong());
     }
 
-    protected void checkAchievements(TextChannel textChannel, long userId){
-
+    protected void checkAchievements(TextChannel textChannel, long userId, GameCompanion gameCompanion){
+        for (Achievement achievement : Achievement.values()){
+            if (achievement.isAchieved(textChannel.getGuild().getIdLong(), userId, gameCompanion)){
+                // notify
+            }
+        }
     }
 
     protected void checkLevel(TextChannel textChannel, Member member, int startXP, int endXP){
