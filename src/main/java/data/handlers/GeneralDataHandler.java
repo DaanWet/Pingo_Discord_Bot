@@ -1,6 +1,7 @@
 package data.handlers;
 
 
+import commands.Command;
 import commands.settings.Setting;
 import org.hsqldb.cmdline.SqlFile;
 import org.hsqldb.cmdline.SqlToolError;
@@ -78,6 +79,8 @@ public class GeneralDataHandler extends DataHandler {
     }
 
     public int addXP(long guildID, long userId, int xp){
+        if (!Command.betaGuilds.contains(guildID))
+            return -1;
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("UPDATE Member SET Experience = Experience + ? WHERE GuildId = ? AND UserId = ?");
              PreparedStatement stmn = conn.prepareStatement("SELECT Experience FROM Member WHERE GuildId = ? AND UserId = ?")) {

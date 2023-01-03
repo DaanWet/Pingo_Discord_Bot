@@ -44,7 +44,8 @@ public class XPPaginator extends EmbedPaginator{
             sb.append("`").append(i + 1).append(i >= 9 ? ".`  " : ". `  ")
                     .append("<@!")
                     .append(sorted.get(i).getKey())
-                    .append(">  **: ").append(sorted.get(i).getValue()).append("xp**\n");
+                    .append(">  **: ").append(sorted.get(i).getValue()).append("xp** (lvl ")
+                    .append(Utils.getLevel(sorted.get(i).getValue())).append(")\n");
 
         }
         eb.setDescription(sb.toString());

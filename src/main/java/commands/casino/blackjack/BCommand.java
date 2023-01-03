@@ -42,12 +42,14 @@ public abstract class BCommand extends Command {
                 int won_lose = bjg.getWonCreds();
                 xp = bjg.getWonXP();
                 int credits = dataHandler.addCredits(guildId, id, won_lose);
-                if (xp > 0){
+                if (xp > 0 && canBeta(guildId)){
                     startXP = handler.getXP(guildId, id);
                     endXP = handler.addXP(guildId, id, xp);
                 }
-
-                eb.addField(language.getString("credit.name"), language.getString("credit.new", credits) + "\n" + language.getString("xp.new", xp), false);
+                String desc = language.getString("credit.new", credits) + "\n";
+                if (betaGuilds.contains(guildId))
+                    desc += language.getString("xp.new", xp);
+                eb.addField(language.getString("credit.name"), desc, false);
                 updateRecords(guildId, id, won_lose, m.getJumpUrl());
             }
 

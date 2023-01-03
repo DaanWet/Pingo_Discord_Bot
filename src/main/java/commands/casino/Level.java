@@ -23,6 +23,7 @@ public class Level extends Command {
         this.arguments = new String[]{"[**top**|**global**]"};
         this.category = Category.OTHER;
         this.handler = handler;
+        this.beta = true;
     }
 
 

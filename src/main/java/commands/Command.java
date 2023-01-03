@@ -20,6 +20,7 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Command {
@@ -53,7 +54,8 @@ public abstract class Command {
     protected String example = "";
     protected boolean hidden = false;
     protected long priveligedGuild = -1;
-
+    public static List<Long> betaGuilds = List.of(203572340280262657L, 764196816517464084L, 572022353421271042L);
+    protected boolean beta = false;
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
     protected CommandState canBeExecuted(long guildId, long channelId, Member member, Setting setting){
@@ -150,6 +152,14 @@ public abstract class Command {
         return priveligedGuild;
     }
 
+    public boolean isBeta(){
+        return beta;
+    }
+
+    public boolean canBeta(long guildId){
+        return betaGuilds.contains(guildId);
+    }
+
 
     public String getUsage(long guildId){
         MyResourceBundle language = Utils.getLanguage(guildId);
@@ -202,10 +212,13 @@ public abstract class Command {
     }
 
     protected void checkAchievements(TextChannel textChannel, long userId){
-        checkAchievements(textChannel, userId, null);
+        if (betaGuilds.contains(textChannel.getGuild().getIdLong()))
+            checkAchievements(textChannel, userId, null);
     }
 
     protected void checkAchievements(TextChannel textChannel, long userId, GameCompanion gameCompanion){
+        if (!betaGuilds.contains(textChannel.getGuild().getIdLong()))
+            return;
         long guildId = textChannel.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
         AchievementHandler handler = new AchievementHandler();
@@ -223,6 +236,8 @@ public abstract class Command {
     }
 
     protected void checkLevel(TextChannel textChannel, Member member, int startXP, int endXP){
+        if (!betaGuilds.contains(textChannel.getGuild().getIdLong()))
+            return;
         int startLevel = Utils.getLevel(startXP);
         int endLevel = Utils.getLevel(endXP);
         while(startLevel < endLevel){

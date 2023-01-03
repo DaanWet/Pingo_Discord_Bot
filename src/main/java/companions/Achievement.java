@@ -4,7 +4,7 @@ import data.handlers.AchievementHandler;
 import data.handlers.CreditDataHandler;
 
 public enum Achievement {
-    BALANCE_10K(new AchievementChecker.Balance(10000), 1, "achievement.balance.10K", "achievement.balance.10K.desc", false),
+    BALANCE_10K(new AchievementChecker.Balance(10000), 5, "achievement.balance.10K", "achievement.balance.10K.desc", false),
     BALANCE_100K(new AchievementChecker.Balance(100000), 1, "achievement.balance.100K", "achievement.balance.100K.desc", false),
     BALANCE_1M(new AchievementChecker.Balance(1000000), 1, "achievement.balance.1M", "achievement.balance.1M.desc", false),
     BALANCE_10M(new AchievementChecker.Balance(10000000), 1, "achievement.balance.10M", "achievement.balance.10M.desc", false),

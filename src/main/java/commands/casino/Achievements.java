@@ -15,6 +15,7 @@ public class Achievements extends Command {
         this.name = "achievements";
         this.description = "achievements.description";
         this.category = Category.OTHER;
+        this.beta = true;
     }
 
     @Override

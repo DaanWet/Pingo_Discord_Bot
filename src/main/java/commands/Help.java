@@ -59,7 +59,7 @@ public class Help extends Command {
                 Iterator<Command> iterator = commands.iterator();
                 while (!found && iterator.hasNext()){
                     Command command = iterator.next();
-                    if (command.isCommandFor(args[0])){
+                    if (command.isCommandFor(args[0]) && (!command.isBeta() || command.canBeta(e.getGuild().getIdLong()))){
                         eb = command.getHelp(eb, language, prefix);
                         found = true;
                     }
@@ -85,7 +85,7 @@ public class Help extends Command {
         MyProperties config = Utils.config;
         for (Command c : commands){
             Category cat = c.getCategory();
-            if ((cat == null || ((!c.isHidden() && cat == Category.MODERATION == moderation))) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == guildId)){
+            if ((cat == null || ((!c.isHidden() && cat == Category.MODERATION == moderation))) && (c.getPriveligedGuild() == -1 || c.getPriveligedGuild() == guildId) && (!c.isBeta() || c.canBeta(guildId))){
                 if (!sbs.containsKey(cat)){
                     sbs.put(cat, new StringBuilder());
                 }

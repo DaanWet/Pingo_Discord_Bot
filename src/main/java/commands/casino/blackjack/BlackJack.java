@@ -74,10 +74,13 @@ public class BlackJack extends BCommand {
         if (bjg.hasEnded()){
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
             xp = bjg.getWonXP();
-            if (xp > 0){
+            if (xp > 0 && canBeta(guildId)){
                 endXP = handler.addXP(guildId, playerId, xp);
             }
-            eb.addField(language.getString("credit.name"), language.getString("credit.new", credits) + "\n" + language.getString("xp.new", xp), false);
+            String desc = language.getString("credit.new", credits) + "\n";
+            if (betaGuilds.contains(guildId))
+                desc += language.getString("xp.new", xp);
+            eb.addField(language.getString("credit.name"), desc, false);
         }
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             bjg.setMessageId(m.getIdLong());
