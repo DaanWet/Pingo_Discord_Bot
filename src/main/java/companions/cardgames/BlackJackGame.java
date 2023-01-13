@@ -47,14 +47,18 @@ public class BlackJackGame {
     private int secondbet;
     private boolean firsthand;
     private boolean hasSplit;
+    private int level;
+    private boolean beta;
 
-    public BlackJackGame(int bet){
+    public BlackJackGame(int bet, int level, boolean beta){
         hasEnded = false;
         firsthand = true;
         hasSplit = false;
         deck = new ArrayList<>();
         this.bet = bet;
         secondbet = 0;
+        this.level = level;
+        this.beta = beta;
         playerHand = new BlackJackHand();
         dealerHand = new BlackJackHand();
         secondPlayerHand = new BlackJackHand();
@@ -195,8 +199,13 @@ public class BlackJackGame {
     }
 
     public int getWonCreds(){
-        return ((Double) (bet * endstate.reward + (hasSplit ? secondbet * secondEndstate.reward : 0))).intValue();
+        int cred = ((Double) (bet * endstate.reward + (hasSplit ? secondbet * secondEndstate.reward : 0))).intValue();
+        if (beta && cred > 0){
+            cred = (int) Math.round(cred * Utils.getBoost(level));
+        }
+        return cred;
     }
+
     public int getWonXP(){
         int xp = Utils.getGameXP(this.bet);
         int xp2 = Utils.getGameXP(this.secondbet);
@@ -204,6 +213,10 @@ public class BlackJackGame {
         if (secondEndstate != null)
             xp2 = secondEndstate.reward > 0 ? xp2 : Math.min(xp2, 1);
         return xp + xp2;
+    }
+
+    private boolean displayBoost(int credits){
+        return beta && Utils.getBoost(level) > 1 && credits > 0;
     }
 
     public EmbedBuilder buildEmbed(String user, String prefix, MyResourceBundle language){
@@ -219,7 +232,8 @@ public class BlackJackGame {
         eb.setColor(Color.BLUE);
         if (hasEnded){
             int credits = getWonCreds();
-            eb.addField(hasSplit ? language.getString("blackjack.end.split", endstate.getDisplay(language), secondEndstate.getDisplay(language)) : language.getString("blackjack.end", endstate.getDisplay(language)), language.getString("blackjack.end.desc", credits), hasSplit);
+            eb.addField(hasSplit ? language.getString("blackjack.end.split", endstate.getDisplay(language), secondEndstate.getDisplay(language)) : language.getString("blackjack.end", endstate.getDisplay(language)),
+                        language.getString("blackjack.end.desc", credits) + (displayBoost(credits) ? String.format(" (x%.2f level boost)", Utils.getBoost(level)): ""), hasSplit);
             eb.setColor(credits > 0 ? Color.GREEN : credits == 0 ? Color.BLUE : Color.RED);
         } else {
             StringBuilder sb = new StringBuilder();

@@ -166,4 +166,11 @@ public class Utils {
         return (int)Math.floor(piecewise.solveForX(xp));
     }
 
+    public static double getBoost(int level){
+        if (level >= 100)
+            return 1.5;
+        return 1 + Math.floor(level/10.0)/100;
+    }
+
+
 }

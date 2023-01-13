@@ -49,6 +49,14 @@ public class Level extends Command {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(e.getMember().getColor());
             eb.addField(String.format("Level %d", currentLevel), progressbar + "\nTotal xp: " + xp, false);
+            double boost = Utils.getBoost(currentLevel);
+            String perks;
+            if (boost > 1){
+                perks = String.format("Blackjack credit boost: x%.2f", boost);
+            } else {
+                perks = "No perks yet";
+            }
+            eb.addField("Perks", perks, false);
             eb.setAuthor(e.getMember().getEffectiveName(), null, e.getAuthor().getAvatarUrl());
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
         } else if (args.length == 1 && args[0].matches("(?i)^(top|global)$")){

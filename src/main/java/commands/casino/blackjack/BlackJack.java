@@ -60,16 +60,16 @@ public class BlackJack extends BCommand {
         BlackJackGame objg = gameCompanion.getBlackJackGame(guildId, playerId);
         if (objg != null)
             throw new MessageException(language.getString("bj.error.playing"));
-
-        BlackJackGame bjg = new BlackJackGame(bet);
+        GeneralDataHandler handler = new GeneralDataHandler();
+        int startXP = handler.getXP(guildId, playerId);
+        int level = Utils.getLevel(startXP);
+        BlackJackGame bjg = new BlackJackGame(bet, level, canBeta(guildId));
         SettingsDataHandler settingDH = new SettingsDataHandler();
         settingDH.setCooldown(guildId, playerId, Setting.BLACKJACK, LocalDateTime.now());
         String prefix = settingDH.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix, language);
-        GeneralDataHandler handler = new GeneralDataHandler();
         int xp = 0;
-        int startXP = handler.getXP(guildId, playerId);;
-        int endXP = handler.getXP(guildId, playerId);;
+        int endXP = handler.getXP(guildId, playerId);
         gameCompanion.putBlackJackGame(guildId, playerId, bjg);
         if (bjg.hasEnded()){
             int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
@@ -78,7 +78,7 @@ public class BlackJack extends BCommand {
                 endXP = handler.addXP(guildId, playerId, xp);
             }
             String desc = language.getString("credit.new", credits) + "\n";
-            if (betaGuilds.contains(guildId))
+            if (canBeta(guildId))
                 desc += language.getString("xp.new", xp);
             eb.addField(language.getString("credit.name"), desc, false);
         }
