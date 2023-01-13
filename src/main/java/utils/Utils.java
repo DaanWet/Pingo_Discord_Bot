@@ -134,7 +134,7 @@ public class Utils {
     }
 
 
-    private static Point p1 = new Point(500, 3);
+    private static Point p1 = new Point(1000, 3);
     private static Point p2 = new Point(5000, 4);
     private static Point p3  = new Point(10000, 5);
     private static Point p4 = new Point(100000, 12);

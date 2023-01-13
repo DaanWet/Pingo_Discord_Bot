@@ -17,7 +17,7 @@ public class Question<T> {
     private boolean ended;
 
     public Question(long userId, String question){
-        this.ID = new Random().nextInt(1000000);
+        this.ID = new Random().nextInt(1000);
         this.userId = userId;
         this.question = question;
         this.answers = new HashMap<>();

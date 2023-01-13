@@ -29,16 +29,27 @@ public class Achievements extends Command {
             int hidden = 0;
             AchievementHandler handler = new AchievementHandler();
             long userId = e.getAuthor().getIdLong();
+            Achievement.Type type = Achievement.values()[0].getType();
+            StringBuilder sb = new StringBuilder();
             for (Achievement achievement : Achievement.values()){
                 if (achievement.isHidden())
                     hidden++;
                 else {
-                    eb.appendDescription(language.getString(achievement.getTitle()));
+                    if (type != achievement.getType()){
+                        eb.addField(type.description, sb.toString(), false);
+                        type = achievement.getType();
+                        sb = new StringBuilder();
+                    }
                     boolean unlocked = handler.hasAchieved(guildId, userId, achievement);
-                    eb.appendDescription(" - ").appendDescription(language.getString(unlocked ? "achievements.unlocked" : "achievements.locked"));
-                    eb.appendDescription("\n");
+                    sb.append(unlocked ? type.emoji : language.getString("achievements.locked")).append(" ").append(language.getString(achievement.getTitle()));
+                    if (unlocked)
+                        sb.append(": ||").append(language.getString(achievement.getDescription())).append("||");
+                    else
+                        sb.append(": ???");
+                    sb.append("\n");
                 }
             }
+            eb.addField(type.description, sb.toString(), false);
             if (hidden > 0)
                 eb.setFooter(language.getString("achievements.embed.hidden", hidden));
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
