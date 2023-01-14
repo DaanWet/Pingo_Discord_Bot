@@ -222,15 +222,17 @@ public abstract class Command {
         long guildId = textChannel.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
         AchievementHandler handler = new AchievementHandler();
+        GeneralDataHandler dataHandler = new GeneralDataHandler();
         for (Achievement achievement : Achievement.values()){
             if (achievement.isAchieved(guildId, userId, gameCompanion)){
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setTitle(String.format("Congratulations %s, you achieved:", textChannel.getGuild().getMemberById(userId).getEffectiveName()));
-                eb.addField(language.getString(achievement.getTitle()), String.format("%s - %d XP", language.getString(achievement.getDescription()), achievement.getReward()), false);
+                eb.addField(language.getString(achievement.getTitle()), String.format("%s - %d XP", language.getString(achievement.getDescription()), achievement.getReward().reward), false);
                 eb.setColor(textChannel.getGuild().getSelfMember().getColor());
                 textChannel.sendMessageEmbeds(eb.build()).queue();
                 // notify
-                //handler.setAchieved(guildId, userId, achievement);
+                handler.setAchieved(guildId, userId, achievement);
+                dataHandler.addXP(guildId, userId, achievement.getReward().reward);
             }
         }
     }

@@ -52,7 +52,7 @@ public class CollectCredits extends Command {
         e.getChannel().sendMessage(language.getString("daily.success", daily, creds)).queue();
         GeneralDataHandler handler = new GeneralDataHandler();
         int startXP = handler.getXP(guildId, id);
-        //checkAchievements(e.getChannel(), id);
+        checkAchievements(e.getChannel(), id);
         int endXp = handler.getXP(guildId, id);
         checkLevel(e.getChannel(), e.getMember(), startXP, endXp);
     }

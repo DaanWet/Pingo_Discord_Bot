@@ -56,9 +56,9 @@ public abstract class BCommand extends Command {
             m.editMessageEmbeds(eb.build()).queue();
             if (bjg.hasEnded()){
                 checkLevel(m.getTextChannel(), e.getMember(), startXP, endXP);
-                //checkAchievements(e.getChannel(), id, gameCompanion);
+                checkAchievements(e.getChannel(), id, gameCompanion);
                 gameCompanion.removeBlackJackGame(guildId, id);
-                //checkLevel(m.getTextChannel(), e.getMember(), endXP, handler.getXP(guildId, id)); //TODO change this ??
+                checkLevel(m.getTextChannel(), e.getMember(), endXP, handler.getXP(guildId, id)); //TODO change this ??
             }
         });
     }

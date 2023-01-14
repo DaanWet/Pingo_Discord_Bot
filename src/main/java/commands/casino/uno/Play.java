@@ -126,7 +126,7 @@ public class Play extends Command {
                             eb.setTitle(language.getString("uno.end"));
                             eb.setDescription(language.getString("uno.win.short", hand.getPlayerName(), credits));
                             m.editMessageEmbeds(eb.build()).queue();
-                            //checkAchievements(m.getTextChannel(), player, gameCompanion);
+                            checkAchievements(m.getTextChannel(), player, gameCompanion);
                             checkLevel(m.getTextChannel(), guild.getMemberById(player), startxp, endXP);
                         });
                         channel.delete().queueAfter((int) config.get("uno.timeout"), TimeUnit.MINUTES);

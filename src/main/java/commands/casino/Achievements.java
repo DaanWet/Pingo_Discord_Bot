@@ -27,31 +27,43 @@ public class Achievements extends Command {
             eb.setTitle(language.getString("achievements.embed.title", e.getMember().getEffectiveName()));
             eb.setColor(e.getMember().getColor());
             int hidden = 0;
+            int more = -1;
             AchievementHandler handler = new AchievementHandler();
             long userId = e.getAuthor().getIdLong();
             Achievement.Type type = Achievement.values()[0].getType();
             StringBuilder sb = new StringBuilder();
             for (Achievement achievement : Achievement.values()){
-                if (achievement.isHidden())
+                if (type != achievement.getType()){
+                    if (hidden + more > 0)
+                        sb.append(language.getString("achievements.embed.hidden", hidden + more));
+                    hidden = 0;
+                    more = -1;
+                    eb.addField(type.description, sb.toString(), false);
+                    type = achievement.getType();
+                    sb = new StringBuilder();
+                }
+                boolean unlocked = handler.hasAchieved(guildId, userId, achievement);
+                if (achievement.isHidden() && !unlocked){
                     hidden++;
-                else {
-                    if (type != achievement.getType()){
-                        eb.addField(type.description, sb.toString(), false);
-                        type = achievement.getType();
-                        sb = new StringBuilder();
-                    }
-                    boolean unlocked = handler.hasAchieved(guildId, userId, achievement);
+                }
+                if (unlocked || more == -1){
+
+
                     sb.append(unlocked ? type.emoji : language.getString("achievements.locked")).append(" ").append(language.getString(achievement.getTitle()));
                     if (unlocked)
                         sb.append(": ||").append(language.getString(achievement.getDescription())).append("||");
                     else
                         sb.append(": ???");
                     sb.append("\n");
+                    if (!unlocked)
+                        more++;
+                } else {
+                    more++;
                 }
             }
+            if (hidden + more > 0)
+                sb.append(language.getString("achievements.embed.hidden", hidden + more));
             eb.addField(type.description, sb.toString(), false);
-            if (hidden > 0)
-                eb.setFooter(language.getString("achievements.embed.hidden", hidden));
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }

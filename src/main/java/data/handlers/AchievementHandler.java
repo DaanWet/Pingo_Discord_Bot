@@ -13,9 +13,10 @@ public class AchievementHandler extends DataHandler{
 
     public boolean hasAchieved(long guildId, long userId, Achievement achievement){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stmn = conn.prepareStatement("SELECT Achieved FROM UserAchievement WHERE GuildId = ? AND UserId = ?")) {
+             PreparedStatement stmn = conn.prepareStatement("SELECT Achieved FROM UserAchievement WHERE GuildId = ? AND UserId = ? AND Achievement LIKE ?")) {
             stmn.setLong(1, guildId);
             stmn.setLong(2, userId);
+            stmn.setString(3, achievement.name());
             try (ResultSet set = stmn.executeQuery()) {
                 if (set.next()){
                     return set.getBoolean("Achieved");
@@ -29,7 +30,7 @@ public class AchievementHandler extends DataHandler{
 
     public void setAchieved(long guildId, long userId, Achievement achievement){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
-             PreparedStatement stmn = conn.prepareStatement("INSERT IGNORE INTO UserAchievement(UserId, GuildId, Achievement, Achieved, Time) VALUES(?, ?, ?, ?, ?);")) {
+             PreparedStatement stmn = conn.prepareStatement("INSERT IGNORE INTO UserAchievement(GuildId, UserId, Achievement, Achieved, Time) VALUES(?, ?, ?, ?, ?);")) {
             stmn.setLong(1, guildId);
             stmn.setLong(2, userId);
             stmn.setString(3, achievement.name());

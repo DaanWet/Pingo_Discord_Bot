@@ -89,9 +89,9 @@ public class BlackJack extends BCommand {
         });
         if (bjg.hasEnded()){
             checkLevel(e.getChannel(), e.getMember(), startXP, endXP);
-            //checkAchievements(e.getChannel(), id, gameCompanion);
+            checkAchievements(e.getChannel(), playerId, gameCompanion);
             gameCompanion.removeBlackJackGame(guildId, playerId);
-            //checkLevel(m.getTextChannel(), e.getMember(), endXP, handler.getXP(guildId, id)); //TODO change this ??
+            checkLevel(e.getChannel(), e.getMember(), endXP, handler.getXP(guildId, playerId)); //TODO change this ??
         }
 
     }
