@@ -168,7 +168,7 @@ public class Utils {
 
     public static double getBoost(int level){
         if (level >= 100)
-            return 1.5;
+            return 1.1;
         return 1 + Math.floor(level/10.0)/100;
     }
 

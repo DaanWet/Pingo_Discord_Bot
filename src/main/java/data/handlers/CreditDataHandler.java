@@ -13,6 +13,40 @@ public class CreditDataHandler extends DataHandler {
         super();
     }
 
+    public int getPlayers(){
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT Count(*) FROM Member")
+        ) {
+
+            try (ResultSet set = stm.executeQuery()) {
+                if (set.next()){
+                    return set.getInt(1);
+                }
+            }
+        } catch (SQLException throwable){
+            throwable.printStackTrace();
+        }
+        return -1;
+    }
+
+    public int getPlayers(long guildId){
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
+             PreparedStatement stm = conn.prepareStatement("SELECT Count(*) FROM Member WHERE guildId = ?")
+        ) {
+            stm.setLong(1, guildId);
+            try (ResultSet set = stm.executeQuery()) {
+                if (set.next()){
+                    return set.getInt(1);
+                }
+            }
+        } catch (SQLException throwable){
+            throwable.printStackTrace();
+        }
+        return -1;
+    }
+
+
+
 
     public int getCredits(long guildID, long userId){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);

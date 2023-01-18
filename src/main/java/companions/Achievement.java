@@ -8,8 +8,8 @@ public enum Achievement {
     BALANCE_100K(new AchievementChecker.Balance(100000), Reward.EASY, "achievement.balance.100K", "achievement.balance.100K.desc", false, Type.BALANCE),
     BALANCE_1M(new AchievementChecker.Balance(1000000), Reward.HARD, "achievement.balance.1M", "achievement.balance.1M.desc", false, Type.BALANCE),
     BALANCE_10M(new AchievementChecker.Balance(10000000), Reward.VERY_HARD, "achievement.balance.10M", "achievement.balance.10M.desc", false, Type.BALANCE),
-    BALANCE_100M(new AchievementChecker.Balance(10000000), Reward.EXTREME, "achievement.balance.100M", "achievement.balance.100M.desc", false, Type.BALANCE),
-    BALANCE_1B(new AchievementChecker.Balance(10000000), Reward.OTHER_WORLD, "achievement.balance.1B", "achievement.balance.1B.desc", true, Type.BALANCE),
+    BALANCE_100M(new AchievementChecker.Balance(100000000), Reward.EXTREME, "achievement.balance.100M", "achievement.balance.100M.desc", false, Type.BALANCE),
+    BALANCE_1B(new AchievementChecker.Balance(1000000000), Reward.OTHER_WORLD, "achievement.balance.1B", "achievement.balance.1B.desc", true, Type.BALANCE),
 
     BALANCE_NEG((guildId, userId, gameCompanion) -> new CreditDataHandler().getCredits(guildId, userId) < 0, Reward.HARD, "achievement.balance.neg", "achievement.balance.neg.desc", true, Type.BALANCE),
 
