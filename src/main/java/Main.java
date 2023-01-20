@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.log4j.Logger;
+import org.discordbots.api.client.DiscordBotListAPI;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import utils.MyProperties;
@@ -62,7 +63,11 @@ public class Main {
         GitHub github = new GitHubBuilder().withOAuthToken(config.getProperty("gh_token")).build();
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("!help"));
         jda.setAutoReconnect(true);
-        MessageListener ml = new MessageListener(github);
+        DiscordBotListAPI api = new DiscordBotListAPI.Builder()
+                .token(config.getProperty("top.gg.token"))
+                .botId(config.getProperty("top.gg.botId"))
+                .build();
+        MessageListener ml = new MessageListener(github, api);
         jda.addEventListener(ml);
         jda.addEventListener(new NicknameHandler());
         jda.addEventListener(new JoinListener());
@@ -71,7 +76,8 @@ public class Main {
         jda.addEventListener(new VoiceHandler(vc));
         jda.addEventListener(new ReactionListener(ch, github));
         ch.registerCommand(new Voice(vc));
-
+        jda.awaitReady();
+        api.setStats(jda.getGuilds().size());
     }
 
 }

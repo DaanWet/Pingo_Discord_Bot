@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.discordbots.api.client.DiscordBotListAPI;
 import org.kohsuke.github.GitHub;
 import utils.MessageException;
 import utils.Utils;
@@ -41,7 +42,7 @@ public class CommandHandler {
     private final GameCompanion gameCompanion;
     private final DataCompanion dataCompanion;
 
-    public CommandHandler(GitHub gitHub, GameCompanion gameCompanion){
+    public CommandHandler(GitHub gitHub, DiscordBotListAPI topGGApi, GameCompanion gameCompanion){
         pathname = Utils.config.getProperty("pictures.path");
         random = new Random();
         CommandHandler commh = this;
@@ -89,6 +90,7 @@ public class CommandHandler {
         registerCommands(new Blackbox(gameCompanion), new EndBlackbox(gameCompanion));
         registerCommand(new Level(dataCompanion));
         registerCommand(new Achievements());
+        registerCommand(new Vote(topGGApi));
         help.setCommands(commands);
     }
 

@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
+import org.discordbots.api.client.DiscordBotListAPI;
 import org.kohsuke.github.GitHub;
 import utils.*;
 
@@ -25,9 +26,9 @@ public class MessageListener extends ListenerAdapter {
     private final CommandHandler commandListener;
     private final GameCompanion gameCompanion;
 
-    public MessageListener(GitHub github){
+    public MessageListener(GitHub github, DiscordBotListAPI topGGApi){
         this.gameCompanion = new GameCompanion();
-        this.commandListener = new CommandHandler(github, gameCompanion);
+        this.commandListener = new CommandHandler(github, topGGApi, gameCompanion);
     }
 
     public CommandHandler getCommandHandler(){
