@@ -1,9 +1,12 @@
 package listeners;
 
 import commands.settings.Setting;
+import companions.GameCompanion;
+import companions.Question;
 import data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -13,16 +16,18 @@ import org.kohsuke.github.GitHub;
 import utils.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter {
 
     static final Logger logger = Logger.getLogger(MessageListener.class.getName());
     private final CommandHandler commandListener;
+    private final GameCompanion gameCompanion;
 
     public MessageListener(GitHub github){
-        this.commandListener = new CommandHandler(github);
-
+        this.gameCompanion = new GameCompanion();
+        this.commandListener = new CommandHandler(github, gameCompanion);
     }
 
     public CommandHandler getCommandHandler(){
@@ -35,6 +40,27 @@ public class MessageListener extends ListenerAdapter {
     }
 
     @Override
+    public void onMessageReceived(MessageReceivedEvent e){
+        if (!e.isFromGuild()){
+            String[] args = e.getMessage().getContentRaw().split(" ");
+            if (args.length > 1 && Utils.isInteger(args[0])){
+                Question<String> bb = gameCompanion.getBlackBox(Utils.getInt(args[0]));
+                MyResourceBundle language = new MyResourceBundle("i18n", Locale.ENGLISH);
+                if (bb == null){
+                    e.getChannel().sendMessage(language.getString("blackbox.error.id")).queue();
+                    logger.info(String.format("Content: %s, error: %s", e.getMessage().getContentRaw(), language.getString("blackbox.error.id")));
+                } else {
+                    if (bb.isEnded()){
+                        e.getChannel().sendMessage(language.getString("blackbox.error.ended")).queue();
+                        logger.info(String.format("Content: %s, error: %s", e.getMessage().getContentRaw(), language.getString("blackbox.error.ended")));
+                    }
+                    bb.addAnswer(e.getAuthor().getIdLong(), Utils.concat(args, 1));
+                    e.getMessage().addReaction(Utils.config.getProperty("emoji.checkmark")).queue();
+                }
+
+            }
+        }
+    }
     public void onGuildMessageReceived(GuildMessageReceivedEvent e){
         User author = e.getAuthor();
         TextChannel channel = e.getChannel();
@@ -109,5 +135,8 @@ public class MessageListener extends ListenerAdapter {
             m.addReaction(config.getProperty("emoji.red_tick")).queue();
         });
     }
+
+
+
 
 }

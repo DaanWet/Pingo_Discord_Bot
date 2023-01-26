@@ -1,3 +1,5 @@
+import commands.Voice;
+import companions.VoiceCompanion;
 import data.handlers.DataHandler;
 import data.handlers.GeneralDataHandler;
 import listeners.*;
@@ -65,8 +67,10 @@ public class Main {
         jda.addEventListener(new NicknameHandler());
         jda.addEventListener(new JoinListener());
         CommandHandler ch = ml.getCommandHandler();
-        jda.addEventListener(new ReactionListener(ch, github, ch.getGameHandler(), ch.getDataCompanion()));
-
+        VoiceCompanion vc = new VoiceCompanion();
+        jda.addEventListener(new VoiceHandler(vc));
+        jda.addEventListener(new ReactionListener(ch, github));
+        ch.registerCommand(new Voice(vc));
 
     }
 

@@ -100,6 +100,7 @@ public class UnoGame {
         UnoHand hand = hands.get(turn);
         hand.endTurn(card);
         discardPile.add(card);
+        hand.setPingOrPlay();
         if (hand.getCards().size() == 0){
             finished = true;
             return true;

@@ -49,7 +49,7 @@ public class Play extends Command {
                 throw new MessageException(language.getString("uno.ended"));
 
             if (turn == -1 || hands.get(turn).getPlayerId() != e.getAuthor().getIdLong())
-                throw new MessageException(language.getString("uno.turn"));
+                throw new MessageException(language.getString("uno.error.turn"));
 
             if (args.length == 0)
                 throw new MessageException(getUsage(guild.getIdLong()));

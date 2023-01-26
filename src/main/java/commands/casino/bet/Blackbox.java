@@ -8,32 +8,23 @@ import companions.Question;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import utils.MessageException;
 import utils.MyResourceBundle;
 import utils.Utils;
 
-public class StartBet extends Command {
+public class Blackbox extends Command {
+
 
     private final GameCompanion gameCompanion;
 
-    public StartBet(GameCompanion gameCompanion){
+    public Blackbox(GameCompanion gameCompanion){
         this.gameCompanion = gameCompanion;
-        this.name = "startbet";
-        this.aliases = new String[]{"sbet"};
-        this.category = Category.CASINO;
+        this.name = "blackbox";
+        this.description = "blackbox.description";
         this.arguments = new String[]{"<question>"};
-        this.description = "start_bet.description";
-        this.example = "When will Pedro wake up?";
+        this.category = Category.CASINO;
+        this.example = "Who will marry first";
     }
-
-    @Override
-    public CommandState canBeExecuted(long guildId, long channelId, Member member){
-        CommandState betting = canBeExecuted(guildId, channelId, member, Setting.BETTING);
-        CommandState custom = canBeExecuted(guildId, channelId, member, Setting.CUSTOMBET);
-        return betting.worst(custom);
-    }
-
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
@@ -42,12 +33,14 @@ public class StartBet extends Command {
             throw new MessageException(language.getString("start_bet.error.no_question"));
 
         EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(e.getGuild().getSelfMember().getColor());
         eb.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getAvatarUrl());
-        eb.setTitle(Utils.concat(args, 0));
-        Question<Pair<Integer, String>> bet = gameCompanion.addCustomBet(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), args[0]);
+        String question = Utils.concat(args, 0);
+        eb.setTitle(question);
+        Question<String> bet = gameCompanion.addBlackBox(e.getGuild().getIdLong(), e.getAuthor().getIdLong(), question);
+        eb.setDescription(language.getString("blackbox.embed.description", bet.getID()));
         eb.setFooter(language.getString("start_bet.footer", bet.getID()));
         e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> bet.setIds(m.getChannel().getIdLong(), m.getIdLong()));
         e.getMessage().delete().queue();
-
     }
 }

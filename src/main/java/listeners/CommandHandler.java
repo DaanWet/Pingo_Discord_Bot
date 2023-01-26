@@ -2,14 +2,9 @@ package listeners;
 
 import commands.*;
 import commands.casino.*;
-import commands.casino.bet.Bet;
-import commands.casino.bet.EndBet;
-import commands.casino.bet.StartBet;
+import commands.casino.bet.*;
 import commands.casino.blackjack.*;
-import commands.casino.uno.Challenge;
-import commands.casino.uno.Draw;
-import commands.casino.uno.Play;
-import commands.casino.uno.Uno;
+import commands.casino.uno.*;
 import commands.pictures.AddPicture;
 import commands.pictures.DeletePicture;
 import commands.roles.AddRoleAssign;
@@ -46,11 +41,11 @@ public class CommandHandler {
     private final GameCompanion gameCompanion;
     private final DataCompanion dataCompanion;
 
-    public CommandHandler(GitHub gitHub){
+    public CommandHandler(GitHub gitHub, GameCompanion gameCompanion){
         pathname = Utils.config.getProperty("pictures.path");
         random = new Random();
         CommandHandler commh = this;
-        gameCompanion = new GameCompanion();
+        this.gameCompanion = gameCompanion;
         dataCompanion = new DataCompanion();
         commands = new HashMap<>();
         Help help = new Help(gameCompanion);
@@ -90,11 +85,19 @@ public class CommandHandler {
         registerCommand(new Bet(gameCompanion));
         registerCommand(new EndBet(gameCompanion));
         registerCommand(new Arguments());
+        registerCommand(new Ping(gameCompanion));
+        registerCommands(new Blackbox(gameCompanion), new EndBlackbox(gameCompanion));
         help.setCommands(commands);
     }
 
     public void registerCommand(Command command){
         this.commands.put(command.getName(), command);
+    }
+
+    public void registerCommands(Command... commands){
+        for (Command c : commands){
+            registerCommand(c);
+        }
     }
 
     public GameCompanion getGameHandler(){

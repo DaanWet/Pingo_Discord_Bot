@@ -65,7 +65,7 @@ public class Uno extends Command {
         eb.setFooter(language.getString("uno.embed.footer", config.getProperty("emoji.uno.join"), config.getProperty("emoji.uno.start"), config.getProperty("emoji.cancel")));
 
         EmbedBuilder eb2 = help.getUnoHelp(new EmbedBuilder(), language, settingDH.getStringSetting(guildId, Setting.PREFIX).get(0));
-        e.getChannel().sendMessageEmbeds(eb2.build(), eb.build()).queue(m -> {
+        e.getChannel().sendMessageEmbeds(eb.build()).queue(m -> {
             unogame.setMessageID(m.getIdLong());
             m.addReaction(config.getProperty("emoji.uno.join")).queue();
             m.addReaction(config.getProperty("emoji.uno.start")).queue();
