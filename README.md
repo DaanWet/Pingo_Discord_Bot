@@ -3,6 +3,12 @@
 Pingo is a fun/moderation bot including blackjack, uno, role picker and some more.
 [Invite me](https://discord.com/api/oauth2/authorize?client_id=589027434611867668&permissions=413873335536&scope=bot) to your server!
 
+#### Now on top.gg 
+
+<a href="https://top.gg/bot/589027434611867668">
+  <img src="https://top.gg/api/widget/589027434611867668.svg">
+</a>
+
 ### Support needed? 
 Join my [discord server](https://discord.gg/4Atn8t2)
 
