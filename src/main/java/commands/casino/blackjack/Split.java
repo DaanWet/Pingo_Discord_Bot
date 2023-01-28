@@ -8,6 +8,8 @@ import utils.MessageException;
 import utils.MyResourceBundle;
 import utils.Utils;
 
+import java.util.concurrent.TimeUnit;
+
 public class Split extends BCommand {
 
     public Split(GameCompanion gameCompanion){
@@ -27,7 +29,10 @@ public class Split extends BCommand {
             CreditDataHandler dataHandler = new CreditDataHandler();
             if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet())
                 throw new MessageException(language.getString("credit.error.not_enough.short"));
-
+            if (bjg.getMessageId() == null){
+                e.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+                throw new MessageException(language.getString("bj.error.fast"), 5);
+            }
             bjg.split();
             updateMessage(e, bjg, dataHandler, language);
 
