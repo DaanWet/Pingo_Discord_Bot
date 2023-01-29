@@ -38,7 +38,7 @@ public interface AchievementChecker {
         public boolean isAchieved(long guildId, long userId, GameCompanion gameCompanion){
             RecordDataHandler handler = new RecordDataHandler();
             RecordData games = handler.getRecord(guildId, userId, Record.GAMES);
-            return games.getValue() >= amount;
+            return games != null && games.getValue() >= amount;
         }
     }
 

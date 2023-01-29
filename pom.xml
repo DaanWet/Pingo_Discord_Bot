@@ -104,8 +104,8 @@
             <version>3.6.1</version>
         </dependency>
         <dependency>
-            <groupId>org.discordbots</groupId>
-            <artifactId>DBL-Java-Library</artifactId>
+            <groupId>com.github.top-gg</groupId>
+            <artifactId>java-sdk</artifactId>
             <version>2.1.2</version>
         </dependency>
     </dependencies>

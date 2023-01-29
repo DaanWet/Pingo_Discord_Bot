@@ -1,11 +1,25 @@
 package listeners;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.discordbots.api.client.DiscordBotListAPI;
 
 public class JoinListener extends ListenerAdapter {
+
+    private DiscordBotListAPI botListAPI;
+
+    public JoinListener(DiscordBotListAPI api){
+        this.botListAPI = api;
+    }
+
+    @Override
+    public void onGuildJoin(GuildJoinEvent e){
+        botListAPI.setStats(e.getJDA().getGuilds().size());
+    }
+
 
 
     @Override

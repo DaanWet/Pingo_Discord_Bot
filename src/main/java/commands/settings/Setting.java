@@ -6,6 +6,7 @@ import java.util.*;
 
 public enum Setting {
     BETTING("betting", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
+    LEVELING("leveling", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(), "", ""),
     ROLEASSIGN("roleAssign", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     BLACKJACK("blackjack", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     UNO("uno", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
@@ -18,6 +19,7 @@ public enum Setting {
     BLACKBOX("blackbox", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     VOICE("voice", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
     TEAMS("teams", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
+    ACHIEVEMENTS("achievements", Type.COMMANDS, ValueType.BOOLEAN, false, true, List.of(SubSetting.COOLDOWN, SubSetting.BLACKLIST, SubSetting.WHITELIST), "", ""),
 
     PREFIX("prefix", Type.GENERAL, ValueType.STRING, false, "!", List.of(), "", ""),
     LANGUAGE("language", Type.GENERAL, ValueType.LANGUAGE, false, "en", List.of(), "", ""),

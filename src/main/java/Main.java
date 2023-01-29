@@ -70,7 +70,7 @@ public class Main {
         MessageListener ml = new MessageListener(github, api);
         jda.addEventListener(ml);
         jda.addEventListener(new NicknameHandler());
-        jda.addEventListener(new JoinListener());
+        jda.addEventListener(new JoinListener(api));
         CommandHandler ch = ml.getCommandHandler();
         VoiceCompanion vc = new VoiceCompanion();
         jda.addEventListener(new VoiceHandler(vc));
