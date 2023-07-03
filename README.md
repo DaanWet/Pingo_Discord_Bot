@@ -1,4 +1,4 @@
-# Pingo_Discord_Bot [![wakatime](https://wakatime.com/badge/user/8b2880ca-205d-4956-add7-ea2eadc40b57/project/88aeb2d7-0a9e-4687-8e78-ca833e7a61ba.svg)](https://wakatime.com/badge/user/8b2880ca-205d-4956-add7-ea2eadc40b57/project/88aeb2d7-0a9e-4687-8e78-ca833e7a61ba)
+# Pingo_Discord_Bot [![wakatime](https://wakatime.com/badge/github/DaanWet/Pingo_Discord_Bot.svg)](https://wakatime.com/badge/github/DaanWet/Pingo_Discord_Bot)
 
 Pingo is a fun/moderation bot including blackjack, uno, role picker and some more.
 [Invite me](https://discord.com/api/oauth2/authorize?client_id=589027434611867668&permissions=413873335536&scope=bot) to your server!
