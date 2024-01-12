@@ -1,12 +1,14 @@
 package me.damascus2000.pingo.commands;
 
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.sk.PrettyTable;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Eval extends Command {
 
     public Eval(){

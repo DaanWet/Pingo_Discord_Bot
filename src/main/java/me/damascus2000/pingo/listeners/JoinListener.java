@@ -6,11 +6,15 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.discordbots.api.client.DiscordBotListAPI;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JoinListener extends ListenerAdapter {
 
     private DiscordBotListAPI botListAPI;
 
+    @Autowired
     public JoinListener(DiscordBotListAPI api){
         this.botListAPI = api;
     }
@@ -19,7 +23,6 @@ public class JoinListener extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent e){
         botListAPI.setStats(e.getJDA().getGuilds().size());
     }
-
 
 
     @Override

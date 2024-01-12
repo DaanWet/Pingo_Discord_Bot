@@ -14,6 +14,7 @@ public class Utils {
     public static MyProperties config = new MyProperties();
     private static Map<Locale, ResourceBundle> locales;
     public static PieceWiseFunction piecewise = new PieceWiseFunction(9, 1.06, 2, 30);
+
     public static boolean isInteger(String s){
         if (s == null){
             return false;
@@ -136,9 +137,10 @@ public class Utils {
 
     private static Point p1 = new Point(1000, 3);
     private static Point p2 = new Point(5000, 4);
-    private static Point p3  = new Point(10000, 5);
+    private static Point p3 = new Point(10000, 5);
     private static Point p4 = new Point(100000, 12);
     private static Point p5 = new Point(1000000, 25);
+
     public static int getGameXP(int credits){
         int i = 0;
         if (credits >= p5.x){
@@ -156,20 +158,22 @@ public class Utils {
     }
 
     private static double formula(Point p1, Point p2, int cr, boolean round){
-        double x = ((float)p2.y-p1.y)/(p2.x-p1.x)*(cr - p1.x) + p1.y;
+        double x = ((float) p2.y - p1.y) / (p2.x - p1.x) * (cr - p1.x) + p1.y;
         return round ? Math.round(x) : Math.floor(x);
     }
+
     public static int getXP(int level){
         return (int) Math.ceil(piecewise.integrate(level));
     }
+
     public static int getLevel(int xp){
-        return (int)Math.floor(piecewise.solveForX(xp));
+        return (int) Math.floor(piecewise.solveForX(xp));
     }
 
     public static double getBoost(int level){
         if (level >= 100)
             return 1.1;
-        return 1 + Math.floor(level/10.0)/100;
+        return 1 + Math.floor(level / 10.0) / 100;
     }
 
 

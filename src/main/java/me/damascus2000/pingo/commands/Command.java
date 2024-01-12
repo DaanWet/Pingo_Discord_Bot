@@ -7,6 +7,8 @@ import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.data.handlers.AchievementHandler;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
@@ -14,8 +16,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.apache.commons.lang3.StringUtils;
-import me.damascus2000.pingo.utils.MyResourceBundle;
-import me.damascus2000.pingo.utils.Utils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,6 +53,7 @@ public abstract class Command {
     protected long priveligedGuild = -1;
     public static List<Long> betaGuilds = List.of(203572340280262657L, 764196816517464084L, 572022353421271042L);
     protected boolean beta = false;
+
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
     protected CommandState canBeExecuted(long guildId, long channelId, Member member, Setting setting){
@@ -239,7 +240,7 @@ public abstract class Command {
             return;
         int startLevel = Utils.getLevel(startXP);
         int endLevel = Utils.getLevel(endXP);
-        while(startLevel < endLevel){
+        while (startLevel < endLevel){
             startLevel++;
             textChannel.sendMessage(String.format("Good job %s! You andvanced to level %d", member.getAsMention(), startLevel)).queue();
         }

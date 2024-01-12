@@ -29,7 +29,7 @@ public enum Achievement {
     BET_1M(new AchievementChecker.BlackjackBet(1000000), Reward.VERY_HARD, "achievement.bet.1M", "achievement.bet.1M.desc", false, Type.BET),
     BET_10M(new AchievementChecker.BlackjackBet(10000000), Reward.EXTREME, "achievement.bet.10M", "achievement.bet.10M.desc", false, Type.BET);
 
-    public enum Type{
+    public enum Type {
         BALANCE("Balance", "\uD83D\uDFE8"),
         GAMES("Games", "\uD83D\uDFE6"),
         STREAK("Streak", "\uD83D\uDFE9"),
@@ -37,6 +37,7 @@ public enum Achievement {
 
         public String description;
         public String emoji;
+
         Type(String description, String emoji){
             this.description = description;
             this.emoji = emoji;
@@ -54,12 +55,12 @@ public enum Achievement {
         OTHER_WORLD("Other world", 500);
         public int reward;
         public String name;
+
         Reward(String name, int reward){
             this.reward = reward;
             this.name = name;
         }
     }
-
 
 
     private final AchievementChecker checker;
@@ -77,6 +78,7 @@ public enum Achievement {
         this.reward = reward;
         this.type = type;
     }
+
     public boolean isAchieved(long guildId, long userId, GameCompanion gameCompanion){
         AchievementHandler handler = new AchievementHandler();
         if (handler.hasAchieved(guildId, userId, this))

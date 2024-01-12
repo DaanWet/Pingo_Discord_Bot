@@ -6,7 +6,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
-public class AchievementHandler extends DataHandler{
+public class AchievementHandler extends DataHandler {
 
     public AchievementHandler(){
         super();
@@ -106,7 +106,6 @@ public class AchievementHandler extends DataHandler{
         }
         return -1;
     }
-
 
 
 }

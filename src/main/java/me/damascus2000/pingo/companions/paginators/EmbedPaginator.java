@@ -1,10 +1,10 @@
 package me.damascus2000.pingo.companions.paginators;
 
+import me.damascus2000.pingo.utils.MyProperties;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import me.damascus2000.pingo.utils.MyProperties;
-import me.damascus2000.pingo.utils.Utils;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;

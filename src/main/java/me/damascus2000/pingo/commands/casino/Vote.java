@@ -3,7 +3,9 @@ package me.damascus2000.pingo.commands.casino;
 import me.damascus2000.pingo.commands.Command;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.discordbots.api.client.DiscordBotListAPI;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Vote extends Command {
 
 
@@ -19,10 +21,10 @@ public class Vote extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        api.hasVoted(e.getAuthor().getId()).whenComplete((hasVoted, err)  -> {
-           if (hasVoted){
-               e.getChannel().sendMessage("Voted").queue();
-           }
+        api.hasVoted(e.getAuthor().getId()).whenComplete((hasVoted, err) -> {
+            if (hasVoted){
+                e.getChannel().sendMessage("Voted").queue();
+            }
         });
     }
 }

@@ -1,10 +1,10 @@
 package me.damascus2000.pingo.companions.paginators;
 
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class XPPaginator extends EmbedPaginator{
+public class XPPaginator extends EmbedPaginator {
 
     private final boolean global;
     private final long guildId;
@@ -21,7 +21,6 @@ public class XPPaginator extends EmbedPaginator{
         this.global = global;
         this.guildId = guildId;
     }
-
 
 
     @Override

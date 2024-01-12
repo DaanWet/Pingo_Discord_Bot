@@ -1,10 +1,10 @@
 package me.damascus2000.pingo.utils.logging;
 
+import me.damascus2000.pingo.utils.MyProperties;
+import me.damascus2000.pingo.utils.Utils;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import me.damascus2000.pingo.utils.MyProperties;
-import me.damascus2000.pingo.utils.Utils;
 
 import java.io.File;
 import java.io.FileWriter;

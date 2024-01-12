@@ -10,7 +10,7 @@ public interface AchievementChecker {
 
     boolean isAchieved(long guildId, long userId, GameCompanion gameCompanion);
 
-    class Balance implements AchievementChecker{
+    class Balance implements AchievementChecker {
 
         private final int amount;
 
@@ -26,7 +26,7 @@ public interface AchievementChecker {
         }
     }
 
-    class PlayedGames implements AchievementChecker{
+    class PlayedGames implements AchievementChecker {
 
         private final int amount;
 

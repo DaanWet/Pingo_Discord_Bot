@@ -4,13 +4,14 @@ import me.damascus2000.pingo.companions.VoiceCompanion;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class VoiceHandler extends ListenerAdapter {
 
     private final VoiceCompanion voiceCompanion;
-
 
     public VoiceHandler(VoiceCompanion companion){
         this.voiceCompanion = companion;
@@ -34,7 +35,6 @@ public class VoiceHandler extends ListenerAdapter {
             }
         }
     }
-
 
 
 }

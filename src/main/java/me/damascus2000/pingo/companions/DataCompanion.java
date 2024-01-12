@@ -2,14 +2,16 @@ package me.damascus2000.pingo.companions;
 
 import me.damascus2000.pingo.companions.paginators.EmbedPaginator;
 import me.damascus2000.pingo.companions.paginators.OpenExplorerData;
+import me.damascus2000.pingo.utils.QueueMap;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.requests.RestAction;
-import me.damascus2000.pingo.utils.QueueMap;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
+@Service
 public class DataCompanion {
 
     private final HashMap<Long, QueueMap<Long, EmbedPaginator>> embedPaginatorMap;

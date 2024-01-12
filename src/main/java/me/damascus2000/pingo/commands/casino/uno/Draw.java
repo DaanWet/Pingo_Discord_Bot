@@ -6,19 +6,21 @@ import me.damascus2000.pingo.companions.uno.UnoCard;
 import me.damascus2000.pingo.companions.uno.UnoGame;
 import me.damascus2000.pingo.companions.uno.UnoHand;
 import me.damascus2000.pingo.data.ImageHandler;
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.MyResourceBundle;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Component
 public class Draw extends Command {
 
     private final GameCompanion gameCompanion;

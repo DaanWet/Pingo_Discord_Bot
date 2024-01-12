@@ -5,17 +5,19 @@ import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.RRDataHandler;
 import me.damascus2000.pingo.data.models.RoleAssignData;
 import me.damascus2000.pingo.data.models.RoleAssignRole;
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.MyResourceBundle;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class RemoveRoleAssign extends RoleCommand {
 
 

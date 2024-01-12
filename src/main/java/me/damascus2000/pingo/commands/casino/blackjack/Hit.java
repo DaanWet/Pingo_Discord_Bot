@@ -3,13 +3,15 @@ package me.damascus2000.pingo.commands.casino.blackjack;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class Hit extends BCommand {
 
 
@@ -30,7 +32,7 @@ public class Hit extends BCommand {
                 throw new MessageException(language.getString("bj.error.fast"), 5);
             }
             bjg.hit();
-            updateMessage(e, bjg, new CreditDataHandler(), language );
+            updateMessage(e, bjg, new CreditDataHandler(), language);
         }
     }
 }

@@ -11,7 +11,9 @@ import me.damascus2000.pingo.data.ImageHandler;
 import me.damascus2000.pingo.data.handlers.RRDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.data.models.RoleAssignRole;
-import org.apache.log4j.MDC;
+import me.damascus2000.pingo.utils.MyProperties;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -19,12 +21,11 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.apache.log4j.MDC;
 import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import me.damascus2000.pingo.utils.MyProperties;
-import me.damascus2000.pingo.utils.MyResourceBundle;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,22 +36,21 @@ import java.util.stream.Collectors;
 
 import static me.damascus2000.pingo.listeners.CommandHandler.pathname;
 
+@Component
 public class ReactionListener extends ListenerAdapter {
-    private final CommandHandler commandHandler;
     private final GitHub gitHub;
     private final Random random = new Random();
     private final GameCompanion gameCompanion;
     private final DataCompanion dataCompanion;
 
-    public ReactionListener(CommandHandler commandHandler, GitHub gitHub){
-        this.commandHandler = commandHandler;
+    public ReactionListener(GitHub gitHub, GameCompanion gameCompanion, DataCompanion dataCompanion){
         this.gitHub = gitHub;
-        this.gameCompanion = commandHandler.getGameHandler();
-        this.dataCompanion = commandHandler.getDataCompanion();
+        this.gameCompanion = gameCompanion;
+        this.dataCompanion = dataCompanion;
     }
 
     @Override
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e){
         MDC.put("Guild", e.getGuild().getId());
         MDC.put("User", e.getUser().getId());
         MDC.put("Channel", e.getChannel().getId());

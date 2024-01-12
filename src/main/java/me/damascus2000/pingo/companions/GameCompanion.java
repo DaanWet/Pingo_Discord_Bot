@@ -5,9 +5,11 @@ import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.companions.uno.UnoGame;
 import me.damascus2000.pingo.companions.uno.UnoHand;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
+@Service
 public class GameCompanion {
 
 
@@ -80,6 +82,7 @@ public class GameCompanion {
     public Question<String> getBlackBox(int id){
         return blackboxes.get(id);
     }
+
     public Question<String> addBlackBox(long guildId, long userId, String question){
         Question<String> q = new Question<>(userId, question);
         while (blackboxes.containsKey(q.getID())){
@@ -88,7 +91,6 @@ public class GameCompanion {
         blackboxes.put(q.getID(), q);
         return q;
     }
-
 
 
 }

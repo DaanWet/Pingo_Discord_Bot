@@ -8,20 +8,22 @@ import me.damascus2000.pingo.companions.uno.UnoHand;
 import me.damascus2000.pingo.data.ImageHandler;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Component
 public class Play extends Command {
 
     private final GameCompanion gameCompanion;
@@ -113,8 +115,8 @@ public class Play extends Command {
                     } else {
                         EmbedBuilder eb2 = new EmbedBuilder();
                         int size = hands.size() - 1;
-                        int credits = (200+ unoGame.getBet()) * size;
-                        int xp = 10 + size *2;
+                        int credits = (200 + unoGame.getBet()) * size;
+                        int xp = 10 + size * 2;
                         eb2.setTitle(language.getString("uno.win.you", card, credits, xp));
                         dataHandler.addCredits(guild.getIdLong(), player, credits);
                         GeneralDataHandler genHandler = new GeneralDataHandler();

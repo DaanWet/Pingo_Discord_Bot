@@ -1,13 +1,15 @@
 package me.damascus2000.pingo.commands.suggestion;
 
 import me.damascus2000.pingo.commands.Command;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EditSuggestion extends Command {
 
     public EditSuggestion(){

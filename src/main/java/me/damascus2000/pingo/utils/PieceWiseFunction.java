@@ -23,9 +23,9 @@ public class PieceWiseFunction implements UnivariateFunction {
     @Override
     public double value(double v){
         if (v < d){
-            return a* Math.pow(b,v);
+            return a * Math.pow(b, v);
         } else {
-            return c*(v-d)+a*Math.pow(b, d);
+            return c * (v - d) + a * Math.pow(b, d);
         }
     }
 
@@ -35,11 +35,12 @@ public class PieceWiseFunction implements UnivariateFunction {
         SimpsonIntegrator integrator = new SimpsonIntegrator();
         return integrator.integrate(10000, this, 0, x);
     }
+
     public double solveForX(double y){
         MDC.put("y", y);
         BrentSolver solver = new BrentSolver();
         UnivariateFunction function = f -> integrate(f) - y;
-        return solver.solve(10000, function, 0 , 1000);
+        return solver.solve(10000, function, 0, 1000);
     }
 
 }

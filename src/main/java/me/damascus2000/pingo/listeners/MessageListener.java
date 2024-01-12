@@ -6,6 +6,9 @@ import me.damascus2000.pingo.companions.Question;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.exceptions.EmbedException;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.MyProperties;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -14,23 +17,24 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
-import org.discordbots.api.client.DiscordBotListAPI;
-import org.kohsuke.github.GitHub;
-import me.damascus2000.pingo.utils.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class MessageListener extends ListenerAdapter {
 
     static final Logger logger = Logger.getLogger(MessageListener.class.getName());
     private final CommandHandler commandListener;
     private final GameCompanion gameCompanion;
 
-    public MessageListener(GitHub github, DiscordBotListAPI topGGApi){
-        this.gameCompanion = new GameCompanion();
-        this.commandListener = new CommandHandler(github, topGGApi, gameCompanion);
+    @Autowired
+    public MessageListener(GameCompanion gameCompanion, CommandHandler commandHandler){
+        this.gameCompanion = gameCompanion;
+        this.commandListener = commandHandler;
     }
 
     public CommandHandler getCommandHandler(){
@@ -64,6 +68,7 @@ public class MessageListener extends ListenerAdapter {
             }
         }
     }
+
     public void onGuildMessageReceived(GuildMessageReceivedEvent e){
         User author = e.getAuthor();
         TextChannel channel = e.getChannel();
@@ -94,7 +99,8 @@ public class MessageListener extends ListenerAdapter {
             if (channel.getIdLong() == config.get("special.codex")){
                 message.delete().queue();
                 buildSuggestion(author, message.getContentRaw(), e.getGuild(), channel);
-            } // Check for me.damascus2000.pingo.commands
+            } // Check for commands
+
             else if (contentRaw.length() > 0 && contentRaw.toLowerCase().startsWith(new SettingsDataHandler().getStringSetting(guild.getIdLong(), Setting.PREFIX).get(0))){
                 try {
                     commandListener.onCommandReceived(e);
@@ -138,8 +144,6 @@ public class MessageListener extends ListenerAdapter {
             m.addReaction(config.getProperty("emoji.red_tick")).queue();
         });
     }
-
-
 
 
 }

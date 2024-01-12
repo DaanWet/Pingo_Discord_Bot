@@ -7,15 +7,17 @@ import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.uno.UnoGame;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class Uno extends Command {
 
     private final GameCompanion gameCompanion;

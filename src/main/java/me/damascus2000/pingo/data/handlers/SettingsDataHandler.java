@@ -2,8 +2,8 @@ package me.damascus2000.pingo.data.handlers;
 
 import com.mysql.cj.exceptions.WrongArgumentException;
 import me.damascus2000.pingo.commands.settings.Setting;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.sql.*;
 import java.time.LocalDateTime;

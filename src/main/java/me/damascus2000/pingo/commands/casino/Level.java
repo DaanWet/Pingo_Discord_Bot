@@ -4,14 +4,16 @@ import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.companions.DataCompanion;
 import me.damascus2000.pingo.companions.paginators.XPPaginator;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.log4j.MDC;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 
+@Component
 public class Level extends Command {
 
 
@@ -37,7 +39,7 @@ public class Level extends Command {
             int previousXP = Utils.getXP(currentLevel);
             int xpGoal = nextXP - previousXP;
             int progress = xp - previousXP;
-            double percent =(double) progress / xpGoal;
+            double percent = (double) progress / xpGoal;
             int number = (int) Math.round(percent * 15);
             MDC.put("xp", xp);
             MDC.put("level", currentLevel);

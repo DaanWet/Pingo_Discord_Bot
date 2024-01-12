@@ -1,5 +1,6 @@
 package me.damascus2000.pingo.listeners;
 
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -7,8 +8,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NicknameHandler extends ListenerAdapter {
 
     @Override

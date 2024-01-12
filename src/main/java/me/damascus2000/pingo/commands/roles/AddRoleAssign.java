@@ -6,18 +6,20 @@ import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.RRDataHandler;
 import me.damascus2000.pingo.data.models.RoleAssignData;
 import me.damascus2000.pingo.data.models.RoleAssignRole;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class AddRoleAssign extends RoleCommand {
 
     public AddRoleAssign(){

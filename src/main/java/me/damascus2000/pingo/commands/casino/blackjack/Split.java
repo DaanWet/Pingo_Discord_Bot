@@ -3,13 +3,15 @@ package me.damascus2000.pingo.commands.casino.blackjack;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class Split extends BCommand {
 
     public Split(GameCompanion gameCompanion){
@@ -25,7 +27,7 @@ public class Split extends BCommand {
         BlackJackGame bjg = gameCompanion.getBlackJackGame(guildId, id);
         if (args.length == 0 && bjg != null){
             if (!bjg.canSplit())
-                    throw new MessageException("You can't split your cards");
+                throw new MessageException("You can't split your cards");
             CreditDataHandler dataHandler = new CreditDataHandler();
             if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet())
                 throw new MessageException(language.getString("credit.error.not_enough.short"));

@@ -150,9 +150,6 @@ public class GeneralDataHandler extends DataHandler {
     }
 
 
-
-
-
     //</editor-fold>
     public PrettyTable executeQuery(String query){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, nomultiproperties);

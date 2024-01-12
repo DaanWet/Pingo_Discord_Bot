@@ -4,10 +4,11 @@ import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.companions.Achievement;
 import me.damascus2000.pingo.data.handlers.AchievementHandler;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Component
 public class Achievements extends Command {
 
 
@@ -69,7 +71,7 @@ public class Achievements extends Command {
                 sb.append(language.getString("achievements.embed.hidden", hidden + more));
             eb.addField(type.description, sb.toString(), false);
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
-        } else if (args.length == 1 && args[0].matches("(?i)^(top|global)$")) {
+        } else if (args.length == 1 && args[0].matches("(?i)^(top|global)$")){
             AchievementHandler handler = new AchievementHandler();
             boolean global = args[0].equalsIgnoreCase("global");
             HashMap<Achievement, Integer> map = global ? handler.getAchievementCount() : handler.getAchievementCount(guildId);
@@ -81,10 +83,10 @@ public class Achievements extends Command {
             int players = global ? creditDataHandler.getPlayers() : creditDataHandler.getPlayers(guildId);
             for (Map.Entry<Achievement, Integer> entry : sorted){
                 Achievement ach = entry.getKey();
-                sb.append(ach.getType().emoji).append(" ").append(language.getString(ach.getTitle())).append(": ").append(entry.getValue()).append(" (").append(entry.getValue() * 100.0/players).append("%)\n");
+                sb.append(ach.getType().emoji).append(" ").append(language.getString(ach.getTitle())).append(": ").append(entry.getValue()).append(" (").append(entry.getValue() * 100.0 / players).append("%)\n");
             }
             eb.setDescription(sb.toString());
-            eb.setTitle(language.getString(global? "achievements.embed.global" : "achievements.embed.server"));
+            eb.setTitle(language.getString(global ? "achievements.embed.global" : "achievements.embed.server"));
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }

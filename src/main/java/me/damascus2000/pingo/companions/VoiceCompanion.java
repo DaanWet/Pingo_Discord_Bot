@@ -1,9 +1,12 @@
 package me.damascus2000.pingo.companions;
 
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 
+@Service
 public class VoiceCompanion {
 
 

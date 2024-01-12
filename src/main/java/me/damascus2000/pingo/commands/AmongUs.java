@@ -1,15 +1,17 @@
 package me.damascus2000.pingo.commands;
 
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.MyResourceBundle;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class AmongUs extends Command {
 
     public AmongUs(){

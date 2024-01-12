@@ -2,17 +2,19 @@ package me.damascus2000.pingo.commands;
 
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.MyResourceBundle;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Component
 public class Nickname extends Command {
 
 

@@ -4,9 +4,11 @@ package me.damascus2000.pingo.commands;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class FuckPingo extends Command {
 
     public FuckPingo(){

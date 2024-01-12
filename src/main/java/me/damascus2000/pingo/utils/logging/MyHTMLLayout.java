@@ -1,12 +1,12 @@
 package me.damascus2000.pingo.utils.logging;
 
+import me.damascus2000.pingo.utils.Utils;
 import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Level;
 import org.apache.log4j.helpers.Transform;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
-import me.damascus2000.pingo.utils.Utils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

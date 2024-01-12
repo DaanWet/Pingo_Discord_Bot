@@ -3,17 +3,18 @@ package me.damascus2000.pingo.commands.pictures;
 import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.companions.DataCompanion;
 import me.damascus2000.pingo.companions.paginators.OpenExplorerData;
-import me.damascus2000.pingo.listeners.CommandHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.listeners.CommandHandler;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+//@Component
 public class DeletePicture extends Command {
 
     private final CommandHandler commandHandler;

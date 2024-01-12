@@ -1,10 +1,10 @@
 package me.damascus2000.pingo.companions.paginators;
 
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.util.HashMap;
 import java.util.List;

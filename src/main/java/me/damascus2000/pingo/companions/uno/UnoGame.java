@@ -2,10 +2,10 @@ package me.damascus2000.pingo.companions.uno;
 
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-import org.sk.PrettyTable;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import org.sk.PrettyTable;
 
 import java.util.*;
 

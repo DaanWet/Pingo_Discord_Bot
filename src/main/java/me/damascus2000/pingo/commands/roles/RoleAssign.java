@@ -5,16 +5,18 @@ import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.RRDataHandler;
 import me.damascus2000.pingo.data.models.RoleAssignData;
 import me.damascus2000.pingo.data.models.RoleAssignRole;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
+@Component
 public class RoleAssign extends RoleCommand {
 
     public RoleAssign(){

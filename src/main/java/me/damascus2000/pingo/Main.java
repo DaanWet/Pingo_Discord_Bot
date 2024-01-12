@@ -1,10 +1,15 @@
 package me.damascus2000.pingo;
 
-import me.damascus2000.pingo.commands.Voice;
 import me.damascus2000.pingo.companions.VoiceCompanion;
 import me.damascus2000.pingo.data.handlers.DataHandler;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
-import me.damascus2000.pingo.listeners.*;
+import me.damascus2000.pingo.listeners.JoinListener;
+import me.damascus2000.pingo.listeners.NicknameHandler;
+import me.damascus2000.pingo.listeners.VoiceHandler;
+import me.damascus2000.pingo.utils.MyProperties;
+import me.damascus2000.pingo.utils.Utils;
+import me.damascus2000.pingo.utils.logging.ErrorLayout;
+import me.damascus2000.pingo.utils.logging.MyFileAppender;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -17,10 +22,6 @@ import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import me.damascus2000.pingo.utils.MyProperties;
-import me.damascus2000.pingo.utils.Utils;
-import me.damascus2000.pingo.utils.logging.ErrorLayout;
-import me.damascus2000.pingo.utils.logging.MyFileAppender;
 
 import java.sql.SQLException;
 
@@ -100,15 +101,15 @@ public class Main {
                 .token(config.getProperty("top.gg.token"))
                 .botId(config.getProperty("top.gg.botId"))
                 .build();
-        MessageListener ml = new MessageListener(github, api);
-        jda.addEventListener(ml);
+        //MessageListener ml = new MessageListener(github, api);
+        //jda.addEventListener(ml);
         jda.addEventListener(new NicknameHandler());
         jda.addEventListener(new JoinListener(api));
-        CommandHandler ch = ml.getCommandHandler();
+        //CommandHandler ch = ml.getCommandHandler();
         VoiceCompanion vc = new VoiceCompanion();
         jda.addEventListener(new VoiceHandler(vc));
-        jda.addEventListener(new ReactionListener(ch, github));
-        ch.registerCommand(new Voice(vc));
+        //jda.addEventListener(new ReactionListener(ch, github));
+        //ch.registerCommand(new Voice(vc));
         jda.awaitReady();
         api.setStats(jda.getGuilds().size());
     }

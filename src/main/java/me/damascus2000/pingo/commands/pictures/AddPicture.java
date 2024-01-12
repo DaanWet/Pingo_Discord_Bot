@@ -1,10 +1,11 @@
 package me.damascus2000.pingo.commands.pictures;
 
 import me.damascus2000.pingo.commands.Command;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 
 import static me.damascus2000.pingo.listeners.CommandHandler.pathname;
 
+@Component
 public class AddPicture extends Command {
 
 

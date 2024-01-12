@@ -1,12 +1,10 @@
 package me.damascus2000.pingo.configurations;
 
-import me.damascus2000.pingo.commands.Voice;
-import me.damascus2000.pingo.companions.VoiceCompanion;
-import me.damascus2000.pingo.listeners.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.discordbots.api.client.DiscordBotListAPI;
@@ -16,12 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import me.damascus2000.pingo.utils.MyProperties;
-import me.damascus2000.pingo.utils.Utils;
 import org.springframework.context.annotation.PropertySource;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.util.List;
 
 @Configuration
 @PropertySource("classpath:config.properties")
@@ -55,23 +52,13 @@ public class BotConfiguration {
 
     @Bean
     @Autowired
-    public JDA discordClient(GitHub github, DiscordBotListAPI api) throws LoginException, InterruptedException{
-        System.out.println(token);
-
+    public JDA discordClient(DiscordBotListAPI api, List<ListenerAdapter> listeners) throws LoginException, InterruptedException{
         JDA jda = JDABuilder.createDefault(token).enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).build();
 
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("!help"));
         jda.setAutoReconnect(true);
 
-        MessageListener ml = new MessageListener(github, api);
-        jda.addEventListener(ml);
-        jda.addEventListener(new NicknameHandler());
-        jda.addEventListener(new JoinListener(api));
-        CommandHandler ch = ml.getCommandHandler();
-        VoiceCompanion vc = new VoiceCompanion();
-        jda.addEventListener(new VoiceHandler(vc));
-        jda.addEventListener(new ReactionListener(ch, github));
-        ch.registerCommand(new Voice(vc));
+        listeners.forEach(jda::addEventListener);
         jda.awaitReady();
         api.setStats(jda.getGuilds().size());
         return jda;

@@ -3,10 +3,10 @@ package me.damascus2000.pingo.companions.paginators;
 import me.damascus2000.pingo.companions.Record;
 import me.damascus2000.pingo.data.handlers.RecordDataHandler;
 import me.damascus2000.pingo.data.models.RecordData;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.util.ArrayList;
 

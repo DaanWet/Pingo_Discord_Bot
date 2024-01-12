@@ -4,11 +4,13 @@ import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AdminAbuse extends Command {
 
 

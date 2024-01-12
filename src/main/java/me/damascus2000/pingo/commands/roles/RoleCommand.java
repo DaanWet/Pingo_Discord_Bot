@@ -1,14 +1,14 @@
 package me.damascus2000.pingo.commands.roles;
 
 import com.vdurmont.emoji.EmojiManager;
+import emoji4j.EmojiUtils;
 import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.data.models.RoleAssignData;
 import me.damascus2000.pingo.data.models.RoleAssignRole;
-import emoji4j.EmojiUtils;
+import me.damascus2000.pingo.utils.MyResourceBundle;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import me.damascus2000.pingo.utils.MyResourceBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,8 +44,10 @@ public abstract class RoleCommand extends Command {
         StringBuilder sb = new StringBuilder(language.getString("roleassign.embed.description", category));
         ArrayList<RoleAssignRole> sorted;
         switch (data.getSorting()){
-            case EMOJI -> sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());
-            case NAME -> sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName)).collect(Collectors.toList());
+            case EMOJI ->
+                    sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getEmoji)).collect(Collectors.toList());
+            case NAME ->
+                    sorted = (ArrayList<RoleAssignRole>) roles.stream().sorted(Comparator.comparing(RoleAssignRole::getName)).collect(Collectors.toList());
             case CUSTOM -> {
                 sorted = new ArrayList<>();
                 for (String s : data.getCustomS().split(" ")){

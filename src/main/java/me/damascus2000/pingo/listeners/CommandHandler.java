@@ -1,97 +1,37 @@
 package me.damascus2000.pingo.listeners;
 
-import me.damascus2000.pingo.commands.*;
-import me.damascus2000.pingo.commands.casino.*;
-import me.damascus2000.pingo.commands.casino.bet.*;
-import me.damascus2000.pingo.commands.casino.blackjack.*;
-import me.damascus2000.pingo.commands.casino.uno.*;
-import me.damascus2000.pingo.commands.pictures.AddPicture;
-import me.damascus2000.pingo.commands.pictures.DeletePicture;
-import me.damascus2000.pingo.commands.roles.AddRoleAssign;
-import me.damascus2000.pingo.commands.roles.EditRoleAssign;
-import me.damascus2000.pingo.commands.roles.RemoveRoleAssign;
-import me.damascus2000.pingo.commands.roles.RoleAssign;
+import me.damascus2000.pingo.commands.Command;
+import me.damascus2000.pingo.commands.FuckPingo;
+import me.damascus2000.pingo.commands.Help;
 import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
-import me.damascus2000.pingo.commands.settings.Settings;
-import me.damascus2000.pingo.commands.suggestion.EditSuggestion;
-import me.damascus2000.pingo.commands.suggestion.ListIssues;
-import me.damascus2000.pingo.commands.suggestion.Suggest;
-import me.damascus2000.pingo.companions.DataCompanion;
-import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.discordbots.api.client.DiscordBotListAPI;
-import org.kohsuke.github.GitHub;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Service
 public class CommandHandler {
 
     public static String pathname;
     private final Random random;
     private final HashMap<String, Command> commands;
-    private final GameCompanion gameCompanion;
-    private final DataCompanion dataCompanion;
 
-    public CommandHandler(GitHub gitHub, DiscordBotListAPI topGGApi, GameCompanion gameCompanion){
+    public CommandHandler(List<Command> commands, Help help){
         pathname = Utils.config.getProperty("pictures.path");
         random = new Random();
-        CommandHandler commh = this;
-        this.gameCompanion = gameCompanion;
-        dataCompanion = new DataCompanion();
-        commands = new HashMap<>();
-        Help help = new Help(gameCompanion);
-        registerCommand(help);
-        registerCommand(new AddPicture());
-        registerCommand(new FuckPingo());
-        registerCommand(new DeletePicture(commh, dataCompanion));
-        registerCommand(new Nickname());
-        registerCommand(new RoleAssign());
-        registerCommand(new AddRoleAssign());
-        registerCommand(new RemoveRoleAssign());
-        registerCommand(new CollectCredits());
-        registerCommand(new Weekly());
-        registerCommand(new ShowCredits(dataCompanion));
-        registerCommand(new BlackJack(gameCompanion));
-        registerCommand(new Stand(gameCompanion));
-        registerCommand(new Hit(gameCompanion));
-        registerCommand(new DoubleDown(gameCompanion));
-        registerCommand(new Split(gameCompanion));
-        registerCommand(new Suggest());
-        registerCommand(new ListIssues(gitHub));
-        registerCommand(new EditSuggestion());
-        registerCommand(new AdminAbuse());
-        registerCommand(new Clean());
-        registerCommand(new Records(dataCompanion));
-        registerCommand(new Uno(gameCompanion, help));
-        registerCommand(new Play(gameCompanion));
-        registerCommand(new Draw(gameCompanion));
-        registerCommand(new Challenge(gameCompanion));
-        registerCommand(new AmongUs());
-        registerCommand(new Eval());
-        registerCommand(new TeamPicker());
-        registerCommand(new Poll());
-        registerCommand(new EditRoleAssign());
-        registerCommand(new Settings());
-        registerCommand(new StartBet(gameCompanion));
-        registerCommand(new Bet(gameCompanion));
-        registerCommand(new EndBet(gameCompanion));
-        registerCommand(new Arguments());
-        registerCommand(new Ping(gameCompanion));
-        registerCommands(new Blackbox(gameCompanion), new EndBlackbox(gameCompanion));
-        registerCommand(new Level(dataCompanion));
-        registerCommand(new Achievements());
-        registerCommand(new Vote(topGGApi));
-        help.setCommands(commands);
+        this.commands = new HashMap<>();
+        commands.forEach(this::registerCommand);
+        help.setCommands(this.commands);
     }
 
     public void registerCommand(Command command){
@@ -104,14 +44,7 @@ public class CommandHandler {
         }
     }
 
-    public GameCompanion getGameHandler(){
-        return gameCompanion;
-    }
-
-    public DataCompanion getDataCompanion(){
-        return dataCompanion;
-    }
-
+    @Deprecated
     public Set<String> getPcommands(){
         File cdir = new File(pathname);
         Set<String> pcommands = new HashSet<>();

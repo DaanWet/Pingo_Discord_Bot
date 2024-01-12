@@ -1,15 +1,17 @@
 package me.damascus2000.pingo.commands.suggestion;
 
 import me.damascus2000.pingo.commands.Command;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.kohsuke.github.*;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.kohsuke.github.*;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ListIssues extends Command {
 
     private final GitHub gitHub;

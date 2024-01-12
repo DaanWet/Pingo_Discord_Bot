@@ -10,9 +10,9 @@ import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.data.handlers.RecordDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.data.models.RecordData;
+import me.damascus2000.pingo.utils.MyResourceBundle;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import me.damascus2000.pingo.utils.MyResourceBundle;
 
 public abstract class BCommand extends Command {
 

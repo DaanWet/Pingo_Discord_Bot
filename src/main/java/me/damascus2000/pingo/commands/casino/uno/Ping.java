@@ -4,19 +4,21 @@ import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.uno.UnoGame;
 import me.damascus2000.pingo.companions.uno.UnoHand;
+import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.utils.MyResourceBundle;
+import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import me.damascus2000.pingo.exceptions.MessageException;
-import me.damascus2000.pingo.utils.MyResourceBundle;
-import me.damascus2000.pingo.utils.Utils;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
+@Component
 public class Ping extends Command {
 
     private final GameCompanion gameCompanion;
@@ -51,7 +53,7 @@ public class Ping extends Command {
             TextChannel channel = guild.getTextChannelById(hand.getChannelId());
             Color color = guild.getSelfMember().getColor();
             EmbedBuilder eb2 = new EmbedBuilder();
-            eb2.setTitle( language.getString("uno.turn"));
+            eb2.setTitle(language.getString("uno.turn"));
             eb2.setColor(color);
             channel.sendMessageEmbeds(eb2.build()).append(e.getGuild().getMemberById(hand.getPlayerId()).getAsMention()).queue();
         }

@@ -6,7 +6,6 @@ import java.util.Random;
 public class Question<T> {
 
 
-
     private final int ID;
     private final HashMap<Long, T> answers;
     private final long userId;
@@ -34,7 +33,6 @@ public class Question<T> {
     }
 
 
-
     public Long getChannelId(){
         return channelId;
     }
@@ -58,9 +56,11 @@ public class Question<T> {
     public T getAnswer(long userId){
         return answers.get(userId);
     }
+
     public String getQuestion(){
         return question;
     }
+
     public void addAnswer(long userId, T answer){
         answers.put(userId, answer);
     }

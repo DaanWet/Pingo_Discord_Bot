@@ -2,12 +2,14 @@ package me.damascus2000.pingo.commands;
 
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
+import me.damascus2000.pingo.utils.MyResourceBundle;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import me.damascus2000.pingo.utils.MyResourceBundle;
+import org.springframework.stereotype.Component;
 
 import static me.damascus2000.pingo.utils.Utils.config;
 
+@Component
 public class Arguments extends Command {
 
     public Arguments(){

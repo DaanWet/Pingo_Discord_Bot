@@ -46,8 +46,6 @@ public class CreditDataHandler extends DataHandler {
     }
 
 
-
-
     public int getCredits(long guildID, long userId){
         try (Connection conn = DriverManager.getConnection(JDBC_URL, properties);
              PreparedStatement stm = conn.prepareStatement("SELECT Credits FROM Member WHERE GuildId = ? AND UserId = ?")

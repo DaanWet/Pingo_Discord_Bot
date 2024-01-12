@@ -1,9 +1,9 @@
 package me.damascus2000.pingo.companions.cardgames;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -233,7 +233,7 @@ public class BlackJackGame {
         if (hasEnded){
             int credits = getWonCreds();
             eb.addField(hasSplit ? language.getString("blackjack.end.split", endstate.getDisplay(language), secondEndstate.getDisplay(language)) : language.getString("blackjack.end", endstate.getDisplay(language)),
-                        language.getString("blackjack.end.desc", credits) + (displayBoost(credits) ? String.format(" (x%.2f level boost)", Utils.getBoost(level)): ""), hasSplit);
+                        language.getString("blackjack.end.desc", credits) + (displayBoost(credits) ? String.format(" (x%.2f level boost)", Utils.getBoost(level)) : ""), hasSplit);
             eb.setColor(credits > 0 ? Color.GREEN : credits == 0 ? Color.BLUE : Color.RED);
         } else {
             StringBuilder sb = new StringBuilder();
