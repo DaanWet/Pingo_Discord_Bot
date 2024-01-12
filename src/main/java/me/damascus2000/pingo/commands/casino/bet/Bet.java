@@ -5,8 +5,8 @@ import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.Question;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -20,9 +20,12 @@ import org.springframework.stereotype.Component;
 public class Bet extends Command {
 
     private final GameCompanion gameCompanion;
+    private final MemberService memberService;
 
-    public Bet(GameCompanion gameCompanion){
+
+    public Bet(GameCompanion gameCompanion, MemberService memberService){
         this.gameCompanion = gameCompanion;
+        this.memberService = memberService;
         this.name = "bet";
         this.arguments = new String[]{"<bet id> <credits> <answer>"};
         this.description = "bet.description";
@@ -57,7 +60,7 @@ public class Bet extends Command {
         if (bet < 10)
             throw new MessageException(language.getString("credit.error.least"));
 
-        if (new CreditDataHandler().getCredits(e.getGuild().getIdLong(), userId) < bet)
+        if (memberService.getCredits(e.getGuild().getIdLong(), userId) < bet)
             throw new MessageException(language.getString("credit.error.not_enough", bet));
 
         if (args.length == 2)

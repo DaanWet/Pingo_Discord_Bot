@@ -6,6 +6,7 @@ import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,7 +19,9 @@ import java.time.temporal.ChronoUnit;
 @Component
 public class Weekly extends Command {
 
-    public Weekly(){
+    private final MemberService memberService;
+    public Weekly(MemberService memberService){
+        this.memberService = memberService;
         this.name = "weekly";
         this.aliases = new String[]{"weeklycredits"};
         this.category = Category.CASINO;
@@ -37,9 +40,9 @@ public class Weekly extends Command {
         if (args.length != 0)
             throw new MessageException(this.getUsage(guildId));
 
-        CreditDataHandler dataHandler = new CreditDataHandler();
+
         long id = e.getAuthor().getIdLong();
-        LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(guildId, id);
+        LocalDateTime latestcollect = memberService.getLastWeekly(guildId, id);
         if (latestcollect != null && !LocalDateTime.now().minusDays(7).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(7);
             LocalDateTime now = LocalDateTime.now();
@@ -49,13 +52,12 @@ public class Weekly extends Command {
             throw new MessageException(language.getString("weekly.wait", days, hours, minutes));
         }
         int weekly = (int) Utils.config.get("weekly");
-        int creds = dataHandler.addCredits(guildId, id, weekly);
-        dataHandler.setLatestWeekCollect(guildId, id, LocalDateTime.now());
+        int creds = memberService.addCredits(guildId, id, weekly);
+        memberService.setLastWeekly(guildId, id, LocalDateTime.now());
         e.getChannel().sendMessage(language.getString("weekly.success", weekly, creds)).queue();
-        GeneralDataHandler handler = new GeneralDataHandler();
-        int startXP = handler.getXP(guildId, id);
+        int startXP = memberService.getXP(guildId, id);
         checkAchievements(e.getChannel(), id);
-        int endXp = handler.getXP(guildId, id);
+        int endXp = memberService.getXP(guildId, id);
         checkLevel(e.getChannel(), e.getMember(), startXP, endXp);
 
     }

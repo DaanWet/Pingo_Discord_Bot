@@ -5,6 +5,7 @@ import me.damascus2000.pingo.companions.DataCompanion;
 import me.damascus2000.pingo.companions.paginators.XPPaginator;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -18,8 +19,10 @@ public class Level extends Command {
 
 
     private final DataCompanion handler;
+    private final MemberService memberService;
 
-    public Level(DataCompanion handler){
+    public Level(DataCompanion handler, MemberService memberService){
+        this.memberService = memberService;
         this.name = "level";
         this.description = "level.description";
         this.arguments = new String[]{"[**top**|**global**]"};
@@ -31,9 +34,8 @@ public class Level extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        GeneralDataHandler dataHandler = new GeneralDataHandler();
         if (args.length == 0){
-            int xp = dataHandler.getXP(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
+            int xp = memberService.getXP(e.getGuild().getIdLong(), e.getAuthor().getIdLong());
             int currentLevel = Utils.getLevel(xp);
             int nextXP = Utils.getXP(currentLevel + 1);
             int previousXP = Utils.getXP(currentLevel);

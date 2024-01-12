@@ -4,6 +4,9 @@ import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.RecordDataHandler;
 import me.damascus2000.pingo.data.models.RecordData;
+import me.damascus2000.pingo.services.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 public interface AchievementChecker {
 

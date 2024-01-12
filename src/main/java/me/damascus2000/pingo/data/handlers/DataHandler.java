@@ -2,6 +2,7 @@ package me.damascus2000.pingo.data.handlers;
 
 import java.util.Properties;
 
+@Deprecated(forRemoval = true)
 public abstract class DataHandler {
 
 

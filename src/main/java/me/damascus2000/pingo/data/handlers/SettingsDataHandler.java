@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Deprecated(forRemoval = true)
 public class SettingsDataHandler extends DataHandler {
 
     public SettingsDataHandler(){

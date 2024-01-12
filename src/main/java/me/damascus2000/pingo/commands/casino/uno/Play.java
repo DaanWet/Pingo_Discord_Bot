@@ -9,6 +9,7 @@ import me.damascus2000.pingo.data.ImageHandler;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
@@ -27,13 +28,15 @@ import java.util.stream.Collectors;
 public class Play extends Command {
 
     private final GameCompanion gameCompanion;
+    private final MemberService memberService;
 
-    public Play(GameCompanion gameCompanion){
+    public Play(GameCompanion gameCompanion, MemberService memberService){
         this.name = "play";
         this.aliases = new String[]{"p"};
         this.category = Category.UNO;
         this.arguments = new String[]{"<color><value>"};
         this.gameCompanion = gameCompanion;
+        this.memberService = memberService;
         this.description = "uno.play.description";
         this.example = "blueskip";
         this.hidden = true;
@@ -70,7 +73,6 @@ public class Play extends Command {
                 UnoHand hand = hands.get(i);
                 long player = hand.getPlayerId();
                 TextChannel channel = guild.getTextChannelById(hand.getChannelId());
-                CreditDataHandler dataHandler = new CreditDataHandler();
                 if (player != e.getMember().getIdLong()){
                     final int finalI = i; // values inside message Consumer lambdas need to be final, so we need to construct a final variant of i
                     channel.retrieveMessageById(hand.getMessageId()).queue(message -> {
@@ -87,7 +89,7 @@ public class Play extends Command {
                                 eb2.setDescription(language.getString("uno.lost", bet));
                             }
 
-                            if (bet != 0) dataHandler.addCredits(e.getGuild().getIdLong(), player, -1 * credits);
+                            if (bet != 0) memberService.addCredits(e.getGuild().getIdLong(), player, -1 * credits);
                             eb2.setColor(color);
                             channel.sendMessageEmbeds(eb2.build()).queue();
                             channel.delete().queueAfter((int) config.get("uno.timeout"), TimeUnit.MINUTES);
@@ -118,10 +120,9 @@ public class Play extends Command {
                         int credits = (200 + unoGame.getBet()) * size;
                         int xp = 10 + size * 2;
                         eb2.setTitle(language.getString("uno.win.you", card, credits, xp));
-                        dataHandler.addCredits(guild.getIdLong(), player, credits);
-                        GeneralDataHandler genHandler = new GeneralDataHandler();
-                        int startxp = genHandler.getXP(guild.getIdLong(), player);
-                        int endXP = genHandler.addXP(guild.getIdLong(), player, xp);
+                        memberService.addCredits(guild.getIdLong(), player, credits);
+                        int startxp = memberService.getXP(guild.getIdLong(), player);
+                        int endXP = memberService.addXP(guild.getIdLong(), player, xp);
                         channel.sendMessageEmbeds(eb2.build()).queue();
                         guild.getTextChannelById(unoGame.getChannelID()).retrieveMessageById(unoGame.getMessageID()).queue(m -> {
                             EmbedBuilder eb = new EmbedBuilder(m.getEmbeds().get(0));

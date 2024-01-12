@@ -10,6 +10,7 @@ import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.data.handlers.RecordDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.data.models.RecordData;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -17,30 +18,32 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public abstract class BCommand extends Command {
 
     protected final GameCompanion gameCompanion;
+    protected final MemberService memberService;
 
-    public BCommand(GameCompanion gameCompanion){
+    public BCommand(GameCompanion gameCompanion, MemberService memberService){
         this.gameCompanion = gameCompanion;
+        this.memberService = memberService;
         this.category = Category.CASINO;
         this.hidden = true;
     }
 
-    protected void updateMessage(GuildMessageReceivedEvent e, BlackJackGame bjg, CreditDataHandler dataHandler, MyResourceBundle language) throws Exception{
+    protected void updateMessage(GuildMessageReceivedEvent e, BlackJackGame bjg, MyResourceBundle language) throws Exception{
         long guildId = e.getGuild().getIdLong();
         long id = e.getAuthor().getIdLong();
         e.getChannel().retrieveMessageById(bjg.getMessageId()).queue(m -> {
             String prefix = new SettingsDataHandler().getStringSetting(guildId, Setting.PREFIX).get(0);
             EmbedBuilder eb = bjg.buildEmbed(e.getAuthor().getName(), prefix, language);
             GeneralDataHandler handler = new GeneralDataHandler();
-            int startXP = handler.getXP(guildId, id);
-            int endXP = handler.getXP(guildId, id);
+            int startXP = memberService.getXP(guildId, id);
+            int endXP = memberService.getXP(guildId, id);
             int xp = 0;
             if (bjg.hasEnded()){
                 int won_lose = bjg.getWonCreds();
                 xp = bjg.getWonXP();
-                int credits = dataHandler.addCredits(guildId, id, won_lose);
+                int credits = memberService.addCredits(guildId, id, won_lose);
                 if (xp > 0 && canBeta(guildId)){
-                    startXP = handler.getXP(guildId, id);
-                    endXP = handler.addXP(guildId, id, xp);
+                    startXP = memberService.getXP(guildId, id);
+                    endXP = memberService.addXP(guildId, id, xp);
                 }
                 String desc = language.getString("credit.new", credits) + "\n";
                 if (betaGuilds.contains(guildId))
@@ -54,7 +57,7 @@ public abstract class BCommand extends Command {
                 checkLevel(m.getTextChannel(), e.getMember(), startXP, endXP);
                 checkAchievements(e.getChannel(), id, gameCompanion);
                 gameCompanion.removeBlackJackGame(guildId, id);
-                checkLevel(m.getTextChannel(), e.getMember(), endXP, handler.getXP(guildId, id)); //TODO change this ??
+                checkLevel(m.getTextChannel(), e.getMember(), endXP, memberService.getXP(guildId, id)); //TODO change this ??
             }
         });
     }

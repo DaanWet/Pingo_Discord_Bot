@@ -5,6 +5,7 @@ import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,8 +24,10 @@ public class CollectEventCredits extends Command {
     private final String[] emoji = new String[]{"0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"};
     private final String eDescription = "daily.event.falling";
 
+    private final MemberService memberService;
 
-    public CollectEventCredits(){
+    public CollectEventCredits(MemberService memberService){
+        this.memberService = memberService;
         this.name = "daily";
         this.aliases = new String[]{"collect", "dailycredits"};
         this.category = Category.CASINO;
@@ -41,8 +44,7 @@ public class CollectEventCredits extends Command {
         if (args.length != 0)
             throw new MessageException(this.getUsage(e.getGuild().getIdLong()));
         long id = e.getAuthor().getIdLong();
-        CreditDataHandler dataHandler = new CreditDataHandler();
-        LocalDateTime latestcollect = dataHandler.getLatestCollect(e.getGuild().getIdLong(), id);
+        LocalDateTime latestcollect = memberService.getLastDaily(e.getGuild().getIdLong(), id);
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (latestcollect != null && !LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(1);
@@ -99,8 +101,8 @@ public class CollectEventCredits extends Command {
             m.editMessageEmbeds(eb.setDescription(language.getString(eDescription, ROLL, emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(8, TimeUnit.SECONDS);
             m.editMessageEmbeds(eb.setTitle(language.getString("daily.event.collected"))
                                         .setDescription(language.getString("daily.event.fell", emoji[first], emoji[second], emoji[third], emoji[fourth], emoji[fifth], emoji[0], emoji[0])).build()).queueAfter(9, TimeUnit.SECONDS, me -> {
-                int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, value);
-                dataHandler.setLatestCollect(e.getGuild().getIdLong(), id, LocalDateTime.now());
+                int creds = memberService.addCredits(e.getGuild().getIdLong(), id, value);
+                memberService.setLastDaily(e.getGuild().getIdLong(), id, LocalDateTime.now());
                 me.editMessageEmbeds(new EmbedBuilder(me.getEmbeds().get(0)).appendDescription(language.getString("daily.event.balance", creds)).build()).queue();
             });
 

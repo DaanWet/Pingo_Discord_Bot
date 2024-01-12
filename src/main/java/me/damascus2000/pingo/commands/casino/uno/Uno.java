@@ -8,6 +8,7 @@ import me.damascus2000.pingo.companions.uno.UnoGame;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
@@ -22,14 +23,16 @@ public class Uno extends Command {
 
     private final GameCompanion gameCompanion;
     private final Help help;
+    private final MemberService memberService;
 
-    public Uno(GameCompanion gameCompanion, Help help){
+    public Uno(GameCompanion gameCompanion, MemberService memberService,Help help){
         this.name = "uno";
         this.aliases = new String[]{"playuno"};
         this.category = Category.CASINO;
         this.arguments = new String[]{"[bet]"};
         this.description = "uno.description";
         this.gameCompanion = gameCompanion;
+        this.memberService = memberService;
         this.help = help;
     }
 
@@ -51,7 +54,7 @@ public class Uno extends Command {
                 bet = Utils.getInt(args[0]);
                 if (bet < 10)
                     throw new MessageException(language.getString("credit.error.least"));
-                if (new CreditDataHandler().getCredits(guildId, e.getAuthor().getIdLong()) < bet)
+                if (memberService.getCredits(guildId, e.getAuthor().getIdLong()) < bet)
                     throw new MessageException(language.getString("credit.error.not_enough", bet));
             }
         }

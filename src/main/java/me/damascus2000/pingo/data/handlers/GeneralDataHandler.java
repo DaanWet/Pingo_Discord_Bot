@@ -15,6 +15,7 @@ import java.sql.*;
 import java.util.HashMap;
 
 
+@Deprecated(forRemoval = true)
 public class GeneralDataHandler extends DataHandler {
 
     public GeneralDataHandler(){

@@ -7,6 +7,7 @@ import me.damascus2000.pingo.data.models.RoleAssignRole;
 import java.sql.*;
 import java.util.ArrayList;
 
+@Deprecated(forRemoval = true)
 public class RRDataHandler extends DataHandler {
 
 

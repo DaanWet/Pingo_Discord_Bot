@@ -2,6 +2,7 @@ package me.damascus2000.pingo.data.models;
 
 import me.damascus2000.pingo.companions.Record;
 
+@Deprecated(forRemoval = true)
 public class RecordData {
 
     private long userId;

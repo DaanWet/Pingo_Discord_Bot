@@ -8,6 +8,7 @@ import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -22,8 +23,8 @@ import java.time.LocalDateTime;
 public class BlackJack extends BCommand {
 
 
-    public BlackJack(GameCompanion gameCompanion){
-        super(gameCompanion);
+    public BlackJack(GameCompanion gameCompanion, MemberService memberService){
+        super(gameCompanion, memberService);
         this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
         this.arguments = new String[]{"<bet>"};
@@ -49,20 +50,19 @@ public class BlackJack extends BCommand {
 
         long playerId = author.getIdLong();
         int bet = args.length == 0 ? 0 : Utils.getInt(args[0]);
-        CreditDataHandler dataHandler = new CreditDataHandler();
         if (args.length != 0 && args[0].matches("(?i)all(-?in)?")){
-            bet = dataHandler.getCredits(guildId, playerId);
+            bet = memberService.getCredits(guildId, playerId);
+
         }
 
         if (bet < 10)
             throw new MessageException(language.getString("credit.error.least"));
-        if (dataHandler.getCredits(guildId, playerId) < bet)
+        if (memberService.getCredits(guildId, playerId) < bet)
             throw new MessageException(language.getString("credit.error.not_enough", bet));
         BlackJackGame objg = gameCompanion.getBlackJackGame(guildId, playerId);
         if (objg != null)
             throw new MessageException(language.getString("bj.error.playing"));
-        GeneralDataHandler handler = new GeneralDataHandler();
-        int startXP = handler.getXP(guildId, playerId);
+        int startXP = memberService.getXP(guildId, playerId);
         int level = Utils.getLevel(startXP);
         BlackJackGame bjg = new BlackJackGame(bet, level, canBeta(guildId));
         SettingsDataHandler settingDH = new SettingsDataHandler();
@@ -70,13 +70,13 @@ public class BlackJack extends BCommand {
         String prefix = settingDH.getStringSetting(guildId, Setting.PREFIX).get(0);
         EmbedBuilder eb = bjg.buildEmbed(author.getName(), prefix, language);
         int xp = 0;
-        int endXP = handler.getXP(guildId, playerId);
+        int endXP = memberService.getXP(guildId, playerId);
         gameCompanion.putBlackJackGame(guildId, playerId, bjg);
         if (bjg.hasEnded()){
-            int credits = dataHandler.addCredits(guildId, playerId, bjg.getWonCreds());
+            int credits = memberService.addCredits(guildId, playerId, bjg.getWonCreds());
             xp = bjg.getWonXP();
             if (xp > 0 && canBeta(guildId)){
-                endXP = handler.addXP(guildId, playerId, xp);
+                endXP = memberService.addXP(guildId, playerId, xp);
             }
             String desc = language.getString("credit.new", credits) + "\n";
             if (canBeta(guildId))
@@ -92,7 +92,7 @@ public class BlackJack extends BCommand {
             checkLevel(e.getChannel(), e.getMember(), startXP, endXP);
             checkAchievements(e.getChannel(), playerId, gameCompanion);
             gameCompanion.removeBlackJackGame(guildId, playerId);
-            checkLevel(e.getChannel(), e.getMember(), endXP, handler.getXP(guildId, playerId)); //TODO change this ??
+            checkLevel(e.getChannel(), e.getMember(), endXP, memberService.getXP(guildId, playerId)); //TODO change this ??
         }
 
     }

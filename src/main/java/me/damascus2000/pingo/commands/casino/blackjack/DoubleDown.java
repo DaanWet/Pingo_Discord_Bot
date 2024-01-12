@@ -4,6 +4,7 @@ import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 public class DoubleDown extends BCommand {
 
 
-    public DoubleDown(GameCompanion gameCompanion){
-        super(gameCompanion);
+    public DoubleDown(GameCompanion gameCompanion, MemberService memberService){
+        super(gameCompanion, memberService);
         this.name = "double";
     }
 
@@ -31,8 +32,7 @@ public class DoubleDown extends BCommand {
             if (!bjg.canDouble()){
                 throw new MessageException(language.getString("bj.error.invalid"));
             }
-            CreditDataHandler dataHandler = new CreditDataHandler();
-            if (dataHandler.getCredits(guildId, id) < 2 * bjg.getBet()){
+            if (memberService.getCredits(guildId, id) < 2 * bjg.getBet()){
                 throw new MessageException(language.getString("credit.error.not_enough.short"));
             }
             if (bjg.getMessageId() == null){
@@ -40,7 +40,7 @@ public class DoubleDown extends BCommand {
                 throw new MessageException(language.getString("bj.error.fast"), 5);
             }
             bjg.doubleDown();
-            updateMessage(e, bjg, dataHandler, language);
+            updateMessage(e, bjg, language);
         }
     }
 }

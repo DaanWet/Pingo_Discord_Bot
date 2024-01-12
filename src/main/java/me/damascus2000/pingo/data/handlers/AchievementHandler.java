@@ -6,6 +6,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
+@Deprecated(forRemoval = true)
 public class AchievementHandler extends DataHandler {
 
     public AchievementHandler(){

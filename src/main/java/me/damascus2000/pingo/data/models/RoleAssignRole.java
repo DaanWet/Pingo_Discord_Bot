@@ -1,5 +1,6 @@
 package me.damascus2000.pingo.data.models;
 
+@Deprecated(forRemoval = true)
 public class RoleAssignRole {
 
     private final String name;

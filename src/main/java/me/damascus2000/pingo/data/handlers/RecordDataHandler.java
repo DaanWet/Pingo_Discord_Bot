@@ -6,6 +6,7 @@ import me.damascus2000.pingo.data.models.RecordData;
 import java.sql.*;
 import java.util.ArrayList;
 
+@Deprecated(forRemoval = true)
 public class RecordDataHandler extends DataHandler {
 
     public RecordDataHandler(){

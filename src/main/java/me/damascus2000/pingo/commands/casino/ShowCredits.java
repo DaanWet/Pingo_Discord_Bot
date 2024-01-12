@@ -7,6 +7,9 @@ import me.damascus2000.pingo.companions.DataCompanion;
 import me.damascus2000.pingo.companions.paginators.BalancePaginator;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.models.GuildUserId;
+import me.damascus2000.pingo.repositories.MemberRepository;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,8 +20,9 @@ import org.springframework.stereotype.Component;
 public class ShowCredits extends Command {
 
     private final DataCompanion handler;
+    private final MemberService memberService;
 
-    public ShowCredits(DataCompanion handler){
+    public ShowCredits(DataCompanion handler, MemberService memberService){
         this.name = "balance";
         this.aliases = new String[]{"bal", "credits", "ShowCredits"};
         this.category = Category.CASINO;
@@ -26,6 +30,7 @@ public class ShowCredits extends Command {
         this.description = "balance.description";
         this.example = "top";
         this.handler = handler;
+        this.memberService = memberService;
     }
 
     @Override
@@ -35,13 +40,12 @@ public class ShowCredits extends Command {
 
     @Override
     public void run(String[] args, GuildMessageReceivedEvent e) throws Exception{
-        CreditDataHandler dataHandler = new CreditDataHandler();
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (args.length == 0){
-            e.getChannel().sendMessage(language.getString("balance", dataHandler.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()))).queue();
+            e.getChannel().sendMessage(language.getString("balance", memberService.getCredits(e.getGuild().getIdLong(), e.getAuthor().getIdLong()))).queue();
         } else if (args.length == 1 && args[0].matches("(?i)^(top|global)$")){
             boolean global = args[0].equalsIgnoreCase("global");
-            BalancePaginator paginator = new BalancePaginator(global, e.getGuild().getIdLong());
+            BalancePaginator paginator = new BalancePaginator(global, e.getGuild().getIdLong(), memberService);
             paginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), paginator));
         } else {
             throw new MessageException(this.getUsage(e.getGuild().getIdLong()));

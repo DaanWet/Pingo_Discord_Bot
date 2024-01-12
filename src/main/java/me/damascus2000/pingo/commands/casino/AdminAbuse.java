@@ -4,6 +4,7 @@ import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
@@ -13,8 +14,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdminAbuse extends Command {
 
-
-    public AdminAbuse(){
+    private final MemberService memberService;
+    public AdminAbuse(MemberService memberService){
+        this.memberService = memberService;
         this.name = "adminAbuse";
         this.category = Category.MODERATION;
         this.arguments = new String[]{"[<member>] <amount>"};
@@ -37,18 +39,19 @@ public class AdminAbuse extends Command {
         if (args.length == 1){
             coins = Utils.getInt(args[0]);
             target = e.getMember();
-            msg = language.getString("bet.new", dataHandler.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins));
+            msg = language.getString("bet.new", memberService.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins));
         } else if (args.length == 2 && e.getMessage().mentionsEveryone()){
+            // TODO: remove
             coins = Utils.getInt(args[1]);
             for (Long uuid : dataHandler.getAllCredits(e.getGuild().getIdLong()).keySet()){
-                dataHandler.addCredits(e.getGuild().getIdLong(), uuid, coins);
+                memberService.addCredits(e.getGuild().getIdLong(), uuid, coins);
             }
             e.getChannel().sendMessage(language.getString("give.everyone", coins)).queue();
             return;
         } else if (args.length == 2 && e.getMessage().getMentions().size() == 1){
             coins = Utils.getInt(args[1]);
             target = e.getMessage().getMentionedMembers().get(0);
-            msg = language.getString("give.success", target.getEffectiveName(), dataHandler.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins));
+            msg = language.getString("give.success", target.getEffectiveName(), memberService.addCredits(e.getGuild().getIdLong(), target.getIdLong(), coins));
         } else {
             return;
         }

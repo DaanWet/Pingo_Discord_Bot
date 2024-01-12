@@ -2,6 +2,7 @@ package me.damascus2000.pingo.data.models;
 
 import me.damascus2000.pingo.commands.roles.RoleCommand;
 
+@Deprecated(forRemoval = true)
 public class RoleAssignData {
 
     private Long channelId;

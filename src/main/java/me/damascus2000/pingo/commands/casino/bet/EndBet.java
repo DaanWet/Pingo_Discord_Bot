@@ -5,8 +5,8 @@ import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.Question;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -22,9 +22,11 @@ import java.util.Map;
 public class EndBet extends Command {
 
     private final GameCompanion gameCompanion;
+    private final MemberService memberService;
 
-    public EndBet(GameCompanion gameCompanion){
+    public EndBet(GameCompanion gameCompanion, MemberService memberService){
         this.gameCompanion = gameCompanion;
+        this.memberService = memberService;
         this.name = "endbet";
         this.aliases = new String[]{"ebet"};
         this.arguments = new String[]{"<bet id> <winners>"};
@@ -68,12 +70,11 @@ public class EndBet extends Command {
         customBet.end();
         int winnerTotal = 0;
         int prize = 0;
-        CreditDataHandler dh = new CreditDataHandler();
         for (Map.Entry<Long, Pair<Integer, String>> entry : customBet.getAnswers().entrySet()){
             if (winners.contains(entry.getKey()))
                 winnerTotal += entry.getValue().getLeft();
             else {
-                dh.addCredits(guildId, entry.getKey(), -entry.getValue().getLeft());
+                memberService.addCredits(guildId, entry.getKey(), -entry.getValue().getLeft());
                 prize += entry.getValue().getLeft();
             }
         }
@@ -84,7 +85,7 @@ public class EndBet extends Command {
         for (long winner : winners){
             double percentage = (double) customBet.getAnswer(winner).getLeft() / winnerTotal;
             int won = (int) (percentage * prize);
-            dh.addCredits(guildId, winner, won);
+            memberService.addCredits(guildId, winner, won);
             eb.appendDescription("\n").appendDescription(language.getString("end_bet.winner", String.format("<@!%d>", winner), won, customBet.getAnswer(winner).getRight()));
         }
         e.getChannel().sendMessageEmbeds(eb.build()).queue();

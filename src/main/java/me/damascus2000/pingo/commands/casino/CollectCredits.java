@@ -6,6 +6,7 @@ import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,8 +19,9 @@ import java.time.temporal.ChronoUnit;
 @Component
 public class CollectCredits extends Command {
 
-
-    public CollectCredits(){
+    private final MemberService memberService;
+    public CollectCredits(MemberService memberService){
+        this.memberService = memberService;
         this.name = "daily";
         this.aliases = new String[]{"collect", "dailycredits"};
         this.category = Category.CASINO;
@@ -37,8 +39,7 @@ public class CollectCredits extends Command {
         if (args.length != 0)
             throw new MessageException(this.getUsage(guildId));
         long id = e.getAuthor().getIdLong();
-        CreditDataHandler dataHandler = new CreditDataHandler();
-        LocalDateTime latestcollect = dataHandler.getLatestCollect(guildId, id);
+        LocalDateTime latestcollect = memberService.getLastDaily(guildId, id);
         MyResourceBundle language = Utils.getLanguage(guildId);
         if (latestcollect != null && !LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(1);
@@ -48,13 +49,12 @@ public class CollectCredits extends Command {
             throw new MessageException(language.getString("daily.wait", hours, minutes));
         }
         int daily = (int) Utils.config.get("daily");
-        int creds = dataHandler.addCredits(guildId, id, daily);
-        dataHandler.setLatestCollect(guildId, id, LocalDateTime.now());
+        int creds = memberService.addCredits(guildId, id, daily);
+        memberService.setLastDaily(guildId, id, LocalDateTime.now());
         e.getChannel().sendMessage(language.getString("daily.success", daily, creds)).queue();
-        GeneralDataHandler handler = new GeneralDataHandler();
-        int startXP = handler.getXP(guildId, id);
+        int startXP = memberService.getXP(guildId, id);
         checkAchievements(e.getChannel(), id);
-        int endXp = handler.getXP(guildId, id);
+        int endXp = memberService.getXP(guildId, id);
         checkLevel(e.getChannel(), e.getMember(), startXP, endXp);
     }
 }

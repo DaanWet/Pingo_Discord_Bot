@@ -4,6 +4,7 @@ import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 public class Hit extends BCommand {
 
 
-    public Hit(GameCompanion gameCompanion){
-        super(gameCompanion);
+    public Hit(GameCompanion gameCompanion, MemberService memberService){
+        super(gameCompanion, memberService);
         this.name = "hit";
     }
 
@@ -32,7 +33,7 @@ public class Hit extends BCommand {
                 throw new MessageException(language.getString("bj.error.fast"), 5);
             }
             bjg.hit();
-            updateMessage(e, bjg, new CreditDataHandler(), language);
+            updateMessage(e, bjg, language);
         }
     }
 }
