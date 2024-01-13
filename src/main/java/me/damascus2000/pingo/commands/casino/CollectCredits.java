@@ -4,6 +4,7 @@ import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.AchievementService;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
@@ -17,10 +18,9 @@ import java.time.temporal.ChronoUnit;
 @Component
 public class CollectCredits extends Command {
 
-    private final MemberService memberService;
-
-    public CollectCredits(MemberService memberService){
+    public CollectCredits(MemberService memberService, AchievementService achievementService){
         this.memberService = memberService;
+        this.achievementService = achievementService;
         this.name = "daily";
         this.aliases = new String[]{"collect", "dailycredits"};
         this.category = Category.CASINO;

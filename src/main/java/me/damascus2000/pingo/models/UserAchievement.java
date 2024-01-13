@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import me.damascus2000.pingo.companions.Achievement;
+import me.damascus2000.pingo.repositories.AchievementConverter;
 
 import java.time.LocalDateTime;
 
@@ -11,26 +13,27 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name="userachievement")
+@Table(name = "userachievement")
 @IdClass(AchievementId.class)
 public class UserAchievement {
 
     @Id
-    @Column(name="userid", nullable = false)
+    @Column(name = "userid", nullable = false)
     private long userId;
 
     @Id
-    @Column(name="guildid", nullable = false)
+    @Column(name = "guildid", nullable = false)
     private long guildId;
 
     @Id
-    private String achievement;
+    @Convert(converter = AchievementConverter.class)
+    private Achievement achievement;
 
     private boolean achieved;
 
     private LocalDateTime time;
 
-    public UserAchievement(long guildId, long userId, String achievement){
+    public UserAchievement(long guildId, long userId, Achievement achievement){
         this.userId = userId;
         this.guildId = guildId;
         this.achievement = achievement;

@@ -114,5 +114,12 @@ public class MemberService {
         recordRepository.save(record);
     }
 
+    public int getPlayerCount(){
+        return repository.getMemberCount();
+    }
+
+    public int getPlayerCount(long guildId){
+        return repository.getMemberCount(guildId);
+    }
 
 }

@@ -6,6 +6,7 @@ import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.AchievementService;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.services.RecordService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
@@ -22,8 +23,8 @@ import java.time.LocalDateTime;
 public class BlackJack extends BCommand {
 
 
-    public BlackJack(GameCompanion gameCompanion, MemberService memberService, RecordService recordService){
-        super(gameCompanion, memberService, recordService);
+    public BlackJack(GameCompanion gameCompanion, MemberService memberService, RecordService recordService, AchievementService achievementService){
+        super(gameCompanion, memberService, recordService, achievementService);
         this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
         this.arguments = new String[]{"<bet>"};

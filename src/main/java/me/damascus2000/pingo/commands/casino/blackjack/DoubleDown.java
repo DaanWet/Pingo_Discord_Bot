@@ -3,6 +3,7 @@ package me.damascus2000.pingo.commands.casino.blackjack;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.AchievementService;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.services.RecordService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
@@ -16,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class DoubleDown extends BCommand {
 
 
-    public DoubleDown(GameCompanion gameCompanion, MemberService memberService, RecordService recordService){
-        super(gameCompanion, memberService, recordService);
+    public DoubleDown(GameCompanion gameCompanion, MemberService memberService, RecordService recordService, AchievementService achievementService){
+        super(gameCompanion, memberService, recordService, achievementService);
         this.name = "double";
     }
 

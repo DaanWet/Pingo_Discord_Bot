@@ -7,6 +7,7 @@ import me.damascus2000.pingo.companions.Record;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.models.UserRecord;
+import me.damascus2000.pingo.services.AchievementService;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.services.RecordService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
@@ -16,13 +17,13 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public abstract class BCommand extends Command {
 
     protected final GameCompanion gameCompanion;
-    protected final MemberService memberService;
     protected final RecordService recordService;
 
-    public BCommand(GameCompanion gameCompanion, MemberService memberService, RecordService recordService){
+    public BCommand(GameCompanion gameCompanion, MemberService memberService, RecordService recordService, AchievementService achievementService){
         this.gameCompanion = gameCompanion;
         this.memberService = memberService;
         this.recordService = recordService;
+        this.achievementService = achievementService;
         this.category = Category.CASINO;
         this.hidden = true;
     }

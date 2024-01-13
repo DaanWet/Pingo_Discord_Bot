@@ -2,25 +2,26 @@ package me.damascus2000.pingo.commands.casino;
 
 import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.companions.Achievement;
-import me.damascus2000.pingo.data.handlers.AchievementHandler;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
+import me.damascus2000.pingo.models.AchievementCountDTO;
+import me.damascus2000.pingo.services.AchievementService;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class Achievements extends Command {
 
 
-    public Achievements(){
+    public Achievements(MemberService memberService, AchievementService achievementService){
+        this.memberService = memberService;
+        this.achievementService = achievementService;
         this.name = "achievements";
         this.description = "achievements.description";
         this.category = Category.OTHER;
@@ -37,7 +38,6 @@ public class Achievements extends Command {
             eb.setColor(e.getMember().getColor());
             int hidden = 0;
             int more = -1;
-            AchievementHandler handler = new AchievementHandler();
             long userId = e.getAuthor().getIdLong();
             Achievement.Type type = Achievement.values()[0].getType();
             StringBuilder sb = new StringBuilder();
@@ -51,7 +51,7 @@ public class Achievements extends Command {
                     type = achievement.getType();
                     sb = new StringBuilder();
                 }
-                boolean unlocked = handler.hasAchieved(guildId, userId, achievement);
+                boolean unlocked = achievementService.hasAchieved(guildId, userId, achievement);
                 if (achievement.isHidden() && !unlocked){
                     hidden++;
                 } else if (unlocked || more == -1){
@@ -72,18 +72,16 @@ public class Achievements extends Command {
             eb.addField(type.description, sb.toString(), false);
             e.getChannel().sendMessageEmbeds(eb.build()).queue();
         } else if (args.length == 1 && args[0].matches("(?i)^(top|global)$")){
-            AchievementHandler handler = new AchievementHandler();
             boolean global = args[0].equalsIgnoreCase("global");
-            HashMap<Achievement, Integer> map = global ? handler.getAchievementCount() : handler.getAchievementCount(guildId);
-            Stream<Map.Entry<Achievement, Integer>> stream = map.entrySet().stream().sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue());
-            List<Map.Entry<Achievement, Integer>> sorted = stream.collect(Collectors.toList());
+            achievementService.getAchievementCount();
+            List<AchievementCountDTO> map = global ? achievementService.getAchievementCount() : achievementService.getAchievementCount(guildId);
+            map = map.stream().sorted(Comparator.comparingLong(AchievementCountDTO::getCount).reversed()).collect(Collectors.toList());
             EmbedBuilder eb = new EmbedBuilder();
             StringBuilder sb = new StringBuilder();
-            CreditDataHandler creditDataHandler = new CreditDataHandler();
-            int players = global ? creditDataHandler.getPlayers() : creditDataHandler.getPlayers(guildId);
-            for (Map.Entry<Achievement, Integer> entry : sorted){
-                Achievement ach = entry.getKey();
-                sb.append(ach.getType().emoji).append(" ").append(language.getString(ach.getTitle())).append(": ").append(entry.getValue()).append(" (").append(entry.getValue() * 100.0 / players).append("%)\n");
+            int players = global ? memberService.getPlayerCount() : memberService.getPlayerCount(guildId);
+            for (AchievementCountDTO entry : map){
+                Achievement ach = entry.getAchievement();
+                sb.append(ach.getType().emoji).append(" ").append(language.getString(ach.getTitle())).append(": ").append(entry.getCount()).append(" (").append(entry.getCount() * 100.0 / players).append("%)\n");
             }
             eb.setDescription(sb.toString());
             eb.setTitle(language.getString(global ? "achievements.embed.global" : "achievements.embed.server"));

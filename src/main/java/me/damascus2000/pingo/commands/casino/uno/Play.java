@@ -7,6 +7,7 @@ import me.damascus2000.pingo.companions.uno.UnoGame;
 import me.damascus2000.pingo.companions.uno.UnoHand;
 import me.damascus2000.pingo.data.ImageHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.services.AchievementService;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
@@ -28,13 +29,14 @@ public class Play extends Command {
     private final GameCompanion gameCompanion;
     private final MemberService memberService;
 
-    public Play(GameCompanion gameCompanion, MemberService memberService){
+    public Play(GameCompanion gameCompanion, MemberService memberService, AchievementService achievementService){
         this.name = "play";
         this.aliases = new String[]{"p"};
         this.category = Category.UNO;
         this.arguments = new String[]{"<color><value>"};
         this.gameCompanion = gameCompanion;
         this.memberService = memberService;
+        this.achievementService = achievementService;
         this.description = "uno.play.description";
         this.example = "blueskip";
         this.hidden = true;

@@ -4,9 +4,9 @@ import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.companions.Achievement;
 import me.damascus2000.pingo.companions.GameCompanion;
-import me.damascus2000.pingo.data.handlers.AchievementHandler;
-import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
+import me.damascus2000.pingo.services.AchievementService;
+import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -51,8 +51,11 @@ public abstract class Command {
     protected String example = "";
     protected boolean hidden = false;
     protected long priveligedGuild = -1;
-    public static List<Long> betaGuilds = List.of(203572340280262657L, 764196816517464084L, 572022353421271042L);
+    public static List<Long> betaGuilds = List.of(203572340280262657L, 764196816517464084L, 572022353421271042L, 367365697011187714L);
     protected boolean beta = false;
+
+    protected AchievementService achievementService;
+    protected MemberService memberService;
 
     public abstract void run(String[] args, GuildMessageReceivedEvent e) throws Exception;
 
@@ -219,8 +222,6 @@ public abstract class Command {
             return;
         long guildId = textChannel.getGuild().getIdLong();
         MyResourceBundle language = Utils.getLanguage(guildId);
-        AchievementHandler handler = new AchievementHandler();
-        GeneralDataHandler dataHandler = new GeneralDataHandler();
         for (Achievement achievement : Achievement.values()){
             if (achievement.isAchieved(guildId, userId, gameCompanion)){
                 EmbedBuilder eb = new EmbedBuilder();
@@ -229,8 +230,8 @@ public abstract class Command {
                 eb.setColor(textChannel.getGuild().getSelfMember().getColor());
                 textChannel.sendMessageEmbeds(eb.build()).queue();
                 // notify
-                handler.setAchieved(guildId, userId, achievement);
-                dataHandler.addXP(guildId, userId, achievement.getReward().reward);
+                achievementService.setAchieved(guildId, userId, achievement);
+                memberService.addXP(guildId, userId, achievement.getReward().reward);
             }
         }
     }

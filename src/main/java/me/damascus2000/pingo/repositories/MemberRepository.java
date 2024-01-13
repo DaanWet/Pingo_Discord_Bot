@@ -5,6 +5,7 @@ import me.damascus2000.pingo.models.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,5 +24,11 @@ public interface MemberRepository extends JpaRepository<Member, GuildUserId> {
 
     Page<Member> findByGuildIdOrderByCreditsDesc(long guildId, Pageable pageable);
 
+
+    @Query("SELECT count(m) FROM Member m")
+    int getMemberCount();
+
+    @Query("SELECT count(m) FROM Member m WHERE m.guildId = ?1")
+    int getMemberCount(long guildId);
 
 }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 /**
  * Marked for removal
+ *
  * @see me.damascus2000.pingo.services.MemberService
  */
 @Deprecated(forRemoval = true)
