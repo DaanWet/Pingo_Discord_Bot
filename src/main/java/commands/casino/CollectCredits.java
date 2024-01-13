@@ -11,6 +11,7 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 public class CollectCredits extends Command {
@@ -39,10 +40,7 @@ public class CollectCredits extends Command {
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (latestcollect != null && !LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(1);
-            LocalDateTime temp = LocalDateTime.now();
-            long hours = temp.until(till, ChronoUnit.HOURS);
-            long minutes = temp.plusHours(hours).until(till, ChronoUnit.MINUTES);
-            throw new MessageException(language.getString("daily.wait", hours, minutes));
+            throw new MessageException(language.getString("daily.wait", till.toEpochSecond(ZoneOffset.UTC)));
         }
         int daily = (int) Utils.config.get("daily");
         int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, daily);

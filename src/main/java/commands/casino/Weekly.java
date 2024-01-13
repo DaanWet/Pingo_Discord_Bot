@@ -11,6 +11,7 @@ import utils.MyResourceBundle;
 import utils.Utils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 public class Weekly extends Command {
@@ -38,11 +39,7 @@ public class Weekly extends Command {
         LocalDateTime latestcollect = dataHandler.getLatestWeekCollect(e.getGuild().getIdLong(), id);
         if (latestcollect != null && !LocalDateTime.now().minusDays(7).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(7);
-            LocalDateTime now = LocalDateTime.now();
-            long days = now.until(till, ChronoUnit.DAYS);
-            long hours = now.plusDays(days).until(till, ChronoUnit.HOURS);
-            long minutes = now.plusDays(days).plusHours(hours).until(till, ChronoUnit.MINUTES);
-            throw new MessageException(language.getString("weekly.wait", days, hours, minutes));
+            throw new MessageException(language.getString("weekly.wait", till.toEpochSecond(ZoneOffset.UTC)));
         }
         int weekly = (int) Utils.config.get("weekly");
         int creds = dataHandler.addCredits(e.getGuild().getIdLong(), id, weekly);

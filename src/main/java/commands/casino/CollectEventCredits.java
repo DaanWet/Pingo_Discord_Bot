@@ -13,6 +13,7 @@ import utils.Utils;
 
 import java.awt.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -46,10 +47,7 @@ public class CollectEventCredits extends Command {
         MyResourceBundle language = Utils.getLanguage(e.getGuild().getIdLong());
         if (latestcollect != null && !LocalDateTime.now().minusDays(1).isAfter(latestcollect)){
             LocalDateTime till = latestcollect.plusDays(1);
-            LocalDateTime temp = LocalDateTime.now();
-            long hours = temp.until(till, ChronoUnit.HOURS);
-            long minutes = temp.plusHours(hours).until(till, ChronoUnit.MINUTES);
-            throw new MessageException(language.getString("daily.wait", hours, minutes));
+            throw new MessageException(language.getString("daily.wait", till.toEpochSecond(ZoneOffset.UTC)));
         }
         Random random = new Random();
         double c = random.nextDouble();
