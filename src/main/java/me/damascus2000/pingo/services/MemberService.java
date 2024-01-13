@@ -2,9 +2,10 @@ package me.damascus2000.pingo.services;
 
 import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.companions.Record;
-import me.damascus2000.pingo.companions.paginators.RecordPaginator;
-import me.damascus2000.pingo.models.*;
-import me.damascus2000.pingo.repositories.AchievementRepository;
+import me.damascus2000.pingo.models.GuildUserId;
+import me.damascus2000.pingo.models.Member;
+import me.damascus2000.pingo.models.RecordId;
+import me.damascus2000.pingo.models.UserRecord;
 import me.damascus2000.pingo.repositories.MemberRepository;
 import me.damascus2000.pingo.repositories.RecordRepository;
 import org.springframework.data.domain.Page;
@@ -51,11 +52,8 @@ public class MemberService {
 
         repository.save(m);
         int newCredits = m.getCredits();
-        Optional<UserRecord> optRecord = recordRepository.findById(new RecordId(guildId, userId, Record.CREDITS));
-        UserRecord record = new UserRecord(guildId, userId, Record.CREDITS);
-        if (optRecord.isPresent()){
-            record = optRecord.get();
-        }
+        UserRecord record = recordRepository.findById(new RecordId(guildId, userId, Record.CREDITS))
+                .orElse(new UserRecord(guildId, userId, Record.CREDITS));
         if (newCredits > record.getValue()){
             record.setValue(newCredits);
         }
@@ -68,9 +66,9 @@ public class MemberService {
     }
 
     public void setLastDaily(long guildId, long userId, LocalDateTime time){
-            Member m = getMember(guildId, userId);
-            m.setLastDaily(time);
-            repository.save(m);
+        Member m = getMember(guildId, userId);
+        m.setLastDaily(time);
+        repository.save(m);
     }
 
     public LocalDateTime getLastWeekly(long guildId, long userId){
@@ -96,5 +94,25 @@ public class MemberService {
         repository.save(member);
         return member.getExperience();
     }
+
+    public int getStreak(long guildId, long userId){
+        return getMember(guildId, userId).getCurrentStreak();
+    }
+
+    public void setStreak(long guildId, long userId, int value, String link){
+        Member member = getMember(guildId, userId);
+        member.setCurrentStreak(value);
+        repository.save(member);
+        //TODO: Set record
+        Record r = value > 0 ? Record.WIN_STREAK : Record.LOSS_STREAK;
+        UserRecord record = recordRepository.findById(new RecordId(guildId, userId, r))
+                .orElse(new UserRecord(guildId, userId, r));
+        if (Math.abs(value) > record.getValue()){
+            record.setValue(value);
+            record.setLink(link);
+        }
+        recordRepository.save(record);
+    }
+
 
 }

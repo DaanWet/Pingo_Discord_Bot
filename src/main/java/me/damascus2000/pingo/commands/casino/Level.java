@@ -3,7 +3,6 @@ package me.damascus2000.pingo.commands.casino;
 import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.companions.DataCompanion;
 import me.damascus2000.pingo.companions.paginators.XPPaginator;
-import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.Utils;

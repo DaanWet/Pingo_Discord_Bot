@@ -2,9 +2,9 @@ package me.damascus2000.pingo.commands.casino.blackjack;
 
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.services.MemberService;
+import me.damascus2000.pingo.services.RecordService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class Stand extends BCommand {
 
-    public Stand(GameCompanion gameCompanion, MemberService memberService){
-        super(gameCompanion, memberService);
+    public Stand(GameCompanion gameCompanion, MemberService memberService, RecordService recordService){
+        super(gameCompanion, memberService, recordService);
         this.name = "stand";
     }
 

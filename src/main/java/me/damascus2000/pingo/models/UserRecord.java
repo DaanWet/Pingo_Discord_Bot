@@ -10,19 +10,20 @@ import me.damascus2000.pingo.companions.Record;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name="userrecord")
+@Table(name = "userrecord")
 @IdClass(RecordId.class)
 public class UserRecord {
 
     @Id
-    @Column(name="userid", nullable = false)
+    @Column(name = "userid", nullable = false)
     private long userId;
     @Id
-    @Column(name="guildid", nullable = false)
+    @Column(name = "guildid", nullable = false)
     private long guildId;
     @Id
-    @Column(name="name", nullable = false)
+    @Column(name = "name", nullable = false)
     private Record record;
+
     private String link;
     private double value;
 

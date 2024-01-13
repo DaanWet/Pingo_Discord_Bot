@@ -6,8 +6,6 @@ import me.damascus2000.pingo.companions.uno.UnoCard;
 import me.damascus2000.pingo.companions.uno.UnoGame;
 import me.damascus2000.pingo.companions.uno.UnoHand;
 import me.damascus2000.pingo.data.ImageHandler;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyProperties;

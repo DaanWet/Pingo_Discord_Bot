@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class AdminAbuse extends Command {
 
     private final MemberService memberService;
+
     public AdminAbuse(MemberService memberService){
         this.memberService = memberService;
         this.name = "adminAbuse";

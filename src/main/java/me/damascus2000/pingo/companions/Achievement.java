@@ -2,7 +2,6 @@ package me.damascus2000.pingo.companions;
 
 import me.damascus2000.pingo.data.handlers.AchievementHandler;
 import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import me.damascus2000.pingo.services.MemberService;
 
 public enum Achievement {
     BALANCE_10K(new AchievementChecker.Balance(10000), Reward.BEGINNER, "achievement.balance.10K", "achievement.balance.10K.desc", false, Type.BALANCE),

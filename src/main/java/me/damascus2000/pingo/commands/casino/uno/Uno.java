@@ -5,7 +5,6 @@ import me.damascus2000.pingo.commands.Help;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.uno.UnoGame;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.services.MemberService;
@@ -25,7 +24,7 @@ public class Uno extends Command {
     private final Help help;
     private final MemberService memberService;
 
-    public Uno(GameCompanion gameCompanion, MemberService memberService,Help help){
+    public Uno(GameCompanion gameCompanion, MemberService memberService, Help help){
         this.name = "uno";
         this.aliases = new String[]{"playuno"};
         this.category = Category.CASINO;

@@ -3,8 +3,6 @@ package me.damascus2000.pingo.commands.casino;
 import me.damascus2000.pingo.commands.Command;
 import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
@@ -20,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 public class Weekly extends Command {
 
     private final MemberService memberService;
+
     public Weekly(MemberService memberService){
         this.memberService = memberService;
         this.name = "weekly";

@@ -9,6 +9,8 @@ import me.damascus2000.pingo.companions.paginators.RecordPaginator;
 import me.damascus2000.pingo.data.handlers.RecordDataHandler;
 import me.damascus2000.pingo.data.models.RecordData;
 import me.damascus2000.pingo.exceptions.MessageException;
+import me.damascus2000.pingo.models.UserRecord;
+import me.damascus2000.pingo.services.RecordService;
 import me.damascus2000.pingo.utils.MyProperties;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
@@ -19,14 +21,17 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class Records extends Command {
 
     private final MyProperties properties;
     private final DataCompanion handler;
+    private final RecordService recordService;
 
-    public Records(DataCompanion handler){
+    public Records(DataCompanion handler, RecordService recordService){
+        this.recordService = recordService;
         this.name = "records";
         this.category = Category.CASINO;
         this.description = "records.description";
@@ -81,10 +86,11 @@ public class Records extends Command {
                 RecordPaginator recordPaginator = new RecordPaginator(Record.getRecord(args[0].toLowerCase()).get(), e.getGuild().getIdLong());
                 recordPaginator.sendMessage(e.getChannel(), m -> handler.addEmbedPaginator(e.getGuild().getIdLong(), m.getIdLong(), recordPaginator));
             } else if (target != null){
-                ArrayList<RecordData> records = dataHandler.getRecords(e.getGuild().getIdLong(), target.getIdLong());
+
+                List<UserRecord> records = recordService.getRecords(e.getGuild().getIdLong(), target.getIdLong());
                 eb.setTitle(language.getString("records.person", target.getUser().getName()));
                 StringBuilder sb = new StringBuilder();
-                for (RecordData record : records){
+                for (UserRecord record : records){
                     sb.append(dot).append(" ").append(record.getRecord().getDisplay(language)).append(": **");
 
                     // Formats the blackjack winrate into something more human readable

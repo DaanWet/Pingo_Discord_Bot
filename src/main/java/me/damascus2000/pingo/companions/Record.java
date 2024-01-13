@@ -45,5 +45,8 @@ public enum Record {
         return language.getString(name);
     }
 
-
+    @Override
+    public String toString(){
+        return name;
+    }
 }

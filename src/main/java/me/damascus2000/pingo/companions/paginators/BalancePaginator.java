@@ -9,18 +9,13 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class BalancePaginator extends EmbedPaginator {
 
     private final boolean global;
     private final long guildId;
 
     private final MemberService memberService;
+
     public BalancePaginator(boolean global, long guildId, MemberService memberService){
         this.global = global;
         this.guildId = guildId;

@@ -4,11 +4,10 @@ import me.damascus2000.pingo.commands.settings.CommandState;
 import me.damascus2000.pingo.commands.settings.Setting;
 import me.damascus2000.pingo.companions.GameCompanion;
 import me.damascus2000.pingo.companions.cardgames.BlackJackGame;
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
-import me.damascus2000.pingo.data.handlers.GeneralDataHandler;
 import me.damascus2000.pingo.data.handlers.SettingsDataHandler;
 import me.damascus2000.pingo.exceptions.MessageException;
 import me.damascus2000.pingo.services.MemberService;
+import me.damascus2000.pingo.services.RecordService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
 import me.damascus2000.pingo.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,8 +22,8 @@ import java.time.LocalDateTime;
 public class BlackJack extends BCommand {
 
 
-    public BlackJack(GameCompanion gameCompanion, MemberService memberService){
-        super(gameCompanion, memberService);
+    public BlackJack(GameCompanion gameCompanion, MemberService memberService, RecordService recordService){
+        super(gameCompanion, memberService, recordService);
         this.name = "blackjack";
         this.aliases = new String[]{"bj", "21"};
         this.arguments = new String[]{"<bet>"};
