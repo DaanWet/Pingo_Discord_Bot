@@ -19,7 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, GuildUserId> {
 
     List<Member> findByGuildId(long guildId);
 
-    Page<Member> get(Pageable pageable);
+    Page<Member> getAllByOrderByCreditsDesc(Pageable pageable);
 
     Page<Member> findByGuildIdOrderByCreditsDesc(long guildId, Pageable pageable);
 

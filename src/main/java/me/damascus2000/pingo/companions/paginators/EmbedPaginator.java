@@ -13,9 +13,10 @@ public abstract class EmbedPaginator {
 
     /**
      * Current page of the embed
-     * 1 is first page and -1 is last page
+     * 0 is first page and -1 is last page
      */
-    protected int page = 1;
+    protected int page = 0;
+    protected int maxPage = 0;
 
     public abstract MessageEmbed createEmbed(long guild);
 
@@ -44,20 +45,20 @@ public abstract class EmbedPaginator {
 
 
     public void nextPage(){
-        page++;
+        page = Math.min(page + 1, maxPage);
     }
 
     public void previousPage(){
-        if (page != 1)
+        if (page != 0)
             page--;
     }
 
     public void firstPage(){
-        page = 1;
+        page = 0;
     }
 
     public void lastPage(){
-        page = -1;
+        page = maxPage;
     }
 
     public int getPage(){

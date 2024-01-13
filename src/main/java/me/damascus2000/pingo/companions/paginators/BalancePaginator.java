@@ -1,6 +1,5 @@
 package me.damascus2000.pingo.companions.paginators;
 
-import me.damascus2000.pingo.data.handlers.CreditDataHandler;
 import me.damascus2000.pingo.models.Member;
 import me.damascus2000.pingo.services.MemberService;
 import me.damascus2000.pingo.utils.MyResourceBundle;
@@ -32,13 +31,14 @@ public class BalancePaginator extends EmbedPaginator {
     @Override
     public MessageEmbed createEmbed(long guild){
         Page<Member> memberPage = global ? memberService.getMembers(PageRequest.of(page, 10)) : memberService.getMembers(guildId, PageRequest.of(page, 10));
+        maxPage = memberPage.getTotalPages() - 1;
         EmbedBuilder eb = new EmbedBuilder();
         StringBuilder sb = new StringBuilder();
 
 
         MyResourceBundle language = Utils.getLanguage(guild);
         eb.setTitle(language.getString(global ? "leaderboard.credits.global" : "leaderboard.credits.title"));
-        int i = 10 * (page  - 1) + 1;
+        int i = 10 * page + 1;
         for (Member m : memberPage){
             sb.append("`").append(i).append(i >= 10 ? ".`  " : ". `  ")
                     .append("<@!")
@@ -50,7 +50,7 @@ public class BalancePaginator extends EmbedPaginator {
         if (memberPage.getTotalElements() == 0)
             eb.setDescription(language.getString("leaderboard.credits.error"));
         else
-            eb.setFooter(language.getString("paginator.footer", page, memberPage.getTotalPages()));
+            eb.setFooter(language.getString("paginator.footer", page + 1, memberPage.getTotalPages()));
         return eb.build();
     }
 }

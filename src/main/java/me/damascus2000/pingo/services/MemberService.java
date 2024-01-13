@@ -41,8 +41,7 @@ public class MemberService {
     // TODO: This does not have the same functionality as before, now players can appear twice in the global overview,
     // TODO: this has to be fixed, if needed, in the repository
     public Page<Member> getMembers(Pageable page){
-        //return repository.findAllOrderByCreditsDesc(page);
-        return null;
+        return repository.getAllByOrderByCreditsDesc(page);
     }
 
     public int addCredits(long guildId, long userId, int credits){
